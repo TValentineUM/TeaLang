@@ -97,6 +97,19 @@ char_class Lexer::char_cat(char x) {
   case '<': // Waterfall down
   case '>':
     return Comparison;
+  case '{':
+  case '}':
+  case ';':
+  case ':':
+  case '(':
+  case ')':
+  case ',':
+    return Punctuation;
+  case '+':
+  case '-':
+    return PlusMinus;
+  case '*':
+    return Asterisk;
   default:
     return Err;
   }

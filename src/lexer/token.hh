@@ -18,6 +18,12 @@ enum tl_token {
   tok_lit_string,
   tok_multi_op,
   tok_add_op,
+  tok_curly_left,
+  tok_curly_right,
+  tok_round_left,
+  tok_round_right,
+  tok_semicolon,
+  tok_colon,
   tok_comma,
   tok_unary,
   tok_let,
@@ -28,7 +34,7 @@ enum tl_token {
   tok_for,
   tok_while,
   tok_relational,
-  tok_assign
+  tok_assign,
 } typedef tl_token;
 
 class Token {
