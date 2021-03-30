@@ -4,10 +4,10 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  string temp = "12345.789";
+  string temp = "test.tl";
 
   lexer::Lexer lexed(temp);
-  cout << lexed << endl;
+  cout << lexed;
 
   return 0;
 }

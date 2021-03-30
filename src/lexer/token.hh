@@ -6,7 +6,28 @@
 
 namespace lexer {
 
-enum tl_token { tl_int = 0, tl_double } typedef tl_token;
+enum tl_token {
+  tok_iden = 0,
+  tok_type_int,
+  tok_type_float,
+  tok_type_bool,
+  tok_type_string,
+  tok_lit_bool,
+  tok_lit_int,
+  tok_lit_float,
+  tok_lit_string,
+  tok_multi_op,
+  tok_add_op,
+  tok_comma,
+  tok_unary,
+  tok_let,
+  tok_print,
+  tok_return,
+  tok_if,
+  tok_else,
+  tok_for,
+  tok_while,
+} typedef tl_token;
 
 class Token {
 
@@ -21,7 +42,7 @@ public:
                         documentation */
 
   friend std::ostream &operator<<(std::ostream &out, const Token &tok) {
-    out << '{' << tok.type << ", " << tok.value << "}";
+    out << '{' << tok.type << "," << tok.value << "}";
     return out;
   }
 };
