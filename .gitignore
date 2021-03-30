@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Keeping bin folder
+src/bin/*
+!src/bin/.gitkeep
