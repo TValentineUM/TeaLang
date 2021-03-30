@@ -90,6 +90,13 @@ char_class Lexer::char_cat(char x) {
   switch (x) {
   case '.':
     return Decimal;
+  case '=':
+    return Equals;
+  case '!':
+    return Bang;
+  case '<': // Waterfall down
+  case '>':
+    return Comparison;
   default:
     return Err;
   }

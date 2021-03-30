@@ -12,3 +12,6 @@ for    whilee    int
 
 
 1hello bye
+
+
+!= = == < <= > >=

@@ -34,3 +34,5 @@
 # Keeping bin folder
 src/bin/*
 !src/bin/.gitkeep
+/documentation/.auctex-auto/
+/src/.idea/

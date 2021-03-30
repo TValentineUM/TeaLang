@@ -32,6 +32,13 @@ void Token::match_token(std::string value, int state) {
     type = identifiers[value];
     // If the keyword lookup fails it defaults to 0 which is tok_iden
     break;
+  case 5:
+    type = tok_assign;
+    break;
+  case 7:
+  case 8:
+    type = tok_relational;
+    break;
   }
   this->value = value;
 }

@@ -27,6 +27,8 @@ enum tl_token {
   tok_else,
   tok_for,
   tok_while,
+  tok_relational,
+  tok_assign
 } typedef tl_token;
 
 class Token {
