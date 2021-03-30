@@ -1,0 +1,162 @@
+#+TITLE: Tealang Interpreter
+#+AUTHOR: Tony Valentine
+
+
+#+Latex: \newpage
+* Language Definition
+
+The Tealang language is defined using the following EBNF. The '[]' wrapper is equivalent to '?' in regex, and the '{}' wrapper is equivalent to '*' in regex.
+
+#+NAME: some-source-code
+#+begin_src
+<Letter>            ::= [A-Za-z]
+<Digit>             ::= [0-9]
+<Printable>         ::= [\x20-\x7E]
+<Type>              ::= 'float' | 'int' | 'bool' | 'string'
+<BooleanLiteral>    ::= 'true' | 'false'
+<IntegerLiteral>    ::= <Digit> { <Digit> }
+<FloatLiteral>      ::= <Digit> { <Digit> } '.' <Digit> { <Digit> }
+<StringLiteral>     ::= '"' {<Printable> } '"'
+<Literal>           ::= <BooleanLiteral>
+                        |<IntegerLiteral>
+                        |<FloatLiteral>
+                        |<StringLiteral>
+<Identifier >       ::= ('_'| <Letter>) {'_'| <Letter> | <Digit> }
+<MultiplicativeOp>  ::= '*' | '/' | 'and'
+<AdditiveOp>        ::= '+' | '-' | 'or'
+<RelationalOp>      ::= '<' | '>' | '==' | '!=' | '<=' | '>='
+<ActualParams>      ::= <Expression> { ',' <Expression> }
+<FunctionCall >     ::= <Identifier > '(' [ <ActualParams> ] ')'
+<SubExpression>     ::= '(' <Expression> ')'
+<Unary>             ::= ( '-' | 'not' ) <Expression>
+<Factor >           ::= <Literal >
+                        |<Identifier >
+                        |<FunctionCall >
+                        |<SubExpr>
+                        |<Unary>
+<Term>              ::= <Factor > { <MultiplicativeOp> <Factor > }
+<SimpleExpression>  ::= <Term> { <AdditiveOp> <Term> }
+<Expression>        ::= <SimpleExpression> { <RelationalOp> <SimpleExpression> }
+<Assignment>        ::= <Identifier > '=' <Expression>
+<VariableDecl >     ::= 'let' <Identifier > ':' <Type> '=' <Expression>
+<PrintStatement>    ::= 'print' <Expression>
+<RtrnStatement>     ::= 'return' <Expression>
+<IfStatement>       ::= 'if' '(' <Expression> ')' <Block > [ 'else' <Block > ]
+<ForStatement>      ::= 'for' '(' [ <VariableDecl > ] ';' <Expression> ';'
+                        [<Assignment> ] ')' <Block >
+<WhileStatement>    ::= 'while' '(' <Expression> ')' <Block >
+<FormalParam>       ::= <Identifier > ':' <Type>
+<FormalParams>      ::= <FormalParam> { ',' <FormalParam> }
+<FunctionDecl >     ::= <type> <Identifier > '(' [ <FormalParams> ] ')' <Block >
+<Statement>         ::= <VariableDecl > ';'
+                        |<Assignment> ';'
+                        |<PrintStatement> ';'
+                        |<IfStatement>
+                        |<ForStatement>
+                        |<WhileStatement>
+                        |<RtrnStatement> ';'
+                        |<FunctionDecl >
+                        |<Block >
+<Block >            ::= '{' { <Statement> } '}'
+<Program>           ::= { <Statement> }
+
+#+end_src
+
+
+#+Latex: \newpage
+* Lexer
+
+** Lexer Components
+
+*** Identifiers and Keywords
+
+Keywords are reserved identifiers required for operation of the language. Since the set of all keywords is a subset of all identifiers we can focus on detecting correct identifiers first and then check for keywords. The regex for an identifier is ~(_|[A-z])(_|[A-z]|[0-9])+~. To determine the exact token a map can be used to locate the correct token in logarithmic time.
+
+#+BEGIN_SRC dot :file automaton/identifier.png
+digraph finite_state_machine {
+    rankdir=LR;
+    size="8,5"
+
+    node [shape = circle, label="S0", fontsize=14] S0;
+    node [shape = doublecircle, label="S1", fontsize=14] S1;
+
+
+    node [shape = point ]; qi
+    qi -> S0;
+
+    S0   -> S1  [ label = "(_|[A-z])\n " ];
+    S1   -> S1  [ label = "(_|[A-z]|[0-9])\n " ];
+}
+#+END_SRC
+#+CAPTION: Identifier DFA
+#+NAME:   fig:iden-dfa
+#+attr_latex: :width 200px
+#+RESULTS:
+[[file:automaton/identifier.png]]
+
+
+*** Integers and Floats
+
+Taking a look at the BNF it can be seen that a the definition for ~float~ is a concatenation of ~int~ with ~.~ and another ~int~. As such a dfa can be defined to accept both of these strings, and they can be interpreted according the final state of the automaton. In the automaton below if the system stops in state ~Int~ we know it must be an integer, whereas stopping in state ~Float~ assures that the number is a float.
+
+#+BEGIN_SRC dot :file automaton/nums.png
+digraph finite_state_machine {
+    rankdir=LR;
+    size="8,5"
+
+    node [margin=2 fontsize=32 width=1 shape=circle]
+    node [shape = circle, label="S0", fontsize=14, fixedsize=true] S0;
+    node [shape = doublecircle, label="Int", fontsize=14] S1;
+    node [shape = circle, label="S2", fontsize=14] S2;
+    node [shape = doublecircle, label="Float", fontsize=14] S3;
+
+    node [shape = point width=0.25 style=invis ]; qi
+    qi -> S0;
+
+    S0   -> S1  [ label = "[1-9]" ];
+    S1   -> S1  [ label = "[0-9]" ];
+    S1   -> S2  [ label = "." fontsize=30];
+    S2   -> S3  [ label = "[0-9]" ];
+    S3   -> S3  [ label = "[0-9]" ];
+}
+#+end_src
+#+CAPTION: Integer and Float DFA
+#+LABEL:   fig:nums-dfa
+#+attr_latex: :width 250px
+#+RESULTS:
+[[file:automaton/nums.png]]
+
+
+*** Relational Operators and Equality
+
+The relational operators require a slightly more complex DFA than previous examples. This is specifically due to the ~!=~ and singular ~=~ operator. However these can easily be resolved with 2 extra cases in the DFA.
+
+#+BEGIN_SRC dot :file automaton/eq_comp.png
+digraph finite_state_machine {
+    rankdir=LR;
+    size="8,5"
+
+    node [margin=2 fontsize=32 width=1.3 shape=circle]
+    node [shape = circle, label="S0", fontsize=14, fixedsize=true] S0;
+    node [shape = doublecircle, label="Assignment", fontsize=14] S1;
+    node [shape = circle, label="S2", fontsize=14] S2;
+    node [shape = doublecircle, label="Comparison", fontsize=14] S3;
+    node [shape = doublecircle, label="Comparison", fontsize=14] S4;
+
+    node [shape = point width=0.25 style=invis ]; qi
+    qi -> S0;
+
+    S0   -> S1  [ label = "=" ];
+    S1   -> S4  [ label = "=" ];
+    S0   -> S2  [ label = "!" ];
+    S2   -> S4  [label = "="];
+    S0   -> S3  [label = "<,>"];
+    S3   -> S4  [label = "="];
+}
+#+end_src
+#+CAPTION: Comparison and Assignment DFA
+#+LABEL:   fig:eq-comp-dfa
+#+attr_latex: :width 150px
+#+RESULTS:
+[[file:automaton/eq_comp.png]]
+
