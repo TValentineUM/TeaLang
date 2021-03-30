@@ -11,4 +11,4 @@
 for    whilee    int
 
 
-1hello   bye
+1hello bye

@@ -18,7 +18,7 @@ private:
   std::vector<Token>::iterator
       token_counter; /**< Tracks the next token to be returned */
 
-  void tokenize(std::string input);
+  void tokenize(std::ifstream &file);
   char_class char_cat(char x);
   dfa_state transition(dfa_state state, char_class x);
 

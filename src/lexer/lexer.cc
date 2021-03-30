@@ -12,9 +12,7 @@ Lexer::Lexer(std::string file) {
   if (!input) {
     throw std::invalid_argument("File not found");
   } else {
-    for (std::string line; std::getline(input, line);) {
-      tokenize(line);
-    }
+    tokenize(input);
   }
 }
 
@@ -26,52 +24,56 @@ Token Lexer::getNxtToken() {
   }
 }
 
-void Lexer::tokenize(std::string input) {
-  std::string::iterator next_char;
+void Lexer::tokenize(std::ifstream &file) {
   do {
+    char c = file.get();
     dfa_state state = S0;
     std::string lexeme = "";
     std::stack<dfa_state> buffer;
     buffer.push(BAD);
-    next_char = input.begin();
-    while (*next_char == ' ') {
-      input.erase(next_char);
-      next_char = input.begin();
+    while (c == ' ' || c == 10) {
+      c = file.get();
+      if (file.eof()) {
+        break;
+      }
     }
-    if (next_char != input.end()) {
+
+    if (file.peek() == EOF) {
+      break;
+    } else {
       while (state != SE) {
         if (SA[state]) {
           while (!buffer.empty()) {
             buffer.pop();
-          };
+          }
         }
         buffer.push(state);
-        char_class cat = char_cat(*next_char);
+        lexeme.push_back(c);
+        char_class cat = char_cat(c);
         state = transition(state, cat);
-        next_char++;
-        if (next_char == input.end()) {
+        if (state != SE) {
+          c = file.get();
+        }
+        if (file.eof()) {
           break;
         }
       }
+
       while (!SA[state] && state != BAD) {
         state = buffer.top();
         buffer.pop();
-        next_char--;
+        file.unget();
+        lexeme.pop_back();
       }
       if (SA[state]) {
-        lexeme = std::string(input.begin(), next_char);
-        input.erase(input.begin(), next_char);
         Token temp(lexeme, state);
         tokens.push_back(temp);
       } else {
-        std::cout << input << std::endl;
         std::cout << "error" << std::endl;
         throw std::invalid_argument("Unkown token provided");
       }
-    } else {
-      break;
     }
-  } while (next_char != input.end());
+  } while (file.peek() != EOF);
 }
 
 dfa_state Lexer::transition(dfa_state state, char_class x) {
