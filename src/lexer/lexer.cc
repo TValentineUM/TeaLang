@@ -110,7 +110,15 @@ char_class Lexer::char_cat(char x) {
     return PlusMinus;
   case '*':
     return Asterisk;
+  case '\\':
+    return BSlash;
+  case '"':
+    return Qoute;
   default:
-    return Err;
+    if (isprint(x)) {
+      return Printable;
+    } else {
+      return Err;
+    }
   }
 }

@@ -77,6 +77,11 @@ void Token::match_token(std::string value, int state) {
       break;
     }
     break;
+  case 13:
+    type = tok_lit_string;
+    value.erase(value.begin());
+    value.erase(value.end() - 1, value.end());
+    break;
   }
   this->value = value;
 }

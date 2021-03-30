@@ -33,6 +33,9 @@ enum dfa_state {
   S8,     /**< Acceptance State for Comparison and or Equality*/
   S9,     /** Acceptance State for Single Character Punctuation*/
   S10,    /**< Acceptance State for (+|-|*)*/
+  S11,    /**< Main Body of String Literal*/
+  S12,    /**< Escaped Character*/
+  S13,    /**< Acceptance State for String Literal*/
   SE,     /**< Invalid State*/
   BAD     /**< State used for lexer algorithm*/
 } typedef dfa_state;
@@ -48,6 +51,9 @@ enum char_class {
   FSlash,      /**< (/) */
   PlusMinus,   /**< (+|-)*/
   Asterisk,    /**< (*) */
+  BSlash,      /**< \\ aka Backslash*/
+  Qoute,       /**< (")*/
+  Printable,   /**< All Printable Ascii Characters*/
   Err          /**< Unkown Character Type*/
 } typedef char_class;
 
@@ -89,24 +95,29 @@ private:
   dfa_state transition(dfa_state state, char_class x);
 
   /** @brief Accepting States for the DFSA */
-  bool SA[12] = {0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0};
-  /*             S0 S1 S2 S3 S4 S5 S6 S7 S8 S9 S10 SE            */
+  bool SA[15] = {0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0};
+  /*             S0 S1 S2 S3 S4 S5 S6 S7 S8 S9 10 11 12 13 SE            */
 
   /** @brief DFSA Transition Table Definition */
-  dfa_state transition_table[12][11] = {
-      /*       Di  De  Id  <>  =   !   };  FS  PM  AS Ukn*/
-      /*S0 */ {S1, SE, S4, S7, S5, S6, S9, SE, S10, S10, SE},
-      /*S1 */ {S1, S2, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S2 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S3 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S4 */ {S4, SE, S4, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S5 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE},
-      /*S6 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE},
-      /*S7 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE},
-      /*S8 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S9 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S10*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*SE */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+  dfa_state transition_table[15][14] = {
+      /*       Di  De  Id  <>  =   !   };  FS  PM  AS  BS  Qt  Pr Ukn*/
+      /*S0 */ {S1, SE, S4, S7, S5, S6, S9, SE, S10, S10, SE, S11, SE, SE},
+      /*S1 */ {S1, S2, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S2 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S3 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S4 */ {S4, SE, S4, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S5 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S6 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S7 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S8 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S9 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S10*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S11*/
+      {S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S12, S13, S11, SE},
+      /*S12*/
+      {S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, SE},
+      /*S13*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*SE */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
   };
 
 public:
