@@ -13,6 +13,7 @@ Lexer::Lexer(std::string file) {
     throw std::invalid_argument("File not found");
   } else {
     tokenize(input);
+    input.close();
   }
 }
 
@@ -25,13 +26,17 @@ Token Lexer::getNxtToken() {
 }
 
 void Lexer::tokenize(std::ifstream &file) {
+  int line_number = 0;
   do {
     char c = file.get();
     dfa_state state = S0;
     std::string lexeme = "";
     std::stack<dfa_state> buffer;
     buffer.push(BAD);
-    while (c == ' ' || c == 10) {
+    while (c == ' ' || c == 10 || c == 9) {
+      if (c == 10) {
+        line_number++;
+      }
       c = file.get();
       if (file.eof()) {
         break;
@@ -50,7 +55,7 @@ void Lexer::tokenize(std::ifstream &file) {
         buffer.push(state);
         lexeme.push_back(c);
         char_class cat = char_cat(c);
-        state = transition(state, cat);
+        state = transition(state, cat, line_number);
         if (state != SE) {
           c = file.get();
         }
@@ -66,17 +71,22 @@ void Lexer::tokenize(std::ifstream &file) {
         lexeme.pop_back();
       }
       if (SA[state]) {
-        Token temp(lexeme, state);
-        tokens.push_back(temp);
+        Token temp(lexeme, state, line_number);
+        if (temp.type > -1) {
+          tokens.push_back(temp);
+        }
       } else {
-        std::cout << "error" << std::endl;
-        throw std::invalid_argument("Unkown token provided");
+        std::cout << "Invalid Production @ Line: " << line_number << std::endl;
+        throw new std::invalid_argument("Unkown token provided");
       }
     }
   } while (file.peek() != EOF);
 }
 
-dfa_state Lexer::transition(dfa_state state, char_class x) {
+dfa_state Lexer::transition(dfa_state state, char_class x, int &line_number) {
+  if (x == Newline) {
+    line_number++;
+  }
   return transition_table[state][x];
 }
 
@@ -105,6 +115,8 @@ char_class Lexer::char_cat(char x) {
   case ')':
   case ',':
     return Punctuation;
+  case '/':
+    return FSlash;
   case '+':
   case '-':
     return PlusMinus;
@@ -114,6 +126,9 @@ char_class Lexer::char_cat(char x) {
     return BSlash;
   case '"':
     return Qoute;
+  case '\n':
+    return Newline;
+
   default:
     if (isprint(x)) {
       return Printable;

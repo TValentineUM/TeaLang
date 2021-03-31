@@ -82,6 +82,15 @@ void Token::match_token(std::string value, int state) {
     value.erase(value.begin());
     value.erase(value.end() - 1, value.end());
     break;
+  case 14:
+    type = tok_multi_op;
+    break;
+  case 17:
+    type = tok_comment;
+    break;
+  default:
+    std::cout << "Unknown Production @ Line: " << line_number << std::endl;
+    // throw std::invalid_argument("Unkown Production");
   }
   this->value = value;
 }

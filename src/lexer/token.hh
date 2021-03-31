@@ -2,6 +2,7 @@
 #define __TOKEN_H_
 
 #include <iostream>
+#include <map>
 #include <string>
 
 namespace lexer {
@@ -35,7 +36,38 @@ enum tl_token {
   tok_while,
   tok_relational,
   tok_assign,
+  tok_comment = -1,
 } typedef tl_token;
+
+static std::map<tl_token, std::string> tok_word = {
+    {tok_iden, "tok_iden"},
+    {tok_type_int, "tok_type_int"},
+    {tok_type_float, "tok_type_float"},
+    {tok_type_bool, "tok_type_bool"},
+    {tok_type_string, "tok_type_string"},
+    {tok_lit_bool, "tok_lit_bool"},
+    {tok_lit_int, "tok_lit_int"},
+    {tok_lit_float, "tok_lit_float"},
+    {tok_lit_string, "tok_lit_string"},
+    {tok_multi_op, "tok_multi_op"},
+    {tok_add_op, "tok_add_op"},
+    {tok_curly_left, "tok_curly_left"},
+    {tok_curly_right, "tok_curly_right"},
+    {tok_round_left, "tok_round_left"},
+    {tok_round_right, "tok_round_right"},
+    {tok_semicolon, "tok_semicolon"},
+    {tok_colon, "tok_colon"},
+    {tok_comma, "tok_comma"},
+    {tok_unary, "tok_unary"},
+    {tok_let, "tok_let"},
+    {tok_print, "tok_print"},
+    {tok_return, "tok_return"},
+    {tok_if, "tok_if"},
+    {tok_else, "tok_else"},
+    {tok_for, "tok_for"},
+    {tok_while, "tok_while"},
+    {tok_relational, "tok_relational"},
+    {tok_assign, "tok_assign"}};
 
 class Token {
 
@@ -44,13 +76,17 @@ private:
 
 public:
   Token() {}
-  Token(std::string value, int state) { match_token(value, state); }
+  Token(std::string value, int state, int line_number)
+      : line_number{line_number} {
+    match_token(value, state);
+  }
   std::string value; /**< Character stream that produced token*/
   tl_token type;     /**< Denotes the type of the token as specified in
                         documentation */
+  int line_number;   /**< Denotes the linenumber of the token*/
 
   friend std::ostream &operator<<(std::ostream &out, const Token &tok) {
-    out << '{' << tok.type << "," << tok.value << "}";
+    out << '{' << tok_word[tok.type] << "," << tok.value << "}";
     return out;
   }
 };

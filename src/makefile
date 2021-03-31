@@ -5,7 +5,7 @@
 # @version 0.1
 
 CXX=g++
-CXXFLAGS=-I -Wall -std=c++17 -g
+CXXFLAGS=-I -Wall -std=c++17 -g -O3
 DEPS = lexer/lexer.hh lexer/token.hh
 OBJ =  lexer/lexer.o lexer/token.o
 MAINOBJ = main.o $(OBJ)
