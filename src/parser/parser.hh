@@ -14,6 +14,7 @@ public:
   explicit Parser(std::string filename) : lex{lexer::Lexer(filename)} {
     std::cout << lex << std::endl;
     do {
+
       curr_tok = lex.getNxtToken();
       parse_statement();
     } while (curr_tok.type != lexer::tok_end);
@@ -23,12 +24,17 @@ public:
   lexer::Token ll1_tok;  /**< Single Lookahead*/
   lexer::Token ll2_tok;  /**< Double Lookahead*/
 
-  void parse_statement();
-  void parse_var_decl();
   void parse_expression();
   void parse_simple_expression();
   void parse_term();
   void parse_factor();
+  void parse_actual_params();
+
+  void parse_statement();
+  void parse_var_decl();
+  void parse_assignment();
+  void parse_print();
+  void parse_return();
 };
 
 } // namespace parser
