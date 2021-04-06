@@ -88,6 +88,9 @@ void Token::match_token(std::string value, int state) {
   case 17:
     type = tok_comment;
     break;
+  case -1:
+    type = tok_end;
+    break;
   default:
     std::cout << "Unknown Production @ Line: " << line_number << std::endl;
     // throw std::invalid_argument("Unkown Production");

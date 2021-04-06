@@ -1,5 +1,6 @@
 #include "lexer.hh"
 using namespace lexer;
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <stack>
@@ -15,11 +16,21 @@ Lexer::Lexer(std::string file) {
     tokenize(input);
     input.close();
   }
+  token_counter = tokens.begin();
 }
 
 Token Lexer::getNxtToken() {
+
   if (token_counter != tokens.end()) {
     return *token_counter++;
+  } else {
+    throw std::runtime_error("Tokens Expired");
+  }
+}
+
+Token Lexer::peakNextToken() {
+  if (token_counter != tokens.end()) {
+    return *token_counter;
   } else {
     throw std::runtime_error("Tokens Expired");
   }
@@ -33,8 +44,8 @@ void Lexer::tokenize(std::ifstream &file) {
     std::string lexeme = "";
     std::stack<dfa_state> buffer;
     buffer.push(BAD);
-    while (c == ' ' || c == 10 || c == 9) {
-      if (c == 10) {
+    while (c == ' ' || c == '\n' || c == '\t') {
+      if (c == '\n') {
         line_number++;
       }
       c = file.get();
@@ -47,6 +58,9 @@ void Lexer::tokenize(std::ifstream &file) {
       break;
     } else {
       while (state != SE) {
+        if (c == '\n') {
+          line_number++;
+        }
         if (SA[state]) {
           while (!buffer.empty()) {
             buffer.pop();
@@ -55,7 +69,7 @@ void Lexer::tokenize(std::ifstream &file) {
         buffer.push(state);
         lexeme.push_back(c);
         char_class cat = char_cat(c);
-        state = transition(state, cat, line_number);
+        state = transition(state, cat);
         if (state != SE) {
           c = file.get();
         }
@@ -68,6 +82,9 @@ void Lexer::tokenize(std::ifstream &file) {
         state = buffer.top();
         buffer.pop();
         file.unget();
+        if (file.peek() == '\n') {
+          line_number--;
+        }
         lexeme.pop_back();
       }
       if (SA[state]) {
@@ -76,17 +93,16 @@ void Lexer::tokenize(std::ifstream &file) {
           tokens.push_back(temp);
         }
       } else {
-        std::cout << "Invalid Production @ Line: " << line_number << std::endl;
-        throw new std::invalid_argument("Unkown token provided");
+
+        std::cout << "Invalid Production on Line: " << line_number << std::endl;
+        throw std::invalid_argument("Unkown token provided");
       }
     }
   } while (file.peek() != EOF);
+  tokens.push_back(Token("", -1, line_number));
 }
 
-dfa_state Lexer::transition(dfa_state state, char_class x, int &line_number) {
-  if (x == Newline) {
-    line_number++;
-  }
+dfa_state Lexer::transition(dfa_state state, char_class x) {
   return transition_table[state][x];
 }
 

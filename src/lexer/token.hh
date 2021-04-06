@@ -36,6 +36,7 @@ enum tl_token {
   tok_while,
   tok_relational,
   tok_assign,
+  tok_end,
   tok_comment = -1,
 } typedef tl_token;
 
@@ -67,7 +68,8 @@ static std::map<tl_token, std::string> tok_word = {
     {tok_for, "tok_for"},
     {tok_while, "tok_while"},
     {tok_relational, "tok_relational"},
-    {tok_assign, "tok_assign"}};
+    {tok_assign, "tok_assign"},
+    {tok_end, "EOF"}};
 
 class Token {
 
@@ -86,7 +88,8 @@ public:
   int line_number;   /**< Denotes the linenumber of the token*/
 
   friend std::ostream &operator<<(std::ostream &out, const Token &tok) {
-    out << '{' << tok_word[tok.type] << "," << tok.value << "}";
+    out << '{' << tok_word[tok.type] << "," << tok.value << ","
+        << tok.line_number << "}";
     return out;
   }
 };

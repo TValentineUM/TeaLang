@@ -8,8 +8,6 @@ bool XGreaterThanY(x: float, y:float) {
      return ans;
 }
 
-!
-
 bool XGreaterThanYv2(x:float, y:float){
      return x > y;
 }
@@ -25,7 +23,7 @@ string JoinStr(s1:string, s2:string){
     return s3;
 }
 
-let x:float = 2.4;
+let x:float = 2.4ear
 let y:float = Square(2.5);
 print y;                        //6.25
 print XGreaterThanY(x,2.3);     //true

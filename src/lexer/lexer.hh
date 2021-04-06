@@ -98,7 +98,7 @@ private:
    * @return The updated DFA state
    *
    */
-  dfa_state transition(dfa_state state, char_class x, int &line_number);
+  dfa_state transition(dfa_state state, char_class x);
 
   /** @brief Accepting States for the DFSA */
   bool SA[21] = {0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0};
@@ -149,6 +149,7 @@ public:
   }
 
   Token getNxtToken();
+  Token peakNextToken();
 };
 
 } // namespace lexer
