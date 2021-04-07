@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  string source = "test";
+  string source = "example";
   string infile = source + ".tl";
   // string outfile = source + ".to";
 
