@@ -13,55 +13,68 @@ void Parser::fail(std::string expected) {
   throw std::runtime_error(ss.str());
 }
 
+void Parser::parse_program() {
+  do {
+    if (ll1_tok.has_value()) {
+      curr_tok = ll1_tok.value();
+      ll1_tok.reset();
+    } else {
+      // std::cout << "ll1 has no value" << std::endl;
+      curr_tok = lex.getNxtToken();
+    }
+    parse_statement();
+  } while (curr_tok.type != lexer::tok_end);
+}
+
 void Parser::parse_statement() {
-  std::cout << curr_tok << std::endl;
+  // std::cout << curr_tok << std::endl;
 
   switch (curr_tok.type) {
   case lexer::tok_let:
 
-    std::cout << "Parsing let" << std::endl;
+    // std::cout << "Parsing let" << std::endl;
     parse_var_decl();
     break;
   case lexer::tok_end:
-    std::cout << "Reached End" << std::endl;
+    // std::cout << "Reached End" << std::endl;
     break;
   case lexer::tok_print:
-    std::cout << "Parsing print" << std::endl;
+    // std::cout << "Parsing print" << std::endl;
     parse_print();
     break;
   case lexer::tok_return:
-    std::cout << "Parsing Return" << std::endl;
+    // std::cout << "Parsing Return" << std::endl;
     parse_return();
     break;
   case lexer::tok_if:
-    std::cout << "Parsing If" << std::endl;
+    // std::cout << "Parsing If" << std::endl;
     parse_if();
     break;
   case lexer::tok_for:
-    std::cout << "Parsing For" << std::endl;
+    // std::cout << "Parsing For" << std::endl;
     parse_for();
     break;
   case lexer::tok_while:
-    std::cout << "Parsing While" << std::endl;
+    // std::cout << "Parsing While" << std::endl;
     parse_while();
     break;
   case lexer::tok_iden:
-    std::cout << "Parsing Assignment" << std::endl;
+    // std::cout << "Parsing Assignment" << std::endl;
     parse_assignment();
     break;
   case lexer::tok_type_int:
   case lexer::tok_type_float:
   case lexer::tok_type_bool:
   case lexer::tok_type_string:
-    std::cout << "Parsing Function Decleration" << std::endl;
+    // std::cout << "Parsing Function Decleration" << std::endl;
     parse_function_decl();
     break;
   case lexer::tok_curly_left:
-    std::cout << "Parsing Block" << std::endl;
+    // std::cout << "Parsing Block" << std::endl;
     parse_block();
     break;
   default:
-    std::cout << curr_tok << std::endl;
+    // std::cout << curr_tok << std::endl;
     std::cout << "Not Implemented Yet" << std::endl;
   }
 }
@@ -105,24 +118,24 @@ void Parser::parse_factor() {
   case lexer::tok_lit_float:
   case lexer::tok_lit_int:
   case lexer::tok_lit_string:
-    std::cout << "matched literal" << std::endl;
+    // std::cout << "matched literal" << std::endl;
     curr_tok = lex.getNxtToken();
     break;
   case lexer::tok_iden:
     ll1_tok = lex.getNxtToken();
     if (ll1_tok->type == lexer::tok_round_left) {
       // parse function call
-      std::cout << "function call!" << std::endl;
+      // std::cout << "function call!" << std::endl;
       parse_actual_params();
       curr_tok = lex.getNxtToken();
     } else {
-      std::cout << "identifier" << std::endl;
+      // std::cout << "identifier" << std::endl;
       curr_tok = ll1_tok.value();
     }
     ll1_tok.reset();
     break;
   case lexer::tok_round_left:
-    std::cout << "matched subexpression" << std::endl;
+    // std::cout << "matched subexpression" << std::endl;
     parse_expression();
     if (curr_tok.type != lexer::tok_round_right) {
       std::stringstream ss;
@@ -133,11 +146,11 @@ void Parser::parse_factor() {
     curr_tok = lex.getNxtToken();
     break;
   case lexer::tok_unary:
-    std::cout << "matched unary" << std::endl;
+    // std::cout << "matched unary" << std::endl;
     parse_expression();
     break;
   default:
-    std::cout << curr_tok << std::endl;
+    // std::cout << curr_tok << std::endl;
     std::stringstream ss;
     ss << "Unable to match production on line: " << curr_tok.line_number
        << " after assignment";
@@ -204,7 +217,7 @@ void Parser::parse_print() {
   if (curr_tok.type != lexer::tok_semicolon) {
     fail(";");
   } else {
-    std::cout << "Print success" << std::endl;
+    // std::cout << "Print success" << std::endl;
   }
 }
 
@@ -221,7 +234,7 @@ void Parser::parse_return() {
   if (curr_tok.type != lexer::tok_semicolon) {
     fail(";");
   } else {
-    std::cout << "Return Success" << std::endl;
+    // std::cout << "Return Success" << std::endl;
   }
 }
 
@@ -247,7 +260,7 @@ void Parser::parse_assignment() {
   if (curr_tok.type != lexer::tok_semicolon) {
     fail(";");
   } else {
-    std::cout << "Assignment Success" << std::endl;
+    // std::cout << "Assignment Success" << std::endl;
   }
 }
 
@@ -260,7 +273,7 @@ void Parser::parse_block() {
         curr_tok = ll1_tok.value();
         ll1_tok.reset();
       } else {
-        std::cout << "ll1 has no value" << std::endl;
+        // std::cout << "ll1 has no value" << std::endl;
         curr_tok = lex.getNxtToken();
       }
       if (curr_tok.type == lexer::tok_curly_right) {
@@ -329,7 +342,7 @@ void Parser::parse_function_decl() {
     fail("{");
   }
   parse_block();
-  std::cout << "AFTER FUNCTION BLOCK: " << curr_tok << std::endl;
+  // std::cout << "AFTER FUNCTION BLOCK: " << curr_tok << std::endl;
   // int fib (x:int){}
 }
 
@@ -447,11 +460,11 @@ void Parser::parse_if() {
   if (curr_tok.type != lexer::tok_curly_right) {
     fail("}");
   }
-  std::cout << curr_tok << std::endl;
+  // std::cout << curr_tok << std::endl;
   ll1_tok = lex.getNxtToken();
-  std::cout << ll1_tok->value << std::endl;
+  // std::cout << ll1_tok->value << std::endl;
   if (ll1_tok->type == lexer::tok_else) {
-    std::cout << "Here" << std::endl;
+    // std::cout << "Here" << std::endl;
     ll1_tok.reset();
     curr_tok = lex.getNxtToken();
     parse_block();

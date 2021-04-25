@@ -16,22 +16,13 @@ private:
 
 public:
   explicit Parser(std::string filename) : lex{lexer::Lexer(filename)} {
-    std::cout << lex << std::endl;
-    do {
-      if (ll1_tok.has_value()) {
-        curr_tok = ll1_tok.value();
-        ll1_tok.reset();
-      } else {
-        std::cout << "ll1 has no value" << std::endl;
-        curr_tok = lex.getNxtToken();
-      }
-      parse_statement();
-    } while (curr_tok.type != lexer::tok_end);
+    parse_program();
   };
   lexer::Lexer lex;
   lexer::Token curr_tok;               /**< Current Token*/
   std::optional<lexer::Token> ll1_tok; /**< Single Lookahead*/
 
+  void parse_program();
   void parse_expression();
   void parse_simple_expression();
   void parse_term();
