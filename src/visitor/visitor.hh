@@ -4,21 +4,13 @@
 namespace parser {
 
 class AST;
-
 class ASTLiteral;
 class ASTExpression;
-
 class ASTIdentifier;
 class ASTFunctionCall;
 class ASTSubExpression;
 class ASTBinOp;
-
 class ASTProgram;
-
-/**
- * Statement Nodes
- */
-
 class ASTStatement;
 class ASTBlock;
 class ASTVariableDecl;
@@ -32,7 +24,7 @@ class ASTFunctionDecl;
 
 } // namespace parser
 
-namespace Visitor {
+namespace visitor {
 
 // Visitor abstract class (Interface). All visitor implementations (extensions
 // to this class) have to handle.
@@ -59,6 +51,6 @@ public:
   virtual void visit(parser::ASTFunctionDecl *) = 0;
 };
 
-} // namespace Visitor
+} // namespace visitor
 
 #endif // VISITOR_H_

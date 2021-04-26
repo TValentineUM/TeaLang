@@ -6,8 +6,8 @@
 
 CXX=g++
 CXXFLAGS=-I -Wall -std=c++17 -g
-DEPS = lexer/lexer.hh lexer/token.hh parser/parser.hh
-OBJ =  lexer/lexer.o lexer/token.o parser/parser.o
+DEPS = lexer/lexer.hh lexer/token.hh parser/parser.hh parser/AST.hh visitor/visitor.hh
+OBJ =  lexer/lexer.o lexer/token.o parser/parser.o parser/AST.cc
 MAINOBJ = main.o $(OBJ)
 
 OUT_DIR = ./bin/
