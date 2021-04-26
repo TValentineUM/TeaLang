@@ -17,7 +17,7 @@ private:
   void fail(std::string expected);
 
 public:
-  explicit Parser(std::string filename) : lex{lexer::Lexer(filename)} {
+  explicit Parser(std::string filename) : lex{lexer::Lexer{filename}} {
     tree = parse_program();
   };
   lexer::Lexer lex;

@@ -33,20 +33,47 @@ static std::map<std::string, Operators> tok_to_op = {
 
 };
 
-enum Tealang_t { Float, Int, Bool, String } typedef Tealang_t;
+enum Tealang_t {
+  tea_float = 0,
+  tea_int = 1,
+  tea_bool = 2,
+  tea_string = 3
+} typedef Tealang_t;
 
-class AST {};
+class AST {
+
+  virtual void accept(visitor::Visitor *) = 0;
+};
 
 class ASTExpression : public AST {
 public:
-  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+  void accept(visitor::Visitor *) override = 0;
 };
 
 class ASTLiteral : public ASTExpression {
 public:
   Tealang_t type;
   std::string value;
-  ASTLiteral(lexer::Token tok);
+  ASTLiteral(lexer::Token tok) {
+
+    switch (tok.type) {
+    case lexer::tok_lit_bool:
+      type = tea_bool;
+      break;
+    case lexer::tok_lit_int:
+      type = tea_int;
+      break;
+    case lexer::tok_lit_float:
+      type = tea_float;
+      break;
+    case lexer::tok_lit_string:
+      type = tea_string;
+      break;
+    }
+
+    std::cout << tok << std::endl;
+    value = tok.value;
+  }
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
@@ -73,12 +100,14 @@ class ASTUnary : public ASTExpression {
 public:
   Operators op;
   ASTExpression *expr;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
 class ASTBinOp : public ASTExpression {
 public:
   ASTExpression *left, *right;
   Operators op;
+  std::string value;
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
@@ -90,7 +119,7 @@ public:
 
 class ASTStatement : public AST {
 public:
-  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+  void accept(visitor::Visitor *) override = 0;
 };
 
 class ASTProgram : public AST {

@@ -24,7 +24,6 @@ ASTProgram *Parser::parse_program() {
       curr_tok = lex.getNxtToken();
     }
     node->statements.push_back(parse_statement());
-
   } while (curr_tok.type != lexer::tok_end);
   return node;
 }
@@ -82,12 +81,12 @@ ASTStatement *Parser::parse_statement() {
 }
 
 ASTExpression *Parser::parse_expression() {
-  auto x = parse_simple_expression();
+  ASTExpression *x = parse_simple_expression();
   if (curr_tok.type == lexer::tok_relational) {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
-    node->right = parse_simple_expression();
     node->op = tok_to_op[curr_tok.value];
+    node->right = parse_simple_expression();
     return node;
   } else {
     return x;
@@ -95,12 +94,12 @@ ASTExpression *Parser::parse_expression() {
 }
 
 ASTExpression *Parser::parse_simple_expression() {
-  auto x = parse_term();
+  ASTExpression *x = parse_term();
   if (curr_tok.type == lexer::tok_add_op) {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
-    node->right = parse_term();
     node->op = tok_to_op[curr_tok.value];
+    node->right = parse_term();
     return node;
   } else {
     return x;
@@ -108,12 +107,12 @@ ASTExpression *Parser::parse_simple_expression() {
 }
 
 ASTExpression *Parser::parse_term() {
-  auto x = parse_factor();
+  ASTExpression *x = parse_factor();
   if (curr_tok.type == lexer::tok_multi_op) {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
+    node->value = tok_to_op[curr_tok.value];
     node->right = parse_factor();
-    node->op = tok_to_op[curr_tok.value];
     return node;
   } else {
     return x;
@@ -129,23 +128,23 @@ std::vector<ASTExpression *> Parser::parse_actual_params() {
     std::stringstream ss;
     ss << "Missing ')' after function call on line: " << curr_tok.line_number;
     throw std::runtime_error(ss.str());
-  } else {
-    return x;
   }
+  return x;
 }
 
 ASTExpression *Parser::parse_factor() {
   curr_tok = lex.getNxtToken();
   switch (curr_tok.type) {
-  case lexer::tok_lit_bool:
+  case lexer::tok_lit_bool: {
   case lexer::tok_lit_float:
   case lexer::tok_lit_int:
-  case lexer::tok_lit_string: {
+  case lexer::tok_lit_string:
     ASTLiteral *node = new ASTLiteral(curr_tok);
     // std::cout << "matched literal" << std::endl;
     curr_tok = lex.getNxtToken();
     return node;
   }
+
   case lexer::tok_iden: {
     ll1_tok = lex.getNxtToken();
     if (ll1_tok->type == lexer::tok_round_left) {
@@ -156,6 +155,7 @@ ASTExpression *Parser::parse_factor() {
       node->args = parse_actual_params();
       curr_tok = lex.getNxtToken();
       ll1_tok.reset();
+      return node;
     } else {
       // std::cout << "identifier" << std::endl;
       ASTIdentifier *node = new ASTIdentifier();
@@ -221,16 +221,16 @@ ASTVariableDecl *Parser::parse_var_decl() {
   curr_tok = lex.getNxtToken();
   switch (curr_tok.type) {
   case lexer::tok_type_int:
-    node->Type = Int;
+    node->Type = tea_int;
     break;
   case lexer::tok_type_string:
-    node->Type = String;
+    node->Type = tea_string;
     break;
   case lexer::tok_type_bool:
-    node->Type = Bool;
+    node->Type = tea_bool;
     break;
   case lexer::tok_type_float:
-    node->Type = Float;
+    node->Type = tea_float;
     break;
   default:
     fail("Type Decleration");
@@ -361,17 +361,17 @@ std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
     curr_tok = lex.getNxtToken();
     Tealang_t y;
     switch (curr_tok.type) {
-    case lexer::tok_type_bool:
-      y = Bool;
-      break;
-    case lexer::tok_type_float:
-      y = Float;
-      break;
     case lexer::tok_type_int:
-      y = Int;
+      y = tea_int;
       break;
     case lexer::tok_type_string:
-      y = String;
+      y = tea_string;
+      break;
+    case lexer::tok_type_bool:
+      y = tea_bool;
+      break;
+    case lexer::tok_type_float:
+      y = tea_float;
       break;
     default:
       fail("Type Decleration");
@@ -388,16 +388,16 @@ ASTFunctionDecl *Parser::parse_function_decl() {
 
   switch (curr_tok.type) {
   case lexer::tok_type_bool:
-    node->type = Bool;
+    node->type = tea_bool;
     break;
   case lexer::tok_type_float:
-    node->type = Float;
+    node->type = tea_float;
     break;
   case lexer::tok_type_int:
-    node->type = Int;
+    node->type = tea_int;
     break;
   case lexer::tok_type_string:
-    node->type = String;
+    node->type = tea_string;
     break;
   default:
     fail("Type Decleration");
