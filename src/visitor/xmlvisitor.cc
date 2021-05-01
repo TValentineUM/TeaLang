@@ -46,7 +46,10 @@ void XMLVisitor::visit(parser::ASTBinOp *x) {
 }
 
 void XMLVisitor::visit(parser::ASTProgram *x) {
-  file << "<Prog>" << std::endl;
+  file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
+  file << "<root description=\"Tealang AST Generation\">" << std::endl;
+  indent();
+  file << indentation << "<Prog>" << std::endl;
   indent();
 
   for (int i = 0; i != x->statements.size(); i++) {
@@ -55,7 +58,9 @@ void XMLVisitor::visit(parser::ASTProgram *x) {
     }
   }
   unindent();
-  file << "</Prog>" << std::endl;
+  file << indentation << "</Prog>" << std::endl;
+  unindent();
+  file << "</root>" << std::endl;
 }
 
 void XMLVisitor::visit(parser::ASTBlock *x) {

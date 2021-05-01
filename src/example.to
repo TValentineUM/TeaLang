@@ -1,0 +1,92 @@
+<Prog>
+	<FuncDecl>
+		<Var Type="0">Square</Var>
+		<Arg Type="0>x</Arg>
+<Block>
+			<Return>
+				<BinExprNode Op=";">					<Identifier>x</Identifier>
+					<Identifier>x</Identifier>
+</BinExprNode>
+</Return>
+</Block>
+</FuncDecl>
+	<FuncDecl>
+		<Var Type="2">XGreaterThanY</Var>
+		<Arg Type="0>x</Arg>
+		<Arg Type="0>y</Arg>
+<Block>
+			<Decl>
+				<Var Type="2">ans</Var>
+				</Decl>
+			<If>
+				<Condition>
+					<BinExprNode Op=")">						<Identifier>y</Identifier>
+						<Identifier>x</Identifier>
+</BinExprNode>
+				</Condition>
+				<EvalTrue>
+<Block>
+						<Assign>
+							<Var>ans</Var>
+							</Assign>
+</Block>
+				</EvalTrue>
+				<Else>
+				</Else>
+			</If>
+			<Return>
+				<Identifier>ans</Identifier>
+</Return>
+</Block>
+</FuncDecl>
+	<FuncDecl>
+		<Var Type="2">XGreaterThanYv2</Var>
+		<Arg Type="0>x</Arg>
+		<Arg Type="0>y</Arg>
+<Block>
+			<Return>
+				<BinExprNode Op=";">					<Identifier>x</Identifier>
+					<Identifier>y</Identifier>
+</BinExprNode>
+</Return>
+</Block>
+</FuncDecl>
+	<FuncDecl>
+		<Var Type="0">AverageOfThree</Var>
+		<Arg Type="0>x</Arg>
+		<Arg Type="0>y</Arg>
+		<Arg Type="0>z</Arg>
+<Block>
+			<Decl>
+				<Var Type="0">total</Var>
+				<BinExprNode Op=";">					<Identifier>x</Identifier>
+					<Identifier>y</Identifier>
+</BinExprNode>
+</Decl>
+			<Return>
+				<BinExprNode Op=";">					<Identifier>total</Identifier>
+					</BinExprNode>
+</Return>
+</Block>
+</FuncDecl>
+	<FuncDecl>
+		<Var Type="3">JoinStr</Var>
+		<Arg Type="3>s1</Arg>
+		<Arg Type="3>s2</Arg>
+<Block>
+			<Decl>
+				<Var Type="3">s3</Var>
+				<BinExprNode Op=";">					<Identifier>s1</Identifier>
+					<Identifier>s2</Identifier>
+</BinExprNode>
+</Decl>
+			<Return>
+				<Identifier>s3</Identifier>
+</Return>
+</Block>
+</FuncDecl>
+	<Decl>
+		<Var Type="0">x</Var>
+		</Decl>
+	<Decl>
+		<Var Type="0">y</Var>

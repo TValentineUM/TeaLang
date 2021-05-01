@@ -11,11 +11,16 @@ namespace visitor {
 class XMLVisitor : public Visitor {
 
 private:
-  std::string indentation;
-  std::ofstream file;
+  std::string
+      indentation;    /**< String containing the current amount of indentation*/
+  std::ofstream file; /**< Output file for the XML Generator*/
 
-  inline void indent() { indentation.append("\t"); }
-  inline void unindent() { indentation.pop_back(); }
+  inline void indent() {
+    indentation.append("\t");
+  } /**< Increases the current amount of indentation */
+  inline void unindent() {
+    indentation.pop_back();
+  } /**< Decreases the current amount of indentation */
 
 public:
   XMLVisitor(std::string filename) : file{filename, std::ofstream::out} {}

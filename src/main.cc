@@ -1,5 +1,6 @@
 #include "lexer/lexer.hh"
 #include "parser/parser.hh"
+#include "visitor/semantic_visitor.hh"
 #include "visitor/xmlvisitor.hh"
 #include <fstream>
 #include <iostream>
@@ -19,9 +20,12 @@ int main(int argc, char *argv[]) {
   XMLVisitor xml(outfile);
   parser::Parser test(infile);
   // cout << test.lex << endl;
-
+  SemanticVisitor sem;
   xml.visit(test.tree);
-  cout << "Done";
 
+  cout << "Done from xml" << endl;
+
+  sem.visit(test.tree);
+  cout << "Done from semantic";
   return 0;
 }

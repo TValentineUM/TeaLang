@@ -1,3 +1,4 @@
+
 float Square(x:float){
       return x*x;
 }
@@ -13,8 +14,8 @@ bool XGreaterThanYv2(x:float, y:float){
 }
 
 float AverageOfThree (x:float, y:float, z:float){
-      let total:float = x+y;
-      return total/3;
+    let total:float = x+y+z;
+    return total/3.0;
 }
 
 string JoinStr(s1:string, s2:string){

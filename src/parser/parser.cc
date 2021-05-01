@@ -85,8 +85,9 @@ ASTExpression *Parser::parse_expression() {
   if (curr_tok.type == lexer::tok_relational) {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
+    node->value = curr_tok.value;
     node->op = tok_to_op[curr_tok.value];
-    node->right = parse_simple_expression();
+    node->right = parse_expression();
     return node;
   } else {
     return x;
@@ -98,8 +99,9 @@ ASTExpression *Parser::parse_simple_expression() {
   if (curr_tok.type == lexer::tok_add_op) {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
+    node->value = curr_tok.value;
     node->op = tok_to_op[curr_tok.value];
-    node->right = parse_term();
+    node->right = parse_simple_expression();
     return node;
   } else {
     return x;
@@ -111,8 +113,9 @@ ASTExpression *Parser::parse_term() {
   if (curr_tok.type == lexer::tok_multi_op) {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
+    node->value = curr_tok.value;
     node->value = tok_to_op[curr_tok.value];
-    node->right = parse_factor();
+    node->right = parse_term();
     return node;
   } else {
     return x;
