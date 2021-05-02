@@ -1,0 +1,5 @@
+{tok_relational,==}
+{tok_assign,=}
+{tok_iden,dfdwf}
+{tok_relational,!=}
+{,}

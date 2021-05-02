@@ -187,7 +187,7 @@ void SemanticVisitor::visit(parser::ASTUnary *x) {
     break;
   case parser::tea_int:
   case parser::tea_float:
-    if (x->op == parser::op_minus) {
+    if (x->op == parser::op_not) {
       throw std::invalid_argument(
           "Cannot use 'not' operator on numerical type");
     }

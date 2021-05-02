@@ -1,9 +1,9 @@
 #ifndef SEMANTIC_VISITOR_H_
 #define SEMANTIC_VISITOR_H_
 
-#include "../parser/AST.hh"
 #include "visitor.hh"
 using namespace visitor;
+#include "../parser/AST.hh"
 #include <fstream>
 #include <iostream>
 #include <optional>

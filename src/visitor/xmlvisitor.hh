@@ -3,6 +3,7 @@
 
 #include "visitor.hh"
 using namespace visitor;
+#include "../parser/AST.hh"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -11,6 +12,29 @@ namespace visitor {
 class XMLVisitor : public Visitor {
 
 private:
+  //   static std::map<parser::Operators, std::string> op_to_string = {
+
+  // {"*", op_times},
+  // {"/", op_div},
+  // {"and", op_and},
+  // {"+", op_plus},
+  // {"-", op_minus},
+  // {"or", op_or},
+  // {"<", op_less},
+  // {">", op_grtr},
+  // {"==", op_eql},
+  // {"!=", op_neql},
+  // {"<=", op_le},
+  // {">=", op_ge},
+  // {"not", op_not}
+
+  //       {"*", op_times}, {"/", op_div},   {"and", op_and}, {"+", op_plus},
+  //       {"-", op_minus}, {"or", op_or},   {"<", op_less},  {">", op_grtr},
+  //       {"==", op_eql},  {"!=", op_neql}, {"<=", op_le},   {">=", op_ge},
+  //       {"not", op_not}
+
+  //   };
+  //};
   std::string
       indentation;    /**< String containing the current amount of indentation*/
   std::ofstream file; /**< Output file for the XML Generator*/

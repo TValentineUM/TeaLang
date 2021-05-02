@@ -23,6 +23,12 @@ string JoinStr(s1:string, s2:string){
     return s3;
 }
 
+int fib(a: int){
+  if (a < 2) {
+    return a;
+  }
+  return fib(a - 1) + fib(a - 2);
+}
 
 let x:float = 2.4;
 let y:float = Square(2.5);
@@ -31,3 +37,5 @@ print XGreaterThanY(x,2.3);     //true
 print XGreaterThanYv2(Square(1.5),y); // false
 print AverageOfThree(x,y,1.2);        //3.28
 print JoinStr("Hello", " World");     //Hello World
+
+print fib(30);

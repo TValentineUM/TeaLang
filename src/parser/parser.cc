@@ -114,7 +114,7 @@ ASTExpression *Parser::parse_term() {
     ASTBinOp *node = new ASTBinOp();
     node->left = x;
     node->value = curr_tok.value;
-    node->value = tok_to_op[curr_tok.value];
+    node->op = tok_to_op[curr_tok.value];
     node->right = parse_term();
     return node;
   } else {
