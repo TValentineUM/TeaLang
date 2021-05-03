@@ -180,7 +180,94 @@
 		</Print>
 		<Print>
 			<FuncCall Id="fib">
-				<IntConst>30</IntConst>
+				<IntConst>7</IntConst>
+			</FuncCall>
+		</Print>
+		<FuncDecl>
+			<Var Type="3">OverUnder50</Var>
+			<Arg Type="1">age</Arg>
+			<Block>
+				<If>
+					<Condition>
+						<BinExprNode Op="<">
+							<Identifier>age</Identifier>
+							<IntConst>50</IntConst>
+						</BinExprNode>
+					</Condition>
+					<EvalTrue>
+						<Block>
+							<Return>
+								<StringConst>UnderFifty</StringConst>
+							</Return>
+						</Block>
+					</EvalTrue>
+					<Else>
+						<Block>
+							<Return>
+								<StringConst>OverFifty</StringConst>
+							</Return>
+						</Block>
+					</Else>
+				</If>
+			</Block>
+		</FuncDecl>
+		<For>
+			<Decl>
+				<Var Type="1">loopvar</Var>
+					<IntConst>0</IntConst>
+			</Decl>
+			<Condition>
+				<BinExprNode Op="<">
+					<Identifier>loopvar</Identifier>
+					<IntConst>10</IntConst>
+				</BinExprNode>
+			</Condition>
+			<Assign>
+				<Var>loopvar</Var>
+				<BinExprNode Op="+">
+					<Identifier>loopvar</Identifier>
+					<IntConst>1</IntConst>
+				</BinExprNode>
+			</Assign>
+			<EvalTrue>
+				<Block>
+					<Print>
+						<Identifier>loopvar</Identifier>
+					</Print>
+				</Block>
+			</EvalTrue>
+		</For>
+		<Decl>
+			<Var Type="1">z</Var>
+				<IntConst>45</IntConst>
+		</Decl>
+		<While>
+			<Condition>
+				<BinExprNode Op="<">
+					<Identifier>z</Identifier>
+					<IntConst>50</IntConst>
+				</BinExprNode>
+			</Condition>
+			<EvalTrue>
+				<Block>
+					<Print>
+						<FuncCall Id="OverUnder50">
+							<Identifier>z</Identifier>
+						</FuncCall>
+					</Print>
+					<Assign>
+						<Var>z</Var>
+						<BinExprNode Op="+">
+							<Identifier>z</Identifier>
+							<IntConst>1</IntConst>
+						</BinExprNode>
+					</Assign>
+				</Block>
+			</EvalTrue>
+		</While>
+		<Print>
+			<FuncCall Id="OverUnder50">
+				<Identifier>z</Identifier>
 			</FuncCall>
 		</Print>
 	</Prog>

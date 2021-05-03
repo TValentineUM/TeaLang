@@ -136,6 +136,8 @@ std::vector<ASTExpression *> Parser::parse_actual_params() {
 }
 
 ASTExpression *Parser::parse_factor() {
+
+  // std::cout << "identifier:  " << curr_tok.value << std::endl;
   curr_tok = lex.getNxtToken();
   switch (curr_tok.type) {
   case lexer::tok_lit_bool: {
@@ -149,6 +151,7 @@ ASTExpression *Parser::parse_factor() {
   }
 
   case lexer::tok_iden: {
+
     ll1_tok = lex.getNxtToken();
     if (ll1_tok->type == lexer::tok_round_left) {
       // parse function call
@@ -160,7 +163,6 @@ ASTExpression *Parser::parse_factor() {
       ll1_tok.reset();
       return node;
     } else {
-      // std::cout << "identifier" << std::endl;
       ASTIdentifier *node = new ASTIdentifier();
       node->name = curr_tok.value;
       curr_tok = ll1_tok.value();
@@ -492,7 +494,9 @@ ASTForStatement *Parser::parse_for() {
     throw std::runtime_error("Unknown Exception");
   }
 
-  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_semicolon) {
+    fail(";");
+  }
 
   try {
     node->condition = parse_expression();
@@ -509,7 +513,11 @@ ASTForStatement *Parser::parse_for() {
   if (curr_tok.type != lexer::tok_semicolon) {
     fail(";");
   }
+
   curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_iden) {
+    fail("Identifier");
+  }
 
   try {
     node->assign = parse_assignment();
@@ -522,6 +530,8 @@ ASTForStatement *Parser::parse_for() {
   } catch (...) {
     throw std::runtime_error("Unknown Exception");
   }
+
+  curr_tok = lex.getNxtToken();
   if (curr_tok.type != lexer::tok_round_right) {
     fail(")");
   }

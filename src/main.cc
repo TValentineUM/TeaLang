@@ -23,18 +23,20 @@ int main(int argc, char *argv[]) {
 
   std::fstream file;
   file.open(tokenfile);
-
   file << lex;
+
+  // cout << "Lexed Fine" << endl;
   XMLVisitor xml(outfile);
   parser::Parser test(infile);
+
   // cout << test.lex << endl;
   SemanticVisitor sem;
   xml.visit(test.tree);
 
-  cout << "Done from xml" << endl;
+  // cout << "Done from xml" << endl;
 
   sem.visit(test.tree);
-  cout << "Done from semantic" << endl;
+  // cout << "Done from semantic" << endl;
 
   Interpreter please;
   please.visit(test.tree);

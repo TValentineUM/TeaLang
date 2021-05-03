@@ -38,4 +38,25 @@ print XGreaterThanYv2(Square(1.5),y); // false
 print AverageOfThree(x,y,1.2);        //3.28
 print JoinStr("Hello", " World");     //Hello World
 
-print fib(30);
+print fib(7);
+
+string OverUnder50(age: int){
+    if(age<50){
+        return "UnderFifty";
+   }else{
+        return "OverFifty";    }
+}
+
+for(let loopvar:int = 0; loopvar<10; loopvar=loopvar+1;){
+	print loopvar;
+}
+
+
+let z:int=45;
+
+while(z<50){
+	print OverUnder50(z); //"UnderFifty"x5
+	z=z+1;
+}
+
+print OverUnder50(z); //"OverFifty"

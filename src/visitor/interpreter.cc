@@ -20,10 +20,14 @@ Variable Scope::get_var(std::string str) {
 
 void Scope::update_var(std::string str, Variable var) {
 
-  for (auto i = variable_scope.end(); i != variable_scope.begin(); i--) {
-    auto current_scope = variable_scope.back();
+  for (auto i = variable_scope.size(); i > 0; i--) {
+    auto current_scope = variable_scope[i - 1];
     try {
-      current_scope.at(str) = var;
+      auto temp = current_scope.at(str);
+
+      current_scope.erase(str);
+      current_scope.insert({var.name, var});
+      variable_scope[i - 1] = current_scope;
       return;
     } catch (...) {
     }
