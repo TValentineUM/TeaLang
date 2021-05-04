@@ -163,10 +163,14 @@ void XMLVisitor::visit(parser::ASTWhileStatement *x) {
 void XMLVisitor::visit(parser::ASTForStatement *x) {
   file << indentation << "<For>" << std::endl;
   indent();
-  x->init->accept(this);
+  if (x->init) {
+    x->init->accept(this);
+  }
   file << indentation << "<Condition>" << std::endl;
   indent();
-  x->condition->accept(this);
+  if (x->condition) {
+    x->condition->accept(this);
+  }
   unindent();
   file << indentation << "</Condition>" << std::endl;
   x->assign->accept(this);

@@ -437,7 +437,9 @@ void Interpreter::visit(parser::ASTForStatement *x) {
   // Create new scope for loop
   std::map<std::string, Variable> new_scope;
   scope.variable_scope.push_back(new_scope);
-  x->init->accept(this);
+  if (x->init) {
+    x->init->accept(this);
+  }
 
   x->condition->accept(this);
   while (std::any_cast<bool>(token_value)) {
@@ -445,7 +447,9 @@ void Interpreter::visit(parser::ASTForStatement *x) {
     if (return_value.has_value()) {
       break;
     }
-    x->assign->accept(this);
+    if (x->assign) {
+      x->assign->accept(this);
+    }
     x->condition->accept(this);
   }
   // Delete scope

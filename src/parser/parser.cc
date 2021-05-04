@@ -58,10 +58,16 @@ ASTStatement *Parser::parse_statement() {
     // std::cout << "Parsing While" << std::endl;
     return parse_while();
     break;
-  case lexer::tok_iden:
+  case lexer::tok_iden: {
     // std::cout << "Parsing Assignment" << std::endl;
-    return parse_assignment();
+    auto x = parse_assignment();
+
+    if (curr_tok.type != lexer::tok_semicolon) {
+      fail(";");
+    }
+    return x;
     break;
+  }
   case lexer::tok_type_int:
   case lexer::tok_type_float:
   case lexer::tok_type_bool:
@@ -316,9 +322,6 @@ ASTAssignment *Parser::parse_assignment() {
     throw std::runtime_error("Unknown Exception");
   }
 
-  if (curr_tok.type != lexer::tok_semicolon) {
-    fail(";");
-  }
   // std::cout << "Assignment Success" << std::endl;
   return node;
 }
@@ -482,18 +485,19 @@ ASTForStatement *Parser::parse_for() {
   }
 
   curr_tok = lex.getNxtToken();
-  try {
-    node->init = parse_var_decl();
-  } catch (const std::runtime_error &e) {
-    std::stringstream ss;
-    ss << "Unable to parse variable decleration in for loop on line: "
-       << curr_tok.line_number << std::endl;
-    ss << e.what();
-    throw std::runtime_error(ss.str());
-  } catch (...) {
-    throw std::runtime_error("Unknown Exception");
+  if (curr_tok.type == lexer::tok_let) {
+    try {
+      node->init = parse_var_decl();
+    } catch (const std::runtime_error &e) {
+      std::stringstream ss;
+      ss << "Unable to parse variable decleration in for loop on line: "
+         << curr_tok.line_number << std::endl;
+      ss << e.what();
+      throw std::runtime_error(ss.str());
+    } catch (...) {
+      throw std::runtime_error("Unknown Exception");
+    }
   }
-
   if (curr_tok.type != lexer::tok_semicolon) {
     fail(";");
   }
@@ -515,26 +519,23 @@ ASTForStatement *Parser::parse_for() {
   }
 
   curr_tok = lex.getNxtToken();
-  if (curr_tok.type != lexer::tok_iden) {
-    fail("Identifier");
+  if (curr_tok.type == lexer::tok_iden) {
+    try {
+      node->assign = parse_assignment();
+    } catch (const std::runtime_error &e) {
+      std::stringstream ss;
+      ss << "Unable to parse assignment in for loop on line: "
+         << curr_tok.line_number << std::endl;
+      ss << e.what();
+      throw std::runtime_error(ss.str());
+    } catch (...) {
+      throw std::runtime_error("Unknown Exception");
+    }
   }
-
-  try {
-    node->assign = parse_assignment();
-  } catch (const std::runtime_error &e) {
-    std::stringstream ss;
-    ss << "Unable to parse assignment in for loop on line: "
-       << curr_tok.line_number << std::endl;
-    ss << e.what();
-    throw std::runtime_error(ss.str());
-  } catch (...) {
-    throw std::runtime_error("Unknown Exception");
-  }
-
-  curr_tok = lex.getNxtToken();
   if (curr_tok.type != lexer::tok_round_right) {
     fail(")");
   }
+
   curr_tok = lex.getNxtToken();
   if (curr_tok.type != lexer::tok_curly_left) {
     fail("{");

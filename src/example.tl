@@ -1,4 +1,3 @@
-
 float Square(x:float){
       return x*x;
 }
@@ -47,7 +46,7 @@ string OverUnder50(age: int){
         return "OverFifty";    }
 }
 
-for(let loopvar:int = 0; loopvar<10; loopvar=loopvar+1;){
+for(let loopvar:int = 0; loopvar<10; loopvar=loopvar+1){
 	print loopvar;
 }
 
@@ -60,3 +59,20 @@ while(z<50){
 }
 
 print OverUnder50(z); //"OverFifty"
+
+float Pow(x:float, n:int){
+    let y:float = 1.0;
+    if(n>0){
+        for(;n>0;n=n-1){
+            y = y * x;
+        }
+    }else{
+        for(;n<0;n=n-1){
+            y = y/x;
+        }
+    }
+    return y;
+}
+
+let temp:float = Pow(2.1,10);
+print temp; //printstoconsole 1667.988

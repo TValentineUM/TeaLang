@@ -244,12 +244,16 @@ void SemanticVisitor::visit(parser::ASTIfStatement *x) {
 }
 
 void SemanticVisitor::visit(parser::ASTForStatement *x) {
-  x->init->accept(this);
+  if (x->init) {
+    x->init->accept(this);
+  }
   x->condition->accept(this);
   if (token_type != parser::tea_bool) {
     throw std::invalid_argument("Need bool for for");
   }
-  x->assign->accept(this);
+  if (x->assign) {
+    x->assign->accept(this);
+  }
   x->eval->accept(this);
 }
 
