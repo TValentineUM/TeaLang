@@ -140,7 +140,7 @@ private:
 
 public:
   Lexer(std::string file);
-
+  ~Lexer(){};
   friend std::ostream &operator<<(std::ostream &out, const Lexer &lex) {
     for (auto i : lex.tokens) {
       out << i << std::endl;

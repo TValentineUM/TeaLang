@@ -7,6 +7,8 @@
 
 #include "../lexer/lexer.hh"
 
+#include "AST.hh"
+
 namespace parser {
 
 class Parser {
@@ -15,32 +17,33 @@ private:
   void fail(std::string expected);
 
 public:
-  explicit Parser(std::string filename) : lex{lexer::Lexer(filename)} {
-    parse_program();
+  explicit Parser(std::string filename) : lex{lexer::Lexer{filename}} {
+    tree = parse_program();
   };
   lexer::Lexer lex;
   lexer::Token curr_tok;               /**< Current Token*/
   std::optional<lexer::Token> ll1_tok; /**< Single Lookahead*/
 
-  void parse_program();
-  void parse_expression();
-  void parse_simple_expression();
-  void parse_term();
-  void parse_factor();
-  void parse_actual_params();
-  void parse_formal_params();
+  ASTProgram *tree;
 
-  void parse_block();
-  void parse_statement();
-  void parse_var_decl();
-  void parse_assignment();
-  void parse_print();
-  void parse_return();
-  void parse_function_decl();
+  ASTProgram *parse_program();
+  ASTExpression *parse_expression();
+  ASTExpression *parse_simple_expression();
+  ASTExpression *parse_term();
+  ASTExpression *parse_factor();
+  std::vector<ASTExpression *> parse_actual_params();
+  std::vector<std::tuple<std::string, Tealang_t>> parse_formal_params();
 
-  void parse_while();
-  void parse_for();
-  void parse_if();
+  ASTBlock *parse_block();
+  ASTStatement *parse_statement();
+  ASTVariableDecl *parse_var_decl();
+  ASTAssignment *parse_assignment();
+  ASTPrintStatement *parse_print();
+  ASTReturn *parse_return();
+  ASTFunctionDecl *parse_function_decl();
+  ASTWhileStatement *parse_while();
+  ASTForStatement *parse_for();
+  ASTIfStatement *parse_if();
 };
 
 } // namespace parser
