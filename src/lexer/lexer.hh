@@ -41,6 +41,9 @@ enum dfa_state {
   S16,    /**< Asterist in Comments*/
   S17,    /**< Acceptance State for Block Comment*/
   S18,    /**< Single Line Comment*/
+  S19,    /**< Single Quote */
+  S20,    /**< Single Character */
+  S21,    /**< Valid Quote */
   SE,     /**< Invalid State*/
   BAD     /**< State used for lexer algorithm*/
 } typedef dfa_state;
@@ -52,12 +55,13 @@ enum char_class {
   Comparison,  /**< (<|>)*/
   Equals,      /**< (=)*/
   Bang,        /**< (!)*/
-  Punctuation, /**< (\(|\)|\{|\}|:|;) */
+  Punctuation, /**< ,:;(){}[] */
   FSlash,      /**< (/) */
-  PlusMinus,   /**< (+|-)*/
+  PlusMinus,   /**< (+| -)*/
   Asterisk,    /**< (*) */
   BSlash,      /**< \\ aka Backslash*/
-  Qoute,       /**< (")*/
+  DQuote,      /**< (")*/
+  SQuote,      /**< Singe Quotation Character*/
   Newline,     /** Newline Character*/
   Printable,   /**< All Printable Ascii Characters*/
   Err          /**< Unkown Character Type*/
@@ -101,41 +105,54 @@ private:
   dfa_state transition(dfa_state state, char_class x);
 
   /** @brief Accepting States for the DFSA */
-  bool SA[21] = {0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0};
-  /*             S0 S1 S2 S3 S4 S5 S6 S7 S8 S9 10 11 12 13 14 15 16 17 18 SE B
+  bool SA[24] = {0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0,
+                 /* s1 S2 S3 S4 S5 S6 S7 S8 S9 S10 S11   */
+                 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0};
+  /*             12 13 14 15 16 17 18 19 20 21 SE BAD
+   *
    */
 
   /** @brief DFSA Transition Table Definition */
-  dfa_state transition_table[20][15] = {
-      /*       Di  De  Id  <>  =   !   };  FS  PM  AS  BS  Qt \n Pr Ukn*/
-      /*S0 */ {S1, SE, S4, S7, S5, S6, S9, S14, S10, S10, SE, S11, SE, SE, SE},
-      /*S1 */ {S1, S2, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S2 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S3 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S4 */ {S4, SE, S4, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S5 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S6 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S7 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S8 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S9 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S10*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+  dfa_state transition_table[23][16] = {
+      /*       Di   De   Id   <>   =    !    };   FS   PM   AS   BS   DQ   SQ
+         \n   Pr  Ukn*/
+      /*S0 */ {S1, SE, S4, S7, S5, S6, S9, S14, S10, S10, SE, S11, S19, SE, SE,
+               SE},
+      /*S1 */ {S1, S2, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S2 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S3 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S4 */ {S4, SE, S4, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S5 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S6 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S7 */ {SE, SE, SE, SE, S8, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S8 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S9 */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S10*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
       /*S11*/
-      {S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S12, S13, SE, S11, SE},
+      {S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S12, S13, SE, SE, S11,
+       SE},
       /*S12*/
-      {S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, SE, S11, SE},
-      /*S13*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
-      /*S14*/ {SE, SE, SE, SE, SE, SE, SE, S18, SE, S15, SE, SE, SE, SE, SE},
+      {S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, S11, SE, SE, S11,
+       SE},
+      /*S13*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S14*/
+      {SE, SE, SE, SE, SE, SE, SE, S18, SE, S15, SE, SE, SE, SE, SE, SE},
       /*S15*/
-      {S15, S15, S15, S15, S15, S15, S15, S15, S15, S16, S15, S15, S15, S15,
+      {S15, S15, S15, S15, S15, S15, S15, S15, S15, S16, S15, S15, SE, S15, S15,
        SE},
       /*S16*/
-      {S15, S15, S15, S15, S15, S15, S15, S17, S15, S15, S15, S15, S15, S15,
+      {S15, S15, S15, S15, S15, S15, S15, S17, S15, S15, S15, S15, SE, S15, S15,
        SE},
-      /*S17*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S17*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
       /*S18*/
-      {S18, S18, S18, S18, S18, S18, S18, S18, S18, S18, S18, S18, S17, S18,
+      {S18, S18, S18, S18, S18, S18, S18, S18, S18, S18, S18, S18, SE, S17, S18,
        SE},
-      /*SE */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*S19*/
+      {S20, S20, S20, S20, S20, S20, S20, S20, S20, S20, S20, S20, S20, SE, S20,
+       SE},
+      /*S20*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, S21, SE, SE, SE},
+      /*S21*/ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
+      /*SE */ {SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
   };
 
 public:

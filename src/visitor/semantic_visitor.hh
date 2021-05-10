@@ -63,6 +63,7 @@ public:
   void visit(parser::ASTReturn *) override;
   void visit(parser::ASTFunctionDecl *) override;
 };
+
 } // namespace visitor
 
 #endif // SEMANTIC_VISITOR_H_

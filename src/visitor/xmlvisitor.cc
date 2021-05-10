@@ -37,7 +37,8 @@ void XMLVisitor::visit(parser::ASTSubExpression *x) {
 
 void XMLVisitor::visit(parser::ASTBinOp *x) {
 
-  file << indentation << "<BinExprNode Op=\"" << x->value << "\">" << std::endl;
+  file << indentation << "<BinExprNode Op=\"" << op_to_string[x->value] << "\">"
+       << std::endl;
   indent();
   x->left->accept(this);
   x->right->accept(this);
@@ -93,6 +94,20 @@ void XMLVisitor::visit(parser::ASTAssignment *x) {
   x->value->accept(this);
   unindent();
   file << indentation << "</Assign>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTArrayAssignment *x) {
+  file << indentation << "<ArrayAssign>" << std::endl;
+  indent();
+  file << indentation << "<Index>" << std::endl;
+  indent();
+  x->index->accept(this);
+  unindent();
+  file << indentation << "</Index>" << std::endl;
+  file << indentation << "<Var>" << x->identifier << "</Var>" << std::endl;
+  x->value->accept(this);
+  unindent();
+  file << indentation << "</ArrayAssign>" << std::endl;
 }
 
 void XMLVisitor::visit(parser::ASTPrintStatement *x) {
@@ -214,4 +229,52 @@ void XMLVisitor::visit(parser::ASTFunctionCall *x) {
 
   unindent();
   file << indentation << "</FuncCall>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTArrayAccess *x) {
+  file << indentation << "<ArrayAccess Id=\"" << x->name << "\">" << std::endl;
+  indent();
+  file << "<Index>" << std::endl;
+  indent();
+  x->index->accept(this);
+  unindent();
+  file << "</Index>" << std::endl;
+  unindent();
+  file << indentation << "</ArrayAccess>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTArrayDecl *x) {
+  file << indentation << "<Decl>" << std::endl;
+  indent();
+  file << indentation << "<Array Type=\"" << x->Type << "\">" << x->identifier
+       << "</Array>" << std::endl;
+  file << indentation << "<Size>" << std::endl;
+  indent();
+  x->size->accept(this);
+  unindent();
+  file << indentation << "</Size>" << std::endl;
+  if (x->value != nullptr) {
+    file << indentation << "<Value>" << std::endl;
+    indent();
+
+    x->value->accept(this);
+    unindent();
+    file << indentation << "</Value>" << std::endl;
+  }
+  unindent();
+  file << indentation << "</Decl>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTArrayLiteral *x) {
+  file << indentation << "<ArrayLiteral>" << std::endl;
+  indent();
+  for (int i = 0; i < x->values.size(); i++) {
+    file << indentation << "<Item index=\"" + std::to_string(i) + "\">"
+         << std::endl;
+    indent();
+    x->values[i]->accept(this);
+    unindent();
+    file << indentation << "</Item>" << std::endl;
+  }
+  file << indentation << "</ArrayLiteral>" << std::endl;
 }

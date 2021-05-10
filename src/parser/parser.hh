@@ -36,7 +36,7 @@ public:
 
   ASTBlock *parse_block();
   ASTStatement *parse_statement();
-  ASTVariableDecl *parse_var_decl();
+  ASTVariableDecl *parse_var_decl(); /**< Also Handles Array Declerations*/
   ASTAssignment *parse_assignment();
   ASTPrintStatement *parse_print();
   ASTReturn *parse_return();

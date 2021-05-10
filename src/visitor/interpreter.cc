@@ -16,10 +16,10 @@ Variable Scope::get_var(std::string str) {
     } catch (...) {
     }
   }
+  return {};
 }
 
 void Scope::update_var(std::string str, Variable var) {
-
   for (auto i = variable_scope.size(); i > 0; i--) {
     auto current_scope = variable_scope[i - 1];
     try {

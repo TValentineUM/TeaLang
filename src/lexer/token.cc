@@ -19,7 +19,8 @@ std::map<std::string, tl_token> identifiers = {{"float", tok_type_float},
                                                {"for", tok_for},
                                                {"while", tok_while},
                                                {"or", tok_add_op},
-                                               {"and", tok_multi_op}};
+                                               {"and", tok_multi_op},
+                                               {"char", tok_type_char}};
 
 void Token::match_token(std::string value, int state) {
 
@@ -64,6 +65,12 @@ void Token::match_token(std::string value, int state) {
     case ',':
       type = tok_comma;
       break;
+    case '[':
+      type = tok_square_left;
+      break;
+    case ']':
+      type = tok_square_right;
+      break;
     }
     break;
   case 10:
@@ -87,6 +94,11 @@ void Token::match_token(std::string value, int state) {
     break;
   case 17:
     type = tok_comment;
+    break;
+  case 21:
+    type = tok_lit_char;
+    value.erase(value.begin());
+    value.erase(value.end() - 1, value.end());
     break;
   case -1:
     type = tok_end;

@@ -93,7 +93,7 @@ void Lexer::tokenize(std::ifstream &file) {
           tokens.push_back(temp);
         }
       } else {
-
+        std::cout << file.peek();
         std::cout << "Invalid Production on Line: " << line_number << std::endl;
         throw std::invalid_argument("Unkown token provided");
       }
@@ -130,6 +130,8 @@ char_class Lexer::char_cat(char x) {
   case '(':
   case ')':
   case ',':
+  case '[':
+  case ']':
     return Punctuation;
   case '/':
     return FSlash;
@@ -141,7 +143,9 @@ char_class Lexer::char_cat(char x) {
   case '\\':
     return BSlash;
   case '"':
-    return Qoute;
+    return DQuote;
+  case '\'':
+    return SQuote;
   case '\n':
     return Newline;
 

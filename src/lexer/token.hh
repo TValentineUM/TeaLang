@@ -13,16 +13,20 @@ enum tl_token {
   tok_type_float,
   tok_type_bool,
   tok_type_string,
+  tok_type_char,
   tok_lit_bool,
   tok_lit_int,
   tok_lit_float,
   tok_lit_string,
+  tok_lit_char,
   tok_multi_op,
   tok_add_op,
   tok_curly_left,
   tok_curly_right,
   tok_round_left,
   tok_round_right,
+  tok_square_left,
+  tok_square_right,
   tok_semicolon,
   tok_colon,
   tok_comma,
@@ -46,16 +50,20 @@ static std::map<tl_token, std::string> tok_word = {
     {tok_type_float, "tok_type_float"},
     {tok_type_bool, "tok_type_bool"},
     {tok_type_string, "tok_type_string"},
+    {tok_type_char, "tok_type_char"},
     {tok_lit_bool, "tok_lit_bool"},
     {tok_lit_int, "tok_lit_int"},
     {tok_lit_float, "tok_lit_float"},
     {tok_lit_string, "tok_lit_string"},
+    {tok_lit_char, "tok_lit_char"},
     {tok_multi_op, "tok_multi_op"},
     {tok_add_op, "tok_add_op"},
     {tok_curly_left, "tok_curly_left"},
     {tok_curly_right, "tok_curly_right"},
     {tok_round_left, "tok_round_left"},
     {tok_round_right, "tok_round_right"},
+    {tok_square_left, "tok_square_left"},
+    {tok_square_right, "tok_square_right"},
     {tok_semicolon, "tok_semicolon"},
     {tok_colon, "tok_colon"},
     {tok_comma, "tok_comma"},
@@ -84,7 +92,7 @@ public:
   }
   std::string value; /**< Character stream that produced token*/
   tl_token type;     /**< Denotes the type of the token as specified in
-                        documentation */
+                      documentation */
   int line_number;   /**< Denotes the linenumber of the token*/
 
   friend std::ostream &operator<<(std::ostream &out, const Token &tok) {

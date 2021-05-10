@@ -74,5 +74,10 @@ float Pow(x:float, n:int){
     return y;
 }
 
+let temp1:char = 'x';
+
+let temp2[4]:int = {1,2,3,4};
+temp2[2+1] = 2;
+
 let temp:float = Pow(2.1,10);
 print temp; //printstoconsole 1667.988

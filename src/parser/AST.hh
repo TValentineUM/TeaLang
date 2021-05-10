@@ -35,10 +35,11 @@ static std::map<std::string, Operators> tok_to_op = {
 };
 
 enum Tealang_t {
-  tea_float = 0,
-  tea_int = 1,
-  tea_bool = 2,
-  tea_string = 3
+  tea_float,
+  tea_int,
+  tea_bool,
+  tea_string,
+  tea_char
 } typedef Tealang_t;
 
 class AST {
@@ -82,8 +83,21 @@ public:
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
+class ASTArrayLiteral : public ASTExpression {
+public:
+  std::vector<ASTExpression *> values;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
 class ASTIdentifier : public ASTExpression {
 public:
+  std::string name;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+class ASTArrayAccess : public ASTExpression {
+public:
+  ASTExpression *index;
   std::string name;
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
@@ -148,6 +162,12 @@ public:
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
+class ASTArrayDecl : public ASTVariableDecl {
+public:
+  ASTExpression *size;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
 class ASTPrintStatement : public ASTStatement {
 public:
   ASTExpression *value;
@@ -158,6 +178,12 @@ class ASTAssignment : public ASTStatement {
 public:
   std::string identifier;
   ASTExpression *value;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+class ASTArrayAssignment : public ASTAssignment {
+public:
+  ASTExpression *index;
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
