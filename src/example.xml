@@ -377,6 +377,9 @@
 					</ArrayLiteral>
 				</Value>
 			</Decl>
+			<Print>
+				<Identifier>y</Identifier>
+			</Print>
 			<ArrayAssign>
 				<Index>
 					<BinExprNode Op="+">
@@ -387,15 +390,8 @@
 				<Var>temp2</Var>
 				<IntConst>2</IntConst>
 			</ArrayAssign>
-			<Decl>
-				<Var Type="0">temp</Var>
-					<FuncCall Id="Pow">
-						<FloatConst>2.1</FloatConst>
-						<IntConst>10</IntConst>
-					</FuncCall>
-			</Decl>
 			<Print>
-				<Identifier>temp</Identifier>
+				<Identifier>x</Identifier>
 			</Print>
 		</Prog>
 </root>

@@ -1,6 +1,6 @@
 #include "interpreter.hh"
 
-#include "semantic_visitor.hh"
+//#include "semantic_visitor.hh"
 #include <algorithm>
 #include <sstream>
 #include <string>

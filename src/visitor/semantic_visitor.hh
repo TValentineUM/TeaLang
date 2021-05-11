@@ -10,40 +10,71 @@ using namespace visitor;
 #include <string>
 
 namespace visitor {
+
 class SemanticVisitor : public Visitor {
 
 private:
-  std::optional<parser::Tealang_t>
-      token_type; /**< Optional Token used to track the current type of an
-                     expression. This is needed by the operator nodes to ensure
-                     type checking*/
+  class Function {
+  public:
+    std::string name;
+    parser::Tealang_t return_type;
+    std::vector<std::tuple<std::string, parser::Tealang_t>> arguments;
+  };
 
-  std::optional<std::tuple<parser::Tealang_t, bool>>
-      function_type; /**< Optional Token used to track the needed return
-                     type of the current function */
+  class Variable {
+  public:
+    parser::Tealang_t var_type;
+    std::string name;
+  };
 
-  // Working under the assumption that functions can only be declared in the
-  // global scope
-  std::map<std::string,
-           std::tuple<parser::Tealang_t, std::vector<parser::Tealang_t>>>
-      function_scope; /**< Maps function names to a tuple containing the
-                         function return type and the argument types */
+  class Array {
+  public:
+    parser::Tealang_t arr_type; /**< Type of the array */
+    int size;                   /** Maximum Index of the current array */
+    std::string name;           /** Name of the array*/
+  };
 
-  std::vector<std::map<std::string, parser::Tealang_t>>
-      variable_scope; /**< The Vector stores all current variable scopes, where
-                         each scope is a mapping from a string to its type*/
+  class Scope {
 
-  std::optional<std::tuple<parser::Tealang_t, std::vector<parser::Tealang_t>>>
-      res_func(std::string); /**< Checks if function exists and optionally
-                                returns the parameters and return type*/
+  public:
+    Scope()
+        : variable_scope{std::map<std::string, Variable>()},
+          array_scope{std::map<std::string, Array>()} {}
 
-  std::optional<parser::Tealang_t>
-      res_var_all(std::string); /**< Checks if the variable exits in any scope
-                          and optionally returns its type */
+    Function get_func(std::string); /**< Finds Function*/
 
-  std::optional<parser::Tealang_t>
-      res_var_local(std::string); /**< Checks if the variable exits in the
-                           current scope and optionally returns its type */
+    Variable get_var(std::string); /**< Find variable starting from top scope */
+
+    Array get_arr(std::string); /**< Find Array starting from top scope */
+
+    void add_var(Variable); /**< Attempts to add a variable and returns true if
+                               it suceeds*/
+
+    void add_arr(
+        Array); /**< Attempts to add an array and returns true if it succeeds*/
+
+    void add_func(Function);
+
+    std::vector<std::map<std::string, Variable>>
+        variable_scope; /**< The Vector stores all
+                           current variable
+                           scopes, where each
+                           scope is a mapping from
+                           a string to its type*/
+
+    std::map<std::string, Function>
+        function_scope; /**< Maps function names to a tuple
+                           containing the function return
+                           type and the argument types */
+
+    std::vector<std::map<std::string, Array>> array_scope;
+  };
+
+  parser::Tealang_t token_type;
+  std::optional<std::tuple<parser::Tealang_t, bool>> function_type;
+  bool is_array;
+
+  Scope current_scope;
 
 public:
   void visit(parser::ASTLiteral *) override;
@@ -62,6 +93,10 @@ public:
   void visit(parser::ASTWhileStatement *) override;
   void visit(parser::ASTReturn *) override;
   void visit(parser::ASTFunctionDecl *) override;
+  void visit(parser::ASTArrayAccess *) override;
+  void visit(parser::ASTArrayDecl *) override;
+  void visit(parser::ASTArrayAssignment *) override;
+  void visit(parser::ASTArrayLiteral *) override;
 };
 
 } // namespace visitor

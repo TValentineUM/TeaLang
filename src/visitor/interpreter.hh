@@ -13,55 +13,56 @@ using namespace visitor;
 
 namespace visitor {
 
-class Function {
-public:
-  std::string name;
-  parser::Tealang_t return_type;
-  std::vector<std::tuple<std::string, parser::Tealang_t>> arguments;
-  parser::ASTBlock *function_body;
-};
-
-class Variable {
-public:
-  parser::Tealang_t var_type;
-  std::string name;
-  std::any value; /**< Using the enum for the get*/
-};
-
-// Scope is gonna be more of a problem now since we have stack frames with
-// recursive calls
-//
-//
-
-class Scope {
-public:
-  Scope() : function_call{false} {
-    std::map<std::string, Variable> temp;
-    variable_scope.push_back(temp);
-  }
-
-  Function get_func(std::string); /**< Finds Function*/
-
-  Variable get_var(std::string); /**< Find variable starting from top scope */
-
-  void update_var(std::string,
-                  Variable); /**< Updates a variable starting from top scope*/
-
-  void add_var(Variable);
-  std::map<std::string, Function>
-      function_scope; /**< Maps function names to a tuple containing the
-                         function return type and the argument types */
-
-  std::vector<std::map<std::string, Variable>>
-      variable_scope; /**< The Vector stores all current variable scopes, where
-                         each scope is a mapping from a string to its type*/
-
-  bool function_call;
-};
-
 class Interpreter : public Visitor {
 
 private:
+  class Function {
+  public:
+    std::string name;
+    parser::Tealang_t return_type;
+    std::vector<std::tuple<std::string, parser::Tealang_t>> arguments;
+    parser::ASTBlock *function_body;
+  };
+
+  class Variable {
+  public:
+    parser::Tealang_t var_type;
+    std::string name;
+    std::any value; /**< Using the enum for the get*/
+  };
+
+  // Scope is gonna be more of a problem now since we have stack frames with
+  // recursive calls
+  //
+  //
+
+  class Scope {
+  public:
+    Scope() : function_call{false} {
+      std::map<std::string, Variable> temp;
+      variable_scope.push_back(temp);
+    }
+
+    Function get_func(std::string); /**< Finds Function*/
+
+    Variable get_var(std::string); /**< Find variable starting from top scope */
+
+    void update_var(std::string,
+                    Variable); /**< Updates a variable starting from top scope*/
+
+    void add_var(Variable);
+    std::map<std::string, Function>
+        function_scope; /**< Maps function names to a tuple containing the
+                           function return type and the argument types */
+
+    std::vector<std::map<std::string, Variable>>
+        variable_scope; /**< The Vector stores all current variable scopes,
+                           where each scope is a mapping from a string to its
+                           type*/
+
+    bool function_call;
+  };
+
   Scope scope;
 
   parser::Tealang_t token_type;

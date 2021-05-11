@@ -39,7 +39,7 @@ enum Tealang_t {
   tea_int,
   tea_bool,
   tea_string,
-  tea_char
+  tea_char,
 } typedef Tealang_t;
 
 class AST {
@@ -75,6 +75,10 @@ public:
     case lexer::tok_lit_string:
       type = tea_string;
       type_name = "String";
+      break;
+    case lexer::tok_lit_char:
+      type = tea_char;
+      type_name = "Char";
       break;
     }
 

@@ -30,11 +30,11 @@ int main(int argc, char *argv[]) {
   XMLVisitor xml(outfile);
   xml.visit(test.tree);
   // // cout << test.lex << endl;
-  // SemanticVisitor sem;
+  SemanticVisitor sem;
 
+  sem.visit(test.tree);
   // // cout << "Done from xml" << endl;
 
-  // sem.visit(test.tree);
   // // cout << "Done from semantic" << endl;
 
   // Interpreter please;

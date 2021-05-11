@@ -46,9 +46,11 @@ string OverUnder50(age: int){
         return "OverFifty";    }
 }
 
+
 for(let loopvar:int = 0; loopvar<10; loopvar=loopvar+1){
 	print loopvar;
 }
+
 
 
 let z:int=45;
@@ -58,7 +60,11 @@ while(z<50){
 	z=z+1;
 }
 
+
+
 print OverUnder50(z); //"OverFifty"
+
+
 
 float Pow(x:float, n:int){
     let y:float = 1.0;
@@ -74,10 +80,18 @@ float Pow(x:float, n:int){
     return y;
 }
 
+
+
 let temp1:char = 'x';
 
+
+
 let temp2[4]:int = {1,2,3,4};
+
+
+print y;                        //6.25
+
 temp2[2+1] = 2;
 
-let temp:float = Pow(2.1,10);
-print temp; //printstoconsole 1667.988
+
+print x; //printstoconsole 1667.988
