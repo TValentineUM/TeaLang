@@ -60,8 +60,8 @@ while(z<50){
 	z=z+1;
 }
 
-float Sum(toAverage[]:float, count:int){
-    let total: float = 0.0;
+int Sum(toAverage[]:int, count:int){
+    let total: int = 0;
     for (let i:int = 0; i<count; i = i+1){
           total = total + toAverage[i];
     }
@@ -99,7 +99,11 @@ let temp2[4]:int = {1,2,3,4};
 
 print y;                        //6.25
 
-temp2[2+1] = 2;
+temp2[2+1] = 7;
 
 
-print x; //printstoconsole 1667.988
+print temp1; //printstoconsole 1667.988
+
+print temp2;
+
+print Sum(temp2, 4);

@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
   // // cout << "Done from semantic" << endl;
 
-  // Interpreter please;
-  // please.visit(test.tree);
+  Interpreter please;
+  please.visit(test.tree);
   return 0;
 }
