@@ -60,6 +60,14 @@ while(z<50){
 	z=z+1;
 }
 
+float Sum(toAverage[]:float, count:int){
+    let total: float = 0.0;
+    for (let i:int = 0; i<count; i = i+1){
+          total = total + toAverage[i];
+    }
+    return total;
+}
+
 
 
 print OverUnder50(z); //"OverFifty"

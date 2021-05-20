@@ -15,18 +15,6 @@ void SemanticVisitor::Scope::add_var(Variable var) {
   }
 };
 
-void SemanticVisitor::Scope::add_arr(Array arr) {
-  auto current_scope = array_scope.back();
-  array_scope.pop_back();
-  if (current_scope.find(arr.name) == current_scope.end()) {
-    current_scope.insert({arr.name, arr});
-    array_scope.push_back(current_scope);
-  } else {
-    throw std::invalid_argument("Cannot redeclare array with name: " +
-                                arr.name + " in the current scope");
-  }
-};
-
 void SemanticVisitor::Scope::add_func(Function func) {
   if (function_scope.find(func.name) == function_scope.end()) {
     function_scope.insert({func.name, func});
@@ -47,18 +35,6 @@ SemanticVisitor::Variable SemanticVisitor::Scope::get_var(std::string str) {
   std::cout << variable_scope.size() << std::endl;
   throw std::invalid_argument("Variable " + str +
                               " does not exist in any scope");
-}
-
-SemanticVisitor::Array
-SemanticVisitor::SemanticVisitor::Scope::get_arr(std::string str) {
-  for (int i = array_scope.size(); i > 0; i--) {
-    try {
-      return array_scope[i - 1].at(str);
-    } catch (...) {
-    }
-  }
-  throw std::invalid_argument("Array " + str + " does not exist in any scope");
-  return {};
 }
 
 SemanticVisitor::Function SemanticVisitor::Scope::get_func(std::string str) {
@@ -95,7 +71,7 @@ void SemanticVisitor::visit(parser::ASTLiteral *x) { token_type = x->type; }
 
 void SemanticVisitor::visit(parser::ASTIdentifier *x) {
   Variable var = current_scope.get_var(x->name);
-  token_type = var.var_type;
+  token_type = var.type;
 }
 
 void SemanticVisitor::visit(parser::ASTFunctionCall *x) {
@@ -141,13 +117,7 @@ void SemanticVisitor::visit(parser::ASTSubExpression *x) {
 void SemanticVisitor::visit(parser::ASTBinOp *x) {
   x->left->accept(this);
   parser::Tealang_t left = token_type;
-  if (is_array == true) {
-    throw std::invalid_argument("Cannot use a binary operator on an array");
-  }
   x->right->accept(this);
-  if (is_array == true) {
-    throw std::invalid_argument("Cannot use a binary operator on an array");
-  }
   parser::Tealang_t right = token_type;
 
   if (left != right) {
@@ -190,6 +160,7 @@ void SemanticVisitor::visit(parser::ASTBinOp *x) {
         throw std::invalid_argument("Invalid operator on string");
       }
       break;
+    }
     case parser::tea_char: {
       switch (x->op) {
       case parser::op_eql:
@@ -201,7 +172,9 @@ void SemanticVisitor::visit(parser::ASTBinOp *x) {
       }
       break;
     }
-    }
+    default:
+      // Case for arrays
+      throw std::invalid_argument("Unsupported types used in binary operator");
     }
     switch (x->op) {
     case parser::op_and:
@@ -252,7 +225,7 @@ void SemanticVisitor::visit(parser::ASTVariableDecl *x) {
     throw std::invalid_argument(
         "Variable Declaration and Assignment have incompatible types");
   }
-  var.var_type = token_type;
+  var.type = token_type;
   current_scope.add_var(var);
 }
 
@@ -260,7 +233,7 @@ void SemanticVisitor::visit(parser::ASTAssignment *x) {
 
   auto var = current_scope.get_var(x->identifier);
   x->value->accept(this);
-  if (var.var_type != token_type) {
+  if (var.type != token_type) {
     throw std::invalid_argument("Variable assignment types dont match");
   }
 }
@@ -315,7 +288,7 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
   for (int i = 0; i < param_names.size(); i++) {
     Variable var;
     var.name = param_names[i];
-    var.var_type = param_types[i];
+    var.type = param_types[i];
     new_scope.insert({var.name, var});
   }
   current_scope.variable_scope.push_back(new_scope);
@@ -328,21 +301,56 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
 }
 
 void SemanticVisitor::visit(parser::ASTArrayAccess *x) {
-  Array arr = current_scope.get_arr(x->name);
+  Variable arr = current_scope.get_var(x->name);
+  switch (arr.type) {
+  case parser::tea_arr_bool:
+  case parser::tea_arr_float:
+  case parser::tea_arr_int:
+  case parser::tea_arr_string:
+  case parser::tea_arr_char:
+    break;
+  default:
+    throw std::invalid_argument(
+        "Cannot use array access operators on non-array type");
+  }
   x->index->accept(this);
   if (token_type != parser::tea_int) {
     throw std::invalid_argument("Cannot use a non integer index");
   }
-  token_type = arr.arr_type;
+  token_type = arr.type;
+  switch (arr.type) {
+  case parser::tea_arr_bool:
+    token_type = parser::tea_bool;
+    break;
+  case parser::tea_arr_float:
+    token_type = parser::tea_float;
+    break;
+  case parser::tea_arr_int:
+    token_type = parser::tea_int;
+    break;
+  case parser::tea_arr_string:
+    token_type = parser::tea_string;
+    break;
+  case parser::tea_arr_char:
+    token_type = parser::tea_char;
+    break;
+  }
 }
 
 void SemanticVisitor::visit(parser::ASTArrayDecl *x) {
-  Array arr;
+  Variable arr;
   arr.name = x->identifier;
-  arr.arr_type = x->Type;
+  arr.type = x->Type;
   if (x->value) {
     x->value->accept(this);
-    if (!is_array) {
+    switch (token_type) {
+    case parser::tea_arr_bool:
+    case parser::tea_arr_int:
+    case parser::tea_arr_float:
+    case parser::tea_arr_string:
+    case parser::tea_arr_char:
+      break;
+    default:
       throw std::invalid_argument(
           "Can only initialize an array with an array literal or no value");
     }
@@ -350,25 +358,34 @@ void SemanticVisitor::visit(parser::ASTArrayDecl *x) {
   if (x->Type != token_type) {
     throw std::invalid_argument("Array type and Literal type do not match");
   }
-  current_scope.add_arr(arr);
-  is_array = false;
+  current_scope.add_var(arr);
 }
 
 void SemanticVisitor::visit(parser::ASTArrayAssignment *x) {
-  Array arr = current_scope.get_arr(x->identifier);
+  Variable arr = current_scope.get_var(x->identifier);
   x->index->accept(this);
+  switch (arr.type) {
+  case parser::tea_arr_bool:
+  case parser::tea_arr_float:
+  case parser::tea_arr_int:
+  case parser::tea_arr_string:
+  case parser::tea_arr_char:
+    break;
+  default:
+    throw std::invalid_argument(
+        "Cannot use array access operators on non-array type");
+  }
   if (token_type != parser::tea_int) {
     throw std::invalid_argument("Cannot use a non integer index");
   }
   x->value->accept(this);
-  if (arr.arr_type != token_type) {
+  if ((arr.type - parser::tea_arr_float) != token_type) {
     throw std::invalid_argument("Array assignment types dont match");
   }
 }
 
 void SemanticVisitor::visit(parser::ASTArrayLiteral *x) {
 
-  is_array = true;
   parser::Tealang_t arr_lit_type;
   if (x->values.size()) {
     x->values[0]->accept(this);
@@ -381,5 +398,22 @@ void SemanticVisitor::visit(parser::ASTArrayLiteral *x) {
     if (token_type != arr_lit_type) {
       throw std::invalid_argument("Cannot have mixed types inside array");
     }
+  }
+  switch (token_type) {
+  case parser::tea_bool:
+    token_type = parser::tea_arr_bool;
+    break;
+  case parser::tea_char:
+    token_type = parser::tea_arr_char;
+    break;
+  case parser::tea_float:
+    token_type = parser::tea_arr_float;
+    break;
+  case parser::tea_int:
+    token_type = parser::tea_arr_int;
+    break;
+  case parser::tea_string:
+    token_type = parser::tea_arr_string;
+    break;
   }
 }

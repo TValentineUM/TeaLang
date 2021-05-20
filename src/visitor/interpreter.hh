@@ -24,6 +24,14 @@ private:
     parser::ASTBlock *function_body;
   };
 
+  class Array {
+  public:
+    std::string name;
+    parser::Tealang_t type;
+    std::vector<std::any> values;
+    int size;
+  };
+
   class Variable {
   public:
     parser::Tealang_t var_type;
@@ -31,34 +39,44 @@ private:
     std::any value; /**< Using the enum for the get*/
   };
 
-  // Scope is gonna be more of a problem now since we have stack frames with
-  // recursive calls
-  //
-  //
-
   class Scope {
   public:
-    Scope() : function_call{false} {
-      std::map<std::string, Variable> temp;
-      variable_scope.push_back(temp);
-    }
+    Scope()
+        : function_call{false},
+          variable_scope{std::map<std::string, Variable>()},
+          array_scope{std::map<std::string, Array>()} {}
 
     Function get_func(std::string); /**< Finds Function*/
 
     Variable get_var(std::string); /**< Find variable starting from top scope */
 
+    Array get_arr(std::string); /**< Find Array starting from top scope */
+
+    void add_var(Variable);
+
+    void add_arr(
+        Array); /**< Attempts to add an array and returns true if it succeeds*/
+
+    void add_func(Function);
+
     void update_var(std::string,
                     Variable); /**< Updates a variable starting from top scope*/
 
-    void add_var(Variable);
-    std::map<std::string, Function>
-        function_scope; /**< Maps function names to a tuple containing the
-                           function return type and the argument types */
+    void update_arr(std::string,
+                    Array); /**< Updates a variable starting from top scope*/
 
     std::vector<std::map<std::string, Variable>>
         variable_scope; /**< The Vector stores all current variable scopes,
                            where each scope is a mapping from a string to its
                            type*/
+    std::vector<std::map<std::string, Array>>
+        array_scope; /**< The Vector stores all current variable scopes,
+                           where each scope is a mapping from a string to its
+                           type*/
+
+    std::map<std::string, Function>
+        function_scope; /**< Maps function names to a tuple containing the
+                           function return type and the argument types */
 
     bool function_call;
   };

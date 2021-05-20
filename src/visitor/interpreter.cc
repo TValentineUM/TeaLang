@@ -5,9 +5,11 @@
 #include <sstream>
 #include <string>
 
-Function Scope::get_func(std::string str) { return function_scope.at(str); }
+Interpreter::Function Interpreter::Scope::get_func(std::string str) {
+  return function_scope.at(str);
+}
 
-Variable Scope::get_var(std::string str) {
+Interpreter::Variable Interpreter::Scope::get_var(std::string str) {
   for (auto i = variable_scope.size(); i > 0; i--) {
     auto current_scope = variable_scope[i - 1];
     try {
@@ -16,15 +18,44 @@ Variable Scope::get_var(std::string str) {
     } catch (...) {
     }
   }
-  return {};
+  throw std::runtime_error("Unable to locate variable!");
 }
 
-void Scope::update_var(std::string str, Variable var) {
+Interpreter::Array Interpreter::Scope::get_arr(std::string str) {
+  for (auto i = array_scope.size(); i > 0; i--) {
+    auto current_scope = array_scope[i - 1];
+    try {
+      auto y = current_scope.at(str);
+      return y;
+    } catch (...) {
+    }
+  }
+  throw std::runtime_error("Unable to locate array!");
+}
+
+void Interpreter::Scope::add_var(Variable var) {
+  auto current_scope = variable_scope.back();
+  variable_scope.pop_back();
+  current_scope.insert({var.name, var});
+  variable_scope.push_back(current_scope);
+};
+
+void Interpreter::Scope::add_arr(Array arr) {
+  auto current_scope = array_scope.back();
+  array_scope.pop_back();
+  current_scope.insert({arr.name, arr});
+  array_scope.push_back(current_scope);
+};
+
+void Interpreter::Scope::add_func(Function func) {
+  function_scope.insert({func.name, func});
+}
+
+void Interpreter::Scope::update_var(std::string str, Variable var) {
   for (auto i = variable_scope.size(); i > 0; i--) {
     auto current_scope = variable_scope[i - 1];
     try {
       auto temp = current_scope.at(str);
-
       current_scope.erase(str);
       current_scope.insert({var.name, var});
       variable_scope[i - 1] = current_scope;
@@ -34,20 +65,25 @@ void Scope::update_var(std::string str, Variable var) {
   }
 }
 
-void Scope::add_var(Variable var) {
-  auto current_scope = variable_scope.back();
-  variable_scope.pop_back();
-  current_scope.insert({var.name, var});
-  variable_scope.push_back(current_scope);
-};
+void Interpreter::Scope::update_arr(std::string str, Array arr) {
+  for (auto i = array_scope.size(); i > 0; i--) {
+    auto current_scope = array_scope[i - 1];
+    try {
+      auto temp = current_scope.at(str);
+      current_scope.erase(str);
+      current_scope.insert({var.name, var});
+      variable_scope[i - 1] = current_scope;
+      return;
+    } catch (...) {
+    }
+  }
+}
 
 // DONE
 void Interpreter::visit(parser::ASTProgram *x) {
 
-  // std::map<std::string, parser::Tealang_t> temp;
   for (int i = 0; i < x->statements.size(); i++) {
     if (x->statements[i] != nullptr) {
-
       x->statements[i]->accept(this);
     }
   }
@@ -85,75 +121,50 @@ void Interpreter::visit(parser::ASTLiteral *x) {
   case parser::tea_string:
     token_value = x->value;
     break;
+  case parser::tea_char:
+    token_value = x->value.at(0);
+    break;
   }
 }
 
-// DONE
 void Interpreter::visit(parser::ASTIdentifier *x) {
   auto var = scope.get_var(x->name);
   token_type = var.var_type;
-  // std::cout << "before val" << std::endl;
   token_value = var.value;
-  //  std::cout << "after val" << std::endl;
 }
 
 void Interpreter::visit(parser::ASTFunctionCall *x) {
   auto func = scope.get_func(x->name);
+  std::map<std::string, Variable> func_scope;
+  auto func_args = func.arguments;
+  for (int i = 0; i < x->args.size(); i++) {
+    x->args[i]->accept(this);
+    Variable temp;
+    temp.name = std::get<0>(func_args[i]);
+    temp.var_type = std::get<1>(func_args[i]);
+    temp.value = token_value;
+    func_scope.insert({temp.name, temp});
+  }
+
   if (scope.function_call) {
-    //  std::cout << "Recursive Statment" << std::endl;
-
-    //  std::cout << "1" << std::endl;
-    std::map<std::string, Variable> func_scope;
-    auto func_args = func.arguments;
-
-    //  std::cout << "2 Re" << std::endl;
-    // create scope
-    for (int i = 0; i < x->args.size(); i++) {
-
-      x->args[i]->accept(this);
-      Variable temp;
-
-      //     std::cout << "2.5 Re" << std::endl;
-      temp.name = std::get<0>(func_args[i]);
-
-      //  std::cout << temp.name << std::endl;
-      temp.var_type = std::get<1>(func_args[i]);
-
-      temp.value = token_value;
-
-      func_scope.insert({temp.name, temp});
-    }
+    // Removing current top scope to emulate stack frames in recursive calls
+    //
     auto current_scope = scope.variable_scope.back();
     scope.variable_scope.pop_back();
-    // Creating New Scope
+
+    // Adding Function call vars to a new scope and appending it to the current
+    // scopes
     scope.variable_scope.push_back(func_scope);
-    // std::cout << "3" << std::endl;
     func.function_body->accept(this);
-    // Removing new scope
     scope.variable_scope.pop_back();
     token_type = return_type.value();
     token_value = return_value.value();
     scope.variable_scope.push_back(current_scope);
-    //  std::cout << "end Recursive Statment" << std::endl;
   } else {
-    //  std::cout << "Else Statment" << std::endl;
-    scope.function_call = true;
-    std::map<std::string, Variable> func_scope;
-    auto func_args = func.arguments;
-    // create scope
-    for (int i = 0; i < x->args.size(); i++) {
-      x->args[i]->accept(this);
-      Variable temp;
-      temp.name = std::get<0>(func_args[i]);
-      temp.var_type = std::get<1>(func_args[i]);
-      temp.value = token_value;
-      func_scope.insert({temp.name, temp});
-    }
-    // Creating New Scope
-    scope.variable_scope.push_back(func_scope);
 
+    scope.function_call = true; // Denoting Initial Call
+    scope.variable_scope.push_back(func_scope);
     func.function_body->accept(this);
-    // Removing new scope
     scope.variable_scope.pop_back();
     token_type = *return_type;
     token_value = *return_value;

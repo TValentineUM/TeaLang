@@ -40,6 +40,11 @@ enum Tealang_t {
   tea_bool,
   tea_string,
   tea_char,
+  tea_arr_float,
+  tea_arr_int,
+  tea_arr_bool,
+  tea_arr_string,
+  tea_arr_char
 } typedef Tealang_t;
 
 class AST {
@@ -49,7 +54,7 @@ class AST {
 
 class ASTExpression : public AST {
 public:
-  void accept(visitor::Visitor *) override = 0;
+  virtual void accept(visitor::Visitor *) = 0;
 };
 
 class ASTLiteral : public ASTExpression {
@@ -57,33 +62,7 @@ public:
   Tealang_t type;
   std::string value;
   std::string type_name;
-  ASTLiteral(lexer::Token tok) {
-
-    switch (tok.type) {
-    case lexer::tok_lit_bool:
-      type = tea_bool;
-      type_name = "Boolean";
-      break;
-    case lexer::tok_lit_int:
-      type = tea_int;
-      type_name = "Integer";
-      break;
-    case lexer::tok_lit_float:
-      type = tea_float;
-      type_name = "Float";
-      break;
-    case lexer::tok_lit_string:
-      type = tea_string;
-      type_name = "String";
-      break;
-    case lexer::tok_lit_char:
-      type = tea_char;
-      type_name = "Char";
-      break;
-    }
-
-    value = tok.value;
-  }
+  ASTLiteral(lexer::Token tok);
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
@@ -225,25 +204,11 @@ class ASTFunctionDecl : public ASTStatement {
 public:
   Tealang_t type;
   std::string identifier;
-  std::vector<std::tuple<std::string, Tealang_t>> arguments;
-  std::vector<Tealang_t> param_types() {
-    std::vector<Tealang_t> types;
-    types.resize(arguments.size());
-    std::transform(arguments.begin(), arguments.end(), types.begin(),
-                   [](std::tuple<std::string, Tealang_t> const &tuple) {
-                     return std::get<1>(tuple);
-                   });
-    return types;
-  };
-  std::vector<std::string> param_names() {
-    std::vector<std::string> names;
-    names.resize(arguments.size());
-    std::transform(arguments.begin(), arguments.end(), names.begin(),
-                   [](std::tuple<std::string, Tealang_t> const &tuple) {
-                     return std::get<0>(tuple);
-                   });
-    return names;
-  }
+  std::vector<std::tuple<std::string, Tealang_t>>
+      arguments; /**< {Identifier, Type, IsArray?}*/
+
+  std::vector<Tealang_t> param_types();
+  std::vector<std::string> param_names();
   ASTBlock *body;
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };

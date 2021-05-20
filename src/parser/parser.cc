@@ -176,6 +176,7 @@ ASTExpression *Parser::parse_factor() {
       node->index = parse_expression();
       curr_tok = lex.getNxtToken();
       ll1_tok.reset();
+      return node;
     } else {
       ASTIdentifier *node = new ASTIdentifier(); /** Regular Index */
       node->name = curr_tok.value;
@@ -267,19 +268,19 @@ ASTVariableDecl *Parser::parse_var_decl() {
     Tealang_t type;
     switch (curr_tok.type) {
     case lexer::tok_type_int:
-      type = tea_int;
+      type = tea_arr_int;
       break;
     case lexer::tok_type_string:
-      type = tea_string;
+      type = tea_arr_string;
       break;
     case lexer::tok_type_bool:
-      type = tea_bool;
+      type = tea_arr_bool;
       break;
     case lexer::tok_type_float:
-      type = tea_float;
+      type = tea_arr_float;
       break;
     case lexer::tok_type_char:
-      type = tea_char;
+      type = tea_arr_char;
       break;
     default:
       std::cout << curr_tok << std::endl;
@@ -487,29 +488,67 @@ std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
 
     curr_tok = lex.getNxtToken();
 
-    if (curr_tok.type != lexer::tok_colon) {
-      fail(":");
+    if (curr_tok.type == lexer::tok_square_left) {
+      curr_tok = lex.getNxtToken();
+      if (curr_tok.type != lexer::tok_square_right) {
+        fail("]");
+      }
+      curr_tok = lex.getNxtToken();
+      if (curr_tok.type != lexer::tok_colon) {
+        fail(":");
+      }
+      curr_tok = lex.getNxtToken();
+      Tealang_t y;
+      switch (curr_tok.type) {
+      case lexer::tok_type_int:
+        y = tea_arr_int;
+        break;
+      case lexer::tok_type_string:
+        y = tea_arr_string;
+        break;
+      case lexer::tok_type_bool:
+        y = tea_arr_bool;
+        break;
+      case lexer::tok_type_float:
+        y = tea_arr_float;
+        break;
+      case lexer::tok_type_char:
+        y = tea_arr_char;
+        break;
+      default:
+        fail("Type Decleration");
+      }
+      args.push_back({x, y});
+    } else {
+      if (curr_tok.type != lexer::tok_colon) {
+        fail(":");
+      }
+      curr_tok = lex.getNxtToken();
+      Tealang_t y;
+      switch (curr_tok.type) {
+      case lexer::tok_type_int:
+        y = tea_int;
+        break;
+      case lexer::tok_type_string:
+        y = tea_string;
+        break;
+      case lexer::tok_type_bool:
+        y = tea_bool;
+        break;
+      case lexer::tok_type_float:
+        y = tea_float;
+        break;
+      case lexer::tok_type_char:
+        y = tea_char;
+        break;
+      default:
+        fail("Type Decleration");
+      }
+      args.push_back({x, y});
     }
+
     curr_tok = lex.getNxtToken();
-    Tealang_t y;
-    switch (curr_tok.type) {
-    case lexer::tok_type_int:
-      y = tea_int;
-      break;
-    case lexer::tok_type_string:
-      y = tea_string;
-      break;
-    case lexer::tok_type_bool:
-      y = tea_bool;
-      break;
-    case lexer::tok_type_float:
-      y = tea_float;
-      break;
-    default:
-      fail("Type Decleration");
-    }
-    args.push_back({x, y});
-    curr_tok = lex.getNxtToken();
+
   } while (curr_tok.type == lexer::tok_comma);
   return args;
 }

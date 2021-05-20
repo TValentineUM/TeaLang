@@ -23,35 +23,21 @@ private:
 
   class Variable {
   public:
-    parser::Tealang_t var_type;
-    std::string name;
-  };
-
-  class Array {
-  public:
-    parser::Tealang_t arr_type; /**< Type of the array */
-    int size;                   /** Maximum Index of the current array */
-    std::string name;           /** Name of the array*/
+    parser::Tealang_t type; /**< Variable Type, supports base and array types */
+    std::optional<int> size; /**< Optional Parameter for arrays */
+    std::string name;        /**< Variable Name*/
   };
 
   class Scope {
 
   public:
-    Scope()
-        : variable_scope{std::map<std::string, Variable>()},
-          array_scope{std::map<std::string, Array>()} {}
+    Scope() : variable_scope{std::map<std::string, Variable>()} {}
 
     Function get_func(std::string); /**< Finds Function*/
 
     Variable get_var(std::string); /**< Find variable starting from top scope */
 
-    Array get_arr(std::string); /**< Find Array starting from top scope */
-
-    void add_var(Variable); /**< Attempts to add a variable and returns true if
-                               it suceeds*/
-
-    void add_arr(
-        Array); /**< Attempts to add an array and returns true if it succeeds*/
+    void add_var(Variable);
 
     void add_func(Function);
 
@@ -66,14 +52,10 @@ private:
         function_scope; /**< Maps function names to a tuple
                            containing the function return
                            type and the argument types */
-
-    std::vector<std::map<std::string, Array>> array_scope;
   };
 
   parser::Tealang_t token_type;
   std::optional<std::tuple<parser::Tealang_t, bool>> function_type;
-  bool is_array;
-
   Scope current_scope;
 
 public:
