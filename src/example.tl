@@ -8,7 +8,7 @@ bool XGreaterThanY(x: float, y:float) {
      return ans;
 }
 
-bool XGreaterThanYv2(x:float, y:float){
+auto XGreaterThanYv2(x:float, y:float){
      return x > y;
 }
 
@@ -22,7 +22,7 @@ string JoinStr(s1:string, s2:string){
     return s3;
 }
 
-int fib(a: int){
+auto fib(a: int){
   if (a < 2) {
     return a;
   }
@@ -37,9 +37,9 @@ print XGreaterThanYv2(Square(1.5),y); // false
 print AverageOfThree(x,y,1.2);        //3.28
 print JoinStr("Hello", " World");     //Hello World
 
-print fib(7);
+print fib(10);
 
-string OverUnder50(age: int){
+auto OverUnder50(age: int){
     if(age<50){
         return "UnderFifty";
    }else{
@@ -53,7 +53,7 @@ for(let loopvar:int = 0; loopvar<10; loopvar=loopvar+1){
 
 
 
-let z:int=45;
+let z:auto=45;
 
 while(z<50){
 	print OverUnder50(z); //"UnderFifty"x5
@@ -94,7 +94,7 @@ let temp1:char = 'x';
 
 
 
-let temp2[4]:int = {1,2,3,4};
+let temp2[4]:auto = {1,2,3,4};
 
 
 print y;                        //6.25

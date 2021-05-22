@@ -72,6 +72,7 @@ ASTStatement *Parser::parse_statement() {
   case lexer::tok_type_float:
   case lexer::tok_type_bool:
   case lexer::tok_type_string:
+  case lexer::tok_type_auto:
     // std::cout << "Parsing Function Decleration" << std::endl;
     return parse_function_decl();
     break;
@@ -282,6 +283,9 @@ ASTVariableDecl *Parser::parse_var_decl() {
     case lexer::tok_type_char:
       type = tea_arr_char;
       break;
+    case lexer::tok_type_auto:
+      type = tea_auto;
+      break;
     default:
       std::cout << curr_tok << std::endl;
       fail("Type Decleration");
@@ -329,6 +333,9 @@ ASTVariableDecl *Parser::parse_var_decl() {
       break;
     case lexer::tok_type_char:
       type = tea_char;
+      break;
+    case lexer::tok_type_auto:
+      type = tea_auto;
       break;
     default:
       std::cout << curr_tok << std::endl;
@@ -541,6 +548,9 @@ std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
       case lexer::tok_type_char:
         y = tea_char;
         break;
+      case lexer::tok_type_auto:
+        y = tea_auto;
+        break;
       default:
         fail("Type Decleration");
       }
@@ -569,6 +579,9 @@ ASTFunctionDecl *Parser::parse_function_decl() {
     break;
   case lexer::tok_type_string:
     node->type = tea_string;
+    break;
+  case lexer::tok_type_auto:
+    node->type = tea_auto;
     break;
   default:
     fail("Type Decleration");

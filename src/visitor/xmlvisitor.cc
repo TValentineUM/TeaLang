@@ -40,15 +40,8 @@ void XMLVisitor::visit(parser::ASTBinOp *x) {
   file << indentation << "<BinExprNode Op=\"" << op_to_string[x->value] << "\">"
        << std::endl;
   indent();
-
-  std::cout << "Before left" << std::endl;
   x->left->accept(this);
-  std::cout << "Before Right" << std::endl;
-  if (x->right == nullptr) {
-    std::cout << "HELP!!";
-  }
   x->right->accept(this);
-  std::cout << "After Right" << std::endl;
   unindent();
   file << indentation << "</BinExprNode>" << std::endl;
 }

@@ -6,8 +6,6 @@ void SemanticVisitor::Scope::add_var(Variable var) {
   variable_scope.pop_back();
   if (current_scope.find(var.name) == current_scope.end()) {
     current_scope.insert({var.name, var});
-    std::cout << "Adding " << var.name << " to scope " << variable_scope.size()
-              << std::endl;
     variable_scope.push_back(current_scope);
   } else {
     throw std::invalid_argument("Cannot redeclare variable with name: " +
@@ -23,6 +21,16 @@ void SemanticVisitor::Scope::add_func(Function func) {
                                 func.name + " in the current scope");
   }
 };
+
+void SemanticVisitor::Scope::edit_func(Function func) {
+
+  if (function_scope.find(func.name) != function_scope.end()) {
+    function_scope.erase(func.name);
+    function_scope.insert({func.name, func});
+  } else {
+    throw std::runtime_error("Function not found");
+  }
+}
 
 SemanticVisitor::Variable SemanticVisitor::Scope::get_var(std::string str) {
 
@@ -95,10 +103,15 @@ void SemanticVisitor::visit(parser::ASTFunctionCall *x) {
 void SemanticVisitor::visit(parser::ASTReturn *x) {
   if (function_type.has_value()) {
     x->value->accept(this);
-    if (token_type != std::get<0>(*function_type)) {
+    if (token_type != std::get<0>(*function_type) &&
+        std::get<0>(*function_type) != parser::tea_auto) {
       throw std::invalid_argument(
           "Return type does not match function signature");
     } else {
+      if (std::get<0>(*function_type) == parser::tea_auto &&
+          token_type != parser::tea_auto) {
+        std::get<0>(*function_type) = token_type;
+      }
       std::get<1>(*function_type) = true;
     }
   } else {
@@ -221,9 +234,13 @@ void SemanticVisitor::visit(parser::ASTVariableDecl *x) {
   Variable var;
   var.name = x->identifier;
   x->value->accept(this);
-  if (token_type != x->Type) {
-    throw std::invalid_argument(
-        "Variable Declaration and Assignment have incompatible types");
+  if (x->Type == parser::tea_auto) {
+    x->Type = token_type;
+  } else {
+    if (token_type != x->Type) {
+      throw std::invalid_argument(
+          "Variable Declaration and Assignment have incompatible types");
+    }
   }
   var.type = token_type;
   current_scope.add_var(var);
@@ -292,12 +309,55 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
     new_scope.insert({var.name, var});
   }
   current_scope.variable_scope.push_back(new_scope);
-  x->body->accept(this);
+
+  eval_function_body(x->body, x->identifier);
+  // x->body->accept(this);
   current_scope.variable_scope.pop_back();
   if (!std::get<1>(*function_type)) {
     throw std::invalid_argument("Function does not return");
+  } else {
+    if (func.return_type == parser::tea_auto) {
+      if (std::get<0>(*function_type) == parser::tea_auto) {
+        throw std::invalid_argument("Function type was never inferred");
+      } else {
+        func.return_type = std::get<0>(*function_type);
+      }
+    }
   }
   function_type.reset();
+}
+
+void SemanticVisitor::eval_function_body(parser::ASTBlock *x,
+                                         std::string name) {
+
+  bool is_auto = std::get<0>(*function_type) == parser::tea_auto;
+  if (!is_auto) {
+    x->accept(this);
+    return;
+  }
+  for (int i = 0; i != x->source.size(); i++) {
+    if (x->source[i] != nullptr) {
+      try {
+        x->source[i]->accept(this);
+      } catch (...) {
+      }
+      if (is_auto) {
+        if (std::get<0>(*function_type) != parser::tea_auto) {
+          Function func = current_scope.get_func(name);
+          func.return_type = std::get<0>(*function_type);
+          current_scope.edit_func(func);
+          is_auto = false;
+        }
+      }
+    }
+  }
+  if (is_auto) {
+    throw std::runtime_error(
+        "Unable to determine function return type on initial pass");
+  } else {
+    // Running again with inferred type
+    x->accept(this);
+  }
 }
 
 void SemanticVisitor::visit(parser::ASTArrayAccess *x) {
@@ -340,7 +400,6 @@ void SemanticVisitor::visit(parser::ASTArrayAccess *x) {
 void SemanticVisitor::visit(parser::ASTArrayDecl *x) {
   Variable arr;
   arr.name = x->identifier;
-  arr.type = x->Type;
   if (x->value) {
     x->value->accept(this);
     switch (token_type) {
@@ -355,8 +414,13 @@ void SemanticVisitor::visit(parser::ASTArrayDecl *x) {
           "Can only initialize an array with an array literal or no value");
     }
   }
-  if (x->Type != token_type) {
-    throw std::invalid_argument("Array type and Literal type do not match");
+  if (x->Type == parser::tea_auto) {
+    x->Type = token_type;
+    arr.type = token_type;
+  } else {
+    if (x->Type != token_type) {
+      throw std::invalid_argument("Array type and Literal type do not match");
+    }
   }
   current_scope.add_var(arr);
 }

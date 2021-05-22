@@ -20,7 +20,8 @@ std::map<std::string, tl_token> identifiers = {{"float", tok_type_float},
                                                {"while", tok_while},
                                                {"or", tok_add_op},
                                                {"and", tok_multi_op},
-                                               {"char", tok_type_char}};
+                                               {"char", tok_type_char},
+                                               {"auto", tok_type_auto}};
 
 void Token::match_token(std::string value, int state) {
 

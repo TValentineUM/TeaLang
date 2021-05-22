@@ -40,6 +40,7 @@ enum tl_token {
   tok_while,
   tok_relational,
   tok_assign,
+  tok_type_auto,
   tok_end,
   tok_comment = -1,
 } typedef tl_token;
@@ -77,6 +78,7 @@ static std::map<tl_token, std::string> tok_word = {
     {tok_while, "tok_while"},
     {tok_relational, "tok_relational"},
     {tok_assign, "tok_assign"},
+    {tok_type_auto, "tok_type_auto"},
     {tok_end, "EOF"}};
 
 class Token {

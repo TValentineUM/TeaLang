@@ -35,6 +35,7 @@ static std::map<std::string, Operators> tok_to_op = {
 };
 
 enum Tealang_t {
+  tea_auto = -1,
   tea_float,
   tea_int,
   tea_bool,
@@ -45,6 +46,7 @@ enum Tealang_t {
   tea_arr_bool,
   tea_arr_string,
   tea_arr_char
+
 } typedef Tealang_t;
 
 class AST {

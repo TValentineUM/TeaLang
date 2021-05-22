@@ -41,6 +41,8 @@ private:
 
     void add_func(Function);
 
+    void edit_func(Function);
+
     std::vector<std::map<std::string, Variable>>
         variable_scope; /**< The Vector stores all
                            current variable
@@ -79,6 +81,7 @@ public:
   void visit(parser::ASTArrayDecl *) override;
   void visit(parser::ASTArrayAssignment *) override;
   void visit(parser::ASTArrayLiteral *) override;
+  void eval_function_body(parser::ASTBlock *, std::string);
 };
 
 } // namespace visitor
