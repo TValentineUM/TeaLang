@@ -17,6 +17,11 @@ float AverageOfThree (x:float, y:float, z:float){
     return total/3.0;
 }
 
+int AverageOfThree (x:int, y:int, z:int){
+    let total:int = (x+y+z)/3;
+    return total;
+}
+
 string JoinStr(s1:string, s2:string){
     let s3:string = s1 + s2;
     return s3;
@@ -35,6 +40,7 @@ print y;                        //6.25
 print XGreaterThanY(x,2.3);     //true
 print XGreaterThanYv2(Square(1.5),y); // false
 print AverageOfThree(x,y,1.2);        //3.28
+print AverageOfThree(4,8,12);        //8
 print JoinStr("Hello", " World");     //Hello World
 
 print fib(10);

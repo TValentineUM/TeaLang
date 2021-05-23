@@ -17,8 +17,10 @@ private:
   class Function {
   public:
     std::string name;
+    std::string code;
     parser::Tealang_t return_type;
     std::vector<std::tuple<std::string, parser::Tealang_t>> arguments;
+    std::string get_code();
   };
 
   class Variable {

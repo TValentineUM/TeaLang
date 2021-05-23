@@ -6,6 +6,28 @@
 #include <string>
 #include <type_traits>
 
+std::string
+Interpreter::Scope::code_generator(std::string name,
+                                   std::vector<parser::Tealang_t> args) {
+  std::string code = name + "$";
+  for (auto arg : args) {
+    code += std::to_string(arg);
+  }
+  return code;
+}
+
+std::string Interpreter::Function::get_code() {
+  if (code == "") {
+    code = name + "$";
+    for (auto arg : arguments) {
+      code += std::to_string(std::get<1>(arg));
+    }
+    return code;
+  } else {
+    return code;
+  }
+}
+
 Interpreter::Function Interpreter::Scope::get_func(std::string str) {
   return function_scope.at(str);
 }
@@ -30,7 +52,7 @@ void Interpreter::Scope::add_var(Variable var) {
 };
 
 void Interpreter::Scope::add_func(Function func) {
-  function_scope.insert({func.name, func});
+  function_scope.insert({func.get_code(), func});
 }
 
 void Interpreter::Scope::update_var(std::string str, Variable var) {
@@ -104,14 +126,15 @@ void Interpreter::visit(parser::ASTIdentifier *x) {
 }
 
 void Interpreter::visit(parser::ASTFunctionCall *x) {
-  auto func = scope.get_func(x->name);
-  std::map<std::string, Variable> func_scope;
-  auto func_args = func.arguments;
+  // auto func = scope.get_func(x->name);
+  // std::map<std::string, Variable> func_scope;
+  // auto func_args = func.arguments;
+  std::vector<Variable> evaluated_args;
+  std::vector<parser::Tealang_t> arg_types;
   for (int i = 0; i < x->args.size(); i++) {
     x->args[i]->accept(this);
     Variable temp;
-    temp.name = std::get<0>(func_args[i]);
-    temp.type = std::get<1>(func_args[i]);
+    temp.type = token_type;
     temp.value = token_value;
     switch (token_type) {
     case parser::tea_arr_bool:
@@ -130,8 +153,17 @@ void Interpreter::visit(parser::ASTFunctionCall *x) {
       temp.size = std::any_cast<std::vector<std::string>>(token_value).size();
       break;
     }
+    arg_types.push_back(token_type);
+    evaluated_args.push_back(temp);
+  }
 
-    func_scope.insert({temp.name, temp});
+  std::string code = scope.code_generator(x->name, arg_types);
+  Function func = scope.get_func(code);
+  std::map<std::string, Variable> func_scope;
+  auto func_args = func.arguments;
+  for (int i = 0; i < func_args.size(); i++) {
+    evaluated_args[i].name = std::get<0>(func_args[i]);
+    func_scope.insert({evaluated_args[i].name, evaluated_args[i]});
   }
 
   if (scope.function_call) {
@@ -532,7 +564,7 @@ void Interpreter::visit(parser::ASTFunctionDecl *x) {
   func.return_type = x->type;
   func.arguments = x->arguments;
   func.function_body = x->body;
-  scope.function_scope.insert({func.name, func});
+  scope.function_scope.insert({func.get_code(), func});
 }
 
 // DONE

@@ -1,6 +1,18 @@
 #include "semantic_visitor.hh"
 #include <algorithm>
 
+std::string SemanticVisitor::Function::get_code() {
+  if (code == "") {
+    code = name + "$";
+    for (auto arg : arguments) {
+      code += std::to_string(std::get<1>(arg));
+    }
+    return code;
+  } else {
+    return code;
+  }
+}
+
 void SemanticVisitor::Scope::add_var(Variable var) {
   auto current_scope = variable_scope.back();
   variable_scope.pop_back();
@@ -14,19 +26,21 @@ void SemanticVisitor::Scope::add_var(Variable var) {
 };
 
 void SemanticVisitor::Scope::add_func(Function func) {
-  if (function_scope.find(func.name) == function_scope.end()) {
-    function_scope.insert({func.name, func});
+  if (function_scope.find(func.get_code()) == function_scope.end()) {
+    // None there can just insert
+    std::cout << "Adding func: " << func.get_code() << std::endl;
+    function_scope.insert({func.get_code(), func});
   } else {
-    throw std::invalid_argument("Cannot redeclare function with name: " +
-                                func.name + " in the current scope");
+    throw std::invalid_argument(
+        "Cannot redeclare function with the same name and parameters");
   }
-};
+}
 
 void SemanticVisitor::Scope::edit_func(Function func) {
 
-  if (function_scope.find(func.name) != function_scope.end()) {
-    function_scope.erase(func.name);
-    function_scope.insert({func.name, func});
+  if (function_scope.find(func.get_code()) != function_scope.end()) {
+    function_scope.erase(func.get_code());
+    function_scope.insert({func.get_code(), func});
   } else {
     throw std::runtime_error("Function not found");
   }
@@ -49,10 +63,10 @@ SemanticVisitor::Function SemanticVisitor::Scope::get_func(std::string str) {
   try {
     return function_scope.at(str);
   } catch (...) {
+    throw std::invalid_argument("Function " + str +
+                                " does not exist in any scope");
   }
 
-  throw std::invalid_argument("Function " + str +
-                              " does not exist in any scope");
   return {};
 };
 
@@ -83,21 +97,13 @@ void SemanticVisitor::visit(parser::ASTIdentifier *x) {
 }
 
 void SemanticVisitor::visit(parser::ASTFunctionCall *x) {
-  Function func = current_scope.get_func(x->name);
-  auto params = func.arguments;
-  auto args = x->args;
-  if (params.size() != args.size()) {
-    throw std::invalid_argument("Unable to determine function call");
-  } else {
-    for (int i = 0; i < params.size(); i++) {
-      args[i]->accept(this);
-      if (token_type != std::get<1>(params[i])) {
-        throw std::invalid_argument(
-            "Function argument did not match parameter type");
-      }
-      token_type = func.return_type;
-    }
+  std::string code = x->name;
+  code += "$";
+  for (int i = 0; i < x->args.size(); i++) {
+    x->args[i]->accept(this);
+    code += std::to_string(token_type);
   }
+  current_scope.get_func(code);
 }
 
 void SemanticVisitor::visit(parser::ASTReturn *x) {
@@ -310,7 +316,7 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
   }
   current_scope.variable_scope.push_back(new_scope);
 
-  eval_function_body(x->body, x->identifier);
+  eval_function_body(x->body, func.get_code());
   // x->body->accept(this);
   current_scope.variable_scope.pop_back();
   if (!std::get<1>(*function_type)) {

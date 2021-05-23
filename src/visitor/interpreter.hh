@@ -19,9 +19,11 @@ private:
   class Function {
   public:
     std::string name;
+    std::string code;
     parser::Tealang_t return_type;
     std::vector<std::tuple<std::string, parser::Tealang_t>> arguments;
     parser::ASTBlock *function_body;
+    std::string get_code();
   };
 
   class Variable {
@@ -48,6 +50,8 @@ private:
 
     void update_var(std::string,
                     Variable); /**< Updates a variable starting from top scope*/
+
+    std::string code_generator(std::string, std::vector<parser::Tealang_t>);
 
     std::vector<std::map<std::string, Variable>>
         variable_scope; /**< The Vector stores all current variable scopes,
