@@ -1,0 +1,15 @@
+digraph finite_state_machine {
+rankdir=LR;
+
+
+// Defining States
+node [margin=2 fontsize=32 width=1.3 shape=circle]
+node [shape = circle, label="S0", fontsize=14, fixedsize=true] S0;
+node [shape = doublecircle, label="S10", fontsize=14] S10;
+
+node [shape = point width=0.25 style=invis ] qi;
+qi -> S0;
+
+// Binary Operators
+S0 -> S10   [ label = "+-*" ];
+}

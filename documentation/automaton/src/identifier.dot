@@ -1,0 +1,14 @@
+digraph finite_state_machine {
+rankdir=LR;
+size="8,5"
+
+node [shape = circle, label="S0", fontsize=14] S0;
+node [shape = doublecircle, label="S1", fontsize=14] S1;
+
+
+node [shape = point ] qi;
+qi -> S0;
+
+S0   -> S1  [ label = "(_|[A-z])\n " ];
+S1   -> S1  [ label = "(_|[A-z]|[0-9])\n " ];
+}

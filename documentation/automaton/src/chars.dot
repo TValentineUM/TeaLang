@@ -1,0 +1,20 @@
+digraph finite_state_machine {
+rankdir=LR;
+
+// Defining States
+node [margin=2 fontsize=32 width=1.3 shape=circle]
+node [shape = circle, label="S0", fontsize=14, fixedsize=true] S0;
+node [shape = circle, label="S19", fontsize=14] S19;
+node [shape = circle, label="S20", fontsize=14] S20;
+node [shape = doublecircle, label="S21", fontsize=14] S21;
+
+node [shape = point width=0.25 style=invis ] qi;
+qi -> S0;
+
+
+// Character
+S0 -> S19   [ label = "'"];
+S19 -> S20   [ label = "[A-z]|[0-9]"];
+S20 -> S21   [ label = "'"];
+
+}

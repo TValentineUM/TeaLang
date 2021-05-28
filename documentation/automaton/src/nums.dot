@@ -1,0 +1,19 @@
+digraph finite_state_machine {
+rankdir=LR;
+size="8,5"
+
+node [margin=2 fontsize=32 width=1 shape=circle]
+node [shape = circle, label="S0", fontsize=14, fixedsize=true] S0;
+node [shape = doublecircle, label="Int", fontsize=14] S1;
+node [shape = circle, label="S2", fontsize=14] S2;
+node [shape = doublecircle, label="Float", fontsize=14] S3;
+
+node [shape = point width=0.25 style=invis ] qi;
+qi -> S0;
+
+S0   -> S1  [ label = "[1-9]" ];
+S1   -> S1  [ label = "[0-9]" ];
+S1   -> S2  [ label = "." fontsize=30];
+S2   -> S3  [ label = "[0-9]" ];
+S3   -> S3  [ label = "[0-9]" ];
+}
