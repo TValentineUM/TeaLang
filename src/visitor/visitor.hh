@@ -26,6 +26,11 @@ class ASTArrayDecl;
 class ASTArrayAccess;
 class ASTArrayLiteral;
 class ASTArrayAssignment;
+class ASTStructAccess;
+class ASTStructFunc;
+class ASTStructDefn;
+class ASTStructAssign;
+class ASTStructDecl;
 
 } // namespace parser
 
@@ -56,6 +61,11 @@ public:
   virtual void visit(parser::ASTFunctionDecl *) = 0;
   virtual void visit(parser::ASTArrayDecl *) = 0;
   virtual void visit(parser::ASTArrayAssignment *) = 0;
+  virtual void visit(parser::ASTStructAccess *) = 0;
+  virtual void visit(parser::ASTStructFunc *) = 0;
+  virtual void visit(parser::ASTStructDefn *) = 0;
+  virtual void visit(parser::ASTStructAssign *) = 0;
+  virtual void visit(parser::ASTStructDecl *) = 0;
 };
 
 } // namespace visitor

@@ -1,9 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root description="Tealang AST Generation">
 	<Prog>
+		<StructDefn name="Vector">
+			<Variables>
+				<Decl>
+					<Var Type="0">x</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+				<Decl>
+					<Var Type="0">y</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+				<Decl>
+					<Var Type="0">z</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+			</Variables>
+			<Functions>
+				<FuncDecl>
+					<Var Type="1">Scale</Var>
+					<Arg typename="float">s</Arg>
+					<Block>
+						<Assign>
+							<Var>x</Var>
+							<BinExprNode Op="*">
+								<Identifier>x</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>y</Var>
+							<BinExprNode Op="*">
+								<Identifier>y</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>z</Var>
+							<BinExprNode Op="*">
+								<Identifier>z</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Return>
+							<IntConst>0</IntConst>
+						</Return>
+					</Block>
+				</FuncDecl>
+				<FuncDecl>
+					<Var Type="1">Translate</Var>
+					<Arg typename="float">tx</Arg>
+					<Arg typename="float">ty</Arg>
+					<Arg typename="float">tz</Arg>
+					<Block>
+						<Assign>
+							<Var>x</Var>
+							<BinExprNode Op="+">
+								<Identifier>x</Identifier>
+								<Identifier>tx</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>y</Var>
+							<BinExprNode Op="+">
+								<Identifier>y</Identifier>
+								<Identifier>tz</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>z</Var>
+							<BinExprNode Op="+">
+								<Identifier>z</Identifier>
+								<Identifier>tz</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Return>
+							<IntConst>0</IntConst>
+						</Return>
+					</Block>
+				</FuncDecl>
+			</Functions>
+		</StructDefn>
+		<FuncDecl>
+			<Var Type="10">Add</Var>
+			<Arg typename="Vector">v1</Arg>
+			<Arg typename="Vector">v2</Arg>
+			<Block>
+				<Decl>
+					<Var Type="Vector">v3</Var>
+				</Decl>
+				<StructAssign name="v3" element="x">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="x"/>
+						<StructAccess name="v2" element="x"/>
+					</BinExprNode>
+				</StructAssign>
+				<StructAssign name="v3" element="y">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="y"/>
+						<StructAccess name="v2" element="y"/>
+					</BinExprNode>
+				</StructAssign>
+				<StructAssign name="v3" element="z">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="z"/>
+						<StructAccess name="v2" element="z"/>
+					</BinExprNode>
+				</StructAssign>
+				<Return>
+					<Identifier>v3</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="Vector">v1</Var>
+		</Decl>
+		<StructAssign name="v1" element="x">
+			<FloatConst>1.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v1" element="y">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v1" element="z">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<Decl>
+			<Var Type="Vector">v2</Var>
+		</Decl>
+		<StructAssign name="v2" element="x">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v2" element="y">
+			<FloatConst>1.2</FloatConst>
+		</StructAssign>
+		<StructAssign name="v2" element="z">
+			<FloatConst>0.0</FloatConst>
+		</StructAssign>
+		<Decl>
+			<Var Type="Vector">v3</Var>
+				<FuncCall Id="Add">
+					<Identifier>v1</Identifier>
+					<Identifier>v2</Identifier>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<StructAccess name="v3" element="x"/>
+		</Print>
+		<Print>
+			<StructAccess name="v3" element="y"/>
+		</Print>
+		<Print>
+			<StructAccess name="v3" element="z"/>
+		</Print>
+		<Decl>
+			<Var Type="1">tempVar</Var>
+				<StructFunc name="v3" element="translate">
+					<FloatConst>1.0</FloatConst>
+					<FloatConst>1.0</FloatConst>
+					<FloatConst>1.0</FloatConst>
+				</StructFunc>
+		</Decl>
+		<Decl>
+			<Var Type="Vector">v4</Var>
+				<FuncCall Id="Add">
+					<Identifier>v1</Identifier>
+					<Identifier>v3</Identifier>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<StructAccess name="v4" element="x"/>
+		</Print>
+		<Print>
+			<StructAccess name="v4" element="y"/>
+		</Print>
+		<Print>
+			<StructAccess name="v4" element="z"/>
+		</Print>
 		<FuncDecl>
 			<Var Type="0">Square</Var>
-			<Arg Type="0">x</Arg>
+			<Arg typename="float">x</Arg>
 			<Block>
 				<Return>
 					<BinExprNode Op="*">
@@ -15,8 +190,8 @@
 		</FuncDecl>
 		<FuncDecl>
 			<Var Type="2">XGreaterThanY</Var>
-			<Arg Type="0">x</Arg>
-			<Arg Type="0">y</Arg>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
 			<Block>
 				<Decl>
 					<Var Type="2">ans</Var>
@@ -24,7 +199,7 @@
 				</Decl>
 				<If>
 					<Condition>
-						<BinExprNode Op="&gt">
+						<BinExprNode Op="&gt;">
 							<Identifier>y</Identifier>
 							<Identifier>x</Identifier>
 						</BinExprNode>
@@ -46,12 +221,12 @@
 			</Block>
 		</FuncDecl>
 		<FuncDecl>
-			<Var Type="2">XGreaterThanYv2</Var>
-			<Arg Type="0">x</Arg>
-			<Arg Type="0">y</Arg>
+			<Var Type="-1">XGreaterThanYv2</Var>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
 			<Block>
 				<Return>
-					<BinExprNode Op="&gt">
+					<BinExprNode Op="&gt;">
 						<Identifier>x</Identifier>
 						<Identifier>y</Identifier>
 					</BinExprNode>
@@ -60,9 +235,9 @@
 		</FuncDecl>
 		<FuncDecl>
 			<Var Type="0">AverageOfThree</Var>
-			<Arg Type="0">x</Arg>
-			<Arg Type="0">y</Arg>
-			<Arg Type="0">z</Arg>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
+			<Arg typename="float">z</Arg>
 			<Block>
 				<Decl>
 					<Var Type="0">total</Var>
@@ -83,9 +258,33 @@
 			</Block>
 		</FuncDecl>
 		<FuncDecl>
+			<Var Type="1">AverageOfThree</Var>
+			<Arg typename="int">x</Arg>
+			<Arg typename="int">y</Arg>
+			<Arg typename="int">z</Arg>
+			<Block>
+				<Decl>
+					<Var Type="1">total</Var>
+						<BinExprNode Op="/">
+							<BinExprNode Op="+">
+								<Identifier>x</Identifier>
+								<BinExprNode Op="+">
+									<Identifier>y</Identifier>
+									<Identifier>z</Identifier>
+								</BinExprNode>
+							</BinExprNode>
+							<IntConst>3</IntConst>
+						</BinExprNode>
+				</Decl>
+				<Return>
+					<Identifier>total</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<FuncDecl>
 			<Var Type="3">JoinStr</Var>
-			<Arg Type="3">s1</Arg>
-			<Arg Type="3">s2</Arg>
+			<Arg typename="string">s1</Arg>
+			<Arg typename="string">s2</Arg>
 			<Block>
 				<Decl>
 					<Var Type="3">s3</Var>
@@ -100,12 +299,12 @@
 			</Block>
 		</FuncDecl>
 		<FuncDecl>
-			<Var Type="1">fib</Var>
-			<Arg Type="1">a</Arg>
+			<Var Type="-1">fib</Var>
+			<Arg typename="int">a</Arg>
 			<Block>
 				<If>
 					<Condition>
-						<BinExprNode Op="&lt">
+						<BinExprNode Op="&lt;">
 							<Identifier>a</Identifier>
 							<IntConst>2</IntConst>
 						</BinExprNode>
@@ -149,12 +348,20 @@
 				</FuncCall>
 		</Decl>
 		<Print>
+			<Identifier>x</Identifier>
+		</Print>
+		<Print>
 			<Identifier>y</Identifier>
 		</Print>
 		<Print>
 			<FuncCall Id="XGreaterThanY">
 				<Identifier>x</Identifier>
 				<FloatConst>2.3</FloatConst>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="fib">
+				<IntConst>10</IntConst>
 			</FuncCall>
 		</Print>
 		<Print>
@@ -173,23 +380,25 @@
 			</FuncCall>
 		</Print>
 		<Print>
+			<FuncCall Id="AverageOfThree">
+				<IntConst>4</IntConst>
+				<IntConst>8</IntConst>
+				<IntConst>12</IntConst>
+			</FuncCall>
+		</Print>
+		<Print>
 			<FuncCall Id="JoinStr">
 				<StringConst>Hello</StringConst>
 				<StringConst> World</StringConst>
 			</FuncCall>
 		</Print>
-		<Print>
-			<FuncCall Id="fib">
-				<IntConst>7</IntConst>
-			</FuncCall>
-		</Print>
 		<FuncDecl>
-			<Var Type="3">OverUnder50</Var>
-			<Arg Type="1">age</Arg>
+			<Var Type="-1">OverUnder50</Var>
+			<Arg typename="int">age</Arg>
 			<Block>
 				<If>
 					<Condition>
-						<BinExprNode Op="&lt">
+						<BinExprNode Op="&lt;">
 							<Identifier>age</Identifier>
 							<IntConst>50</IntConst>
 						</BinExprNode>
@@ -197,7 +406,7 @@
 					<EvalTrue>
 						<Block>
 							<Return>
-								<StringConst>UnderFifty</StringConst>
+								<StringConst>UnderFifty\"</StringConst>
 							</Return>
 						</Block>
 					</EvalTrue>
@@ -217,7 +426,7 @@
 					<IntConst>0</IntConst>
 			</Decl>
 			<Condition>
-				<BinExprNode Op="&lt">
+				<BinExprNode Op="&lt;">
 					<Identifier>loopvar</Identifier>
 					<IntConst>10</IntConst>
 				</BinExprNode>
@@ -238,12 +447,12 @@
 			</EvalTrue>
 		</For>
 		<Decl>
-			<Var Type="1">z</Var>
+			<Var Type="-1">z</Var>
 				<IntConst>45</IntConst>
 		</Decl>
 		<While>
 			<Condition>
-				<BinExprNode Op="&lt">
+				<BinExprNode Op="&lt;">
 					<Identifier>z</Identifier>
 					<IntConst>50</IntConst>
 				</BinExprNode>
@@ -265,6 +474,54 @@
 				</Block>
 			</EvalTrue>
 		</While>
+		<FuncDecl>
+			<Var Type="1">Sum</Var>
+			<Arg typename="int">toAverage</Arg>
+			<Arg typename="int">count</Arg>
+			<Block>
+				<Decl>
+					<Var Type="1">total</Var>
+						<IntConst>0</IntConst>
+				</Decl>
+				<For>
+					<Decl>
+						<Var Type="1">i</Var>
+							<IntConst>0</IntConst>
+					</Decl>
+					<Condition>
+						<BinExprNode Op="&lt;">
+							<Identifier>i</Identifier>
+							<Identifier>count</Identifier>
+						</BinExprNode>
+					</Condition>
+					<Assign>
+						<Var>i</Var>
+						<BinExprNode Op="+">
+							<Identifier>i</Identifier>
+							<IntConst>1</IntConst>
+						</BinExprNode>
+					</Assign>
+					<EvalTrue>
+						<Block>
+							<Assign>
+								<Var>total</Var>
+								<BinExprNode Op="+">
+									<Identifier>total</Identifier>
+									<ArrayAccess Id="toAverage">
+										<Index>
+											<Identifier>i</Identifier>
+										</Index>
+									</ArrayAccess>
+								</BinExprNode>
+							</Assign>
+						</Block>
+					</EvalTrue>
+				</For>
+				<Return>
+					<Identifier>total</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
 		<Print>
 			<FuncCall Id="OverUnder50">
 				<Identifier>z</Identifier>
@@ -272,8 +529,8 @@
 		</Print>
 		<FuncDecl>
 			<Var Type="0">Pow</Var>
-			<Arg Type="0">x</Arg>
-			<Arg Type="1">n</Arg>
+			<Arg typename="float">x</Arg>
+			<Arg typename="int">n</Arg>
 			<Block>
 				<Decl>
 					<Var Type="0">y</Var>
@@ -281,7 +538,7 @@
 				</Decl>
 				<If>
 					<Condition>
-						<BinExprNode Op="&gt">
+						<BinExprNode Op="&gt;">
 							<Identifier>n</Identifier>
 							<IntConst>0</IntConst>
 						</BinExprNode>
@@ -290,7 +547,7 @@
 						<Block>
 							<For>
 								<Condition>
-									<BinExprNode Op="&gt">
+									<BinExprNode Op="&gt;">
 										<Identifier>n</Identifier>
 										<IntConst>0</IntConst>
 									</BinExprNode>
@@ -320,7 +577,7 @@
 						<Block>
 							<For>
 								<Condition>
-									<BinExprNode Op="&lt">
+									<BinExprNode Op="&lt;">
 										<Identifier>n</Identifier>
 										<IntConst>0</IntConst>
 									</BinExprNode>
@@ -356,7 +613,7 @@
 			<Var Type="4">temp1</Var>
 						</Decl>
 		<Decl>
-			<Array Type="1">temp2</Array>
+			<Array Type="-1">temp2</Array>
 			<Size>
 				<IntConst>4</IntConst>
 			</Size>
@@ -388,10 +645,19 @@
 					</BinExprNode>
 				</Index>
 				<Var>temp2</Var>
-				<IntConst>2</IntConst>
+				<IntConst>7</IntConst>
 			</ArrayAssign>
 			<Print>
-				<Identifier>x</Identifier>
+				<Identifier>temp1</Identifier>
+			</Print>
+			<Print>
+				<Identifier>temp2</Identifier>
+			</Print>
+			<Print>
+				<FuncCall Id="Sum">
+					<Identifier>temp2</Identifier>
+					<IntConst>4</IntConst>
+				</FuncCall>
 			</Print>
 		</Prog>
 </root>

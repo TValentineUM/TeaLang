@@ -13,9 +13,10 @@ class XMLVisitor : public Visitor {
 
 private:
   std::map<std::string, std::string> op_to_string = {
-      {"*", "*"},    {"/", "/"},    {"and", "and"}, {"+", "+"},   {"-", "-"},
-      {"or", "or"},  {"<", "&lt"},  {">", "&gt"},   {"==", "=="}, {"!=", "ne"},
-      {"<=", "&le"}, {">=", "&ge"}, {"not", "not"}
+      {"*", "*"},    {"/", "/"},   {"and", "and"}, {"+", "+"},
+      {"-", "-"},    {"or", "or"}, {"<", "&lt;"},  {">", "&gt;"},
+      {"==", "=="},  {"!=", "ne"}, {"<=", "&le;"}, {">=", "&ge;"},
+      {"not", "not"}
 
   };
 
@@ -53,6 +54,11 @@ public:
   void visit(parser::ASTFunctionDecl *) override;
   void visit(parser::ASTArrayDecl *) override;
   void visit(parser::ASTArrayAssignment *) override;
+  void visit(parser::ASTStructAccess *) override;
+  void visit(parser::ASTStructFunc *) override;
+  void visit(parser::ASTStructDefn *) override;
+  void visit(parser::ASTStructAssign *) override;
+  void visit(parser::ASTStructDecl *) override;
 };
 } // namespace visitor
 #endif // XMLVISITOR_H_

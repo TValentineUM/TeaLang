@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
 
   // cout << "Lexed Fine" << endl;
   parser::Parser test(infile);
-  // XMLVisitor xml(outfile);
-  // xml.visit(test.tree);
+  XMLVisitor xml(outfile);
+  xml.visit(test.tree);
   // cout << test.lex << endl;
   // SemanticVisitor sem;
 

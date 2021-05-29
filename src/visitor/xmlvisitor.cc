@@ -80,7 +80,6 @@ void XMLVisitor::visit(parser::ASTVariableDecl *x) {
   file << indentation << "<Var Type=\"" << x->Type << "\">" << x->identifier
        << "</Var>" << std::endl;
   indent();
-
   x->value->accept(this);
   unindent();
   unindent();
@@ -205,7 +204,7 @@ void XMLVisitor::visit(parser::ASTFunctionDecl *x) {
   file << "<Var Type=\"" << x->type << "\">" << x->identifier << "</Var>"
        << std::endl;
   for (auto item : x->arguments) {
-    file << indentation << "<Arg Type=\"" << std::get<1>(item) << "\">"
+    file << indentation << "<Arg typename=\"" << std::get<2>(item) << "\">"
          << std::get<0>(item) << "</Arg>" << std::endl;
   }
   x->body->accept(this);
@@ -234,11 +233,11 @@ void XMLVisitor::visit(parser::ASTFunctionCall *x) {
 void XMLVisitor::visit(parser::ASTArrayAccess *x) {
   file << indentation << "<ArrayAccess Id=\"" << x->name << "\">" << std::endl;
   indent();
-  file << "<Index>" << std::endl;
+  file << indentation << "<Index>" << std::endl;
   indent();
   x->index->accept(this);
   unindent();
-  file << "</Index>" << std::endl;
+  file << indentation << "</Index>" << std::endl;
   unindent();
   file << indentation << "</ArrayAccess>" << std::endl;
 }
@@ -277,4 +276,69 @@ void XMLVisitor::visit(parser::ASTArrayLiteral *x) {
     file << indentation << "</Item>" << std::endl;
   }
   file << indentation << "</ArrayLiteral>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTStructAccess *x) {
+  file << indentation
+       << "<StructAccess name=\"" + x->name + "\" element=\"" + x->element +
+              "\"/>"
+       << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTStructFunc *x) {
+  file << indentation
+       << "<StructFunc name=\"" + x->name + "\" element=\"" + x->element + "\">"
+       << std::endl;
+  indent();
+  for (auto arg : x->args) {
+    arg->accept(this);
+  }
+  unindent();
+  file << indentation << "</StructFunc>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTStructDefn *x) {
+  file << indentation << "<StructDefn name=\"" + x->name + "\">" << std::endl;
+  indent();
+  file << indentation << "<Variables>" << std::endl;
+  indent();
+  for (auto var : x->vars) {
+    var->accept(this);
+  }
+  unindent();
+  file << indentation << "</Variables>" << std::endl;
+  file << indentation << "<Functions>" << std::endl;
+  indent();
+  for (auto func : x->funcs) {
+    func->accept(this);
+  }
+  unindent();
+  file << indentation << "</Functions>" << std::endl;
+  unindent();
+  file << indentation << "</StructDefn>" << std::endl;
+}
+
+void XMLVisitor::visit(parser::ASTStructAssign *x) {
+  file << indentation
+       << "<StructAssign name=\"" + x->name + "\" element=\"" + x->element +
+              "\">"
+       << std::endl;
+  indent();
+  x->value->accept(this);
+  unindent();
+  file << indentation << "</StructAssign>" << std::endl;
+}
+void XMLVisitor::visit(parser::ASTStructDecl *x) {
+
+  file << indentation << "<Decl>" << std::endl;
+  indent();
+  file << indentation << "<Var Type=\"" << x->struct_name << "\">"
+       << x->identifier << "</Var>" << std::endl;
+  if (x->value != nullptr) {
+    indent();
+    x->value->accept(this);
+    unindent();
+  }
+  unindent();
+  file << indentation << "</Decl>" << std::endl;
 }

@@ -357,6 +357,7 @@ ASTStructDecl *Parser::parse_struct_decl() {
   if (ll1_tok->type == lexer::tok_assign) {
     node->value = parse_expression();
   } else {
+    node->value = nullptr;
     curr_tok = ll1_tok.value();
     ll1_tok.reset();
   }
@@ -872,10 +873,12 @@ ASTIfStatement *Parser::parse_if() {
 
 ASTStructDefn *Parser::parse_struct_def() {
   ASTStructDefn *node = new ASTStructDefn();
+
   curr_tok = lex.getNxtToken();
   if (curr_tok.type != lexer::tok_iden) {
     fail("Identifier");
   }
+  node->name = curr_tok.value;
   curr_tok = lex.getNxtToken();
   if (curr_tok.type != lexer::tok_curly_left) {
     fail("{");
