@@ -31,19 +31,21 @@ ASTLiteral::ASTLiteral(lexer::Token tok) {
 std::vector<Tealang_t> ASTFunctionDecl::param_types() {
   std::vector<Tealang_t> types;
   types.resize(arguments.size());
-  std::transform(arguments.begin(), arguments.end(), types.begin(),
-                 [](std::tuple<std::string, Tealang_t> const &tuple) {
-                   return std::get<1>(tuple);
-                 });
+  std::transform(
+      arguments.begin(), arguments.end(), types.begin(),
+      [](std::tuple<std::string, Tealang_t, std::string> const &tuple) {
+        return std::get<1>(tuple);
+      });
   return types;
 };
 
 std::vector<std::string> ASTFunctionDecl::param_names() {
   std::vector<std::string> names;
   names.resize(arguments.size());
-  std::transform(arguments.begin(), arguments.end(), names.begin(),
-                 [](std::tuple<std::string, Tealang_t> const &tuple) {
-                   return std::get<0>(tuple);
-                 });
+  std::transform(
+      arguments.begin(), arguments.end(), names.begin(),
+      [](std::tuple<std::string, Tealang_t, std::string> const &tuple) {
+        return std::get<0>(tuple);
+      });
   return names;
 }

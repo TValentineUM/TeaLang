@@ -27,17 +27,17 @@ int main(int argc, char *argv[]) {
 
   // cout << "Lexed Fine" << endl;
   parser::Parser test(infile);
-  XMLVisitor xml(outfile);
-  xml.visit(test.tree);
-  // // cout << test.lex << endl;
-  SemanticVisitor sem;
+  // XMLVisitor xml(outfile);
+  // xml.visit(test.tree);
+  // cout << test.lex << endl;
+  // SemanticVisitor sem;
 
-  sem.visit(test.tree);
-  // // cout << "Done from xml" << endl;
+  // sem.visit(test.tree);
+  // cout << "Done from xml" << endl;
 
-  // // cout << "Done from semantic" << endl;
+  // cout << "Done from semantic" << endl;
 
-  Interpreter please;
-  please.visit(test.tree);
+  // Interpreter please;
+  // please.visit(test.tree);
   return 0;
 }

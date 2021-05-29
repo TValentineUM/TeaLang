@@ -8,7 +8,7 @@ using namespace parser;
 void Parser::fail(std::string expected) {
 
   std::stringstream ss;
-  ss << "Unexpected token line: " << curr_tok.line_number << ". Found '"
+  ss << "Unexpected token line: " << ++curr_tok.line_number << ". Found '"
      << curr_tok.value << "' Expected '" << expected << "'";
   throw std::runtime_error(ss.str());
 }
@@ -23,7 +23,12 @@ ASTProgram *Parser::parse_program() {
       // std::cout << "ll1 has no value" << std::endl;
       curr_tok = lex.getNxtToken();
     }
-    node->statements.push_back(parse_statement());
+
+    if (curr_tok.type != lexer::tok_end) {
+      node->statements.push_back(parse_statement());
+    } else {
+      break;
+    }
   } while (curr_tok.type != lexer::tok_end);
   return node;
 }
@@ -33,11 +38,12 @@ ASTStatement *Parser::parse_statement() {
   switch (curr_tok.type) {
   case lexer::tok_let:
     // std::cout << "Parsing let" << std::endl;
-    return parse_var_decl();
+    // TODO: Need to determine between Array, Var and Struct
+    return parse_decl();
     break;
   case lexer::tok_end:
     // std::cout << "Reached End" << std::endl;
-    break;
+    return nullptr;
   case lexer::tok_print:
     // std::cout << "Parsing print" << std::endl;
     return parse_print();
@@ -59,13 +65,26 @@ ASTStatement *Parser::parse_statement() {
     return parse_while();
     break;
   case lexer::tok_iden: {
-    // std::cout << "Parsing Assignment" << std::endl;
-    auto x = parse_assignment();
+    // TODO: Need to determine the correct production rule using lookahead
+    ll1_tok = lex.getNxtToken();
+    switch ((*ll1_tok).type) {
+    case lexer::tok_assign: {
+      auto x = parse_assignment();
 
-    if (curr_tok.type != lexer::tok_semicolon) {
-      fail(";");
+      if (curr_tok.type != lexer::tok_semicolon) {
+        fail(";");
+      }
+      return x;
     }
-    return x;
+    case lexer::tok_iden: {
+      return parse_function_decl();
+    }
+    case lexer::tok_decimal: {
+      return parse_struct_assign();
+    }
+    case lexer::tok_square_left:
+      return parse_arr_assign();
+    }
     break;
   }
   case lexer::tok_type_int:
@@ -80,8 +99,11 @@ ASTStatement *Parser::parse_statement() {
     // std::cout << "Parsing Block" << std::endl;
     return parse_block();
     break;
+  case lexer::tok_struct:
+    return parse_struct_def();
+    break;
   default:
-    // std::cout << curr_tok << std::endl;
+    std::cout << curr_tok << std::endl;
     std::cout << "Not Implemented Yet" << std::endl;
   }
   return nullptr;
@@ -142,9 +164,84 @@ std::vector<ASTExpression *> Parser::parse_actual_params() {
   return x;
 }
 
-ASTExpression *Parser::parse_factor() {
+ASTUnary *Parser::parse_unary() {
+  ASTUnary *node = new ASTUnary();
+  node->op = tok_to_op[curr_tok.value];
+  node->expr = parse_expression();
+  return node;
+}
 
-  // std::cout << "identifier:  " << curr_tok.value << std::endl;
+ASTArrayLiteral *Parser::parse_array_literal() {
+  ASTArrayLiteral *node = new ASTArrayLiteral();
+  while (curr_tok.type != lexer::tok_curly_right) {
+    node->values.push_back(parse_expression());
+    if (curr_tok.type != lexer::tok_comma &&
+        curr_tok.type != lexer::tok_curly_right) {
+      fail("',' or '}'");
+    }
+  }
+  curr_tok = lex.getNxtToken();
+  return node;
+}
+
+ASTExpression *Parser::parse_sub_expression() {
+  ASTExpression *node = parse_expression();
+  if (curr_tok.type != lexer::tok_round_right) {
+    std::stringstream ss;
+    ss << "Subexpression not terminated on line: " << curr_tok.line_number
+       << " after assignment";
+    throw std::runtime_error(ss.str());
+  }
+  curr_tok = lex.getNxtToken();
+  return node;
+}
+
+ASTFunctionCall *Parser::parse_function_call() {
+  ASTFunctionCall *node = new ASTFunctionCall();
+  node->name = curr_tok.value;
+  node->args = parse_actual_params();
+  curr_tok = lex.getNxtToken();
+  ll1_tok.reset();
+  return node;
+}
+
+ASTArrayAccess *Parser::parse_array_access() {
+  ASTArrayAccess *node = new ASTArrayAccess();
+  node->name = curr_tok.value;
+  node->index = parse_expression();
+  curr_tok = lex.getNxtToken();
+  ll1_tok.reset();
+  return node;
+}
+
+ASTExpression *Parser::parse_struct_operator() {
+  std::string name = curr_tok.value;
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_iden) {
+    fail("Unkown struct access operator");
+  }
+  ll1_tok = lex.getNxtToken();
+  switch (ll1_tok->type) {
+  case lexer::tok_round_left: {
+    ASTStructFunc *node = new ASTStructFunc();
+    node->name = name;
+    node->element = curr_tok.value;
+    node->args = parse_actual_params();
+    curr_tok = lex.getNxtToken();
+    ll1_tok.reset();
+    return node;
+  }
+  default:
+    ASTStructAccess *node = new ASTStructAccess();
+    node->name = name;
+    node->element = curr_tok.value;
+    curr_tok = ll1_tok.value();
+    ll1_tok.reset();
+    return node;
+  }
+}
+
+ASTExpression *Parser::parse_factor() {
   curr_tok = lex.getNxtToken();
   switch (curr_tok.type) {
   case lexer::tok_lit_bool: {
@@ -152,33 +249,21 @@ ASTExpression *Parser::parse_factor() {
   case lexer::tok_lit_int:
   case lexer::tok_lit_string:
   case lexer::tok_lit_char:
-    ASTLiteral *node = new ASTLiteral(curr_tok);
     // std::cout << "matched literal" << std::endl;
+    ASTLiteral *node = new ASTLiteral(curr_tok);
     curr_tok = lex.getNxtToken();
     return node;
   }
-
   case lexer::tok_iden: {
-
     ll1_tok = lex.getNxtToken();
-    if (ll1_tok->type == lexer::tok_round_left) { /** Function Call */
-      // parse function call
-      // std::cout << "function call!" << std::endl;
-      ASTFunctionCall *node = new ASTFunctionCall();
-      node->name = curr_tok.value;
-      node->args = parse_actual_params();
-      curr_tok = lex.getNxtToken();
-      ll1_tok.reset();
-      return node;
-    } else if (ll1_tok->type ==
-               lexer::tok_square_left) { /**< Array Index Operation*/
-      ASTArrayAccess *node = new ASTArrayAccess();
-      node->name = curr_tok.value;
-      node->index = parse_expression();
-      curr_tok = lex.getNxtToken();
-      ll1_tok.reset();
-      return node;
-    } else {
+    switch (ll1_tok->type) {
+    case lexer::tok_round_left:
+      return parse_function_call();
+    case lexer::tok_square_left:
+      return parse_array_access();
+    case lexer::tok_decimal:
+      return parse_struct_operator();
+    default:
       ASTIdentifier *node = new ASTIdentifier(); /** Regular Index */
       node->name = curr_tok.value;
       curr_tok = ll1_tok.value();
@@ -187,39 +272,12 @@ ASTExpression *Parser::parse_factor() {
     }
     break;
   }
-  case lexer::tok_round_left: {
-    // std::cout << "matched subexpression" << std::endl;
-    ASTExpression *node = parse_expression();
-    if (curr_tok.type != lexer::tok_round_right) {
-      std::stringstream ss;
-      ss << "Subexpression not terminated on line: " << curr_tok.line_number
-         << " after assignment";
-      throw std::runtime_error(ss.str());
-    }
-    curr_tok = lex.getNxtToken();
-    return node;
-    break;
-  }
-  case lexer::tok_curly_left: {
-    ASTArrayLiteral *node = new ASTArrayLiteral();
-    while (curr_tok.type != lexer::tok_curly_right) {
-      node->values.push_back(parse_expression());
-      if (curr_tok.type != lexer::tok_comma &&
-          curr_tok.type != lexer::tok_curly_right) {
-        fail("',' or '}'");
-      }
-    }
-    curr_tok = lex.getNxtToken();
-    return node;
-  }
-  case lexer::tok_unary: {
-    // std::cout << "matched unary" << std::endl;
-    ASTUnary *node = new ASTUnary();
-    node->op = tok_to_op[curr_tok.value];
-    node->expr = parse_expression();
-    return node;
-    break;
-  }
+  case lexer::tok_round_left:
+    return parse_sub_expression();
+  case lexer::tok_curly_left:
+    return parse_array_literal();
+  case lexer::tok_unary:
+    return parse_unary();
   default:
     // std::cout << curr_tok << std::endl;
     std::stringstream ss;
@@ -230,11 +288,89 @@ ASTExpression *Parser::parse_factor() {
   return nullptr;
 }
 
-ASTVariableDecl *Parser::parse_var_decl() {
+ASTArrayDecl *Parser::parse_array_decl() {
 
+  ll1_tok.reset();
+  ASTArrayDecl *node = new ASTArrayDecl();
+  node->identifier = curr_tok.value;
+  node->size = parse_expression();
+
+  if (curr_tok.type != lexer::tok_square_right) {
+    fail("]");
+  }
+
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_colon) {
+    fail(":");
+  }
+
+  // let x :
+
+  curr_tok = lex.getNxtToken();
+  Tealang_t type;
+  switch (curr_tok.type) {
+  case lexer::tok_type_int:
+    type = tea_arr_int;
+    break;
+  case lexer::tok_type_string:
+    type = tea_arr_string;
+    break;
+  case lexer::tok_type_bool:
+    type = tea_arr_bool;
+    break;
+  case lexer::tok_type_float:
+    type = tea_arr_float;
+    break;
+  case lexer::tok_type_char:
+    type = tea_arr_char;
+    break;
+  case lexer::tok_type_auto:
+    type = tea_auto;
+    break;
+  default:
+    std::cout << curr_tok << std::endl;
+    fail("Type Decleration");
+  }
+
+  node->Type = type;
+
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_assign) {
+    fail("=");
+  }
+  // let x : int =
+
+  node->value = parse_expression();
+
+  // lex x: int = 5
+  if (curr_tok.type != lexer::tok_semicolon) {
+    fail(";");
+  }
+  return node;
+}
+
+ASTStructDecl *Parser::parse_struct_decl() {
+  ASTStructDecl *node = new ASTStructDecl();
+  node->identifier = curr_tok.value;
+  node->struct_name = ll1_tok->value;
+  ll1_tok = lex.getNxtToken();
+  if (ll1_tok->type == lexer::tok_assign) {
+    node->value = parse_expression();
+  } else {
+    curr_tok = ll1_tok.value();
+    ll1_tok.reset();
+  }
+  if (curr_tok.type != lexer::tok_semicolon) {
+    fail(";");
+  }
+  return node;
+}
+
+ASTStatement *Parser::parse_decl() {
   // let
 
   std::string identifier;
+
   curr_tok = lex.getNxtToken();
   if (curr_tok.type != lexer::tok_iden) {
     fail("Identifier");
@@ -244,121 +380,79 @@ ASTVariableDecl *Parser::parse_var_decl() {
 
   // let x
 
+  ll1_tok = lex.getNxtToken();
+  switch (ll1_tok->type) {
+  case lexer::tok_square_left:
+    return parse_array_decl();
+  case lexer::tok_colon:
+    ll1_tok = lex.getNxtToken();
+    switch (ll1_tok->type) {
+    case lexer::tok_iden:
+      return parse_struct_decl();
+    case lexer::tok_type_int: {
+    case lexer::tok_type_string:
+    case lexer::tok_type_bool:
+    case lexer::tok_type_float:
+    case lexer::tok_type_char:
+    case lexer::tok_type_auto:
+      return parse_var_decl();
+    }
+    }
+  default:
+    fail(": or [");
+    return nullptr;
+  }
+}
+
+ASTVariableDecl *Parser::parse_var_decl() {
+
   // let x : int
+  ASTVariableDecl *node = new ASTVariableDecl();
+  node->identifier = curr_tok.value;
+
+  // curr_tok = lex.getNxtToken();
+  Tealang_t type;
+  switch (ll1_tok->type) {
+  case lexer::tok_type_int:
+    type = tea_int;
+    break;
+  case lexer::tok_type_string:
+    type = tea_string;
+    break;
+  case lexer::tok_type_bool:
+    type = tea_bool;
+    break;
+  case lexer::tok_type_float:
+    type = tea_float;
+    break;
+  case lexer::tok_type_char:
+    type = tea_char;
+    break;
+  case lexer::tok_type_auto:
+    type = tea_auto;
+    break;
+  default:
+    std::cout << curr_tok << std::endl;
+    fail("Type Decleration");
+  }
+
+  ll1_tok.reset();
+  node->Type = type;
 
   curr_tok = lex.getNxtToken();
-  if (curr_tok.type == lexer::tok_square_left) {
-    // ArrayDecleration
-
-    ASTArrayDecl *node = new ASTArrayDecl();
-    node->identifier = identifier;
-    node->size = parse_expression();
-
-    if (curr_tok.type != lexer::tok_square_right) {
-      fail("]");
-    }
-
-    curr_tok = lex.getNxtToken();
-    if (curr_tok.type != lexer::tok_colon) {
-      fail(":");
-    }
-
-    // let x :
-
-    curr_tok = lex.getNxtToken();
-    Tealang_t type;
-    switch (curr_tok.type) {
-    case lexer::tok_type_int:
-      type = tea_arr_int;
-      break;
-    case lexer::tok_type_string:
-      type = tea_arr_string;
-      break;
-    case lexer::tok_type_bool:
-      type = tea_arr_bool;
-      break;
-    case lexer::tok_type_float:
-      type = tea_arr_float;
-      break;
-    case lexer::tok_type_char:
-      type = tea_arr_char;
-      break;
-    case lexer::tok_type_auto:
-      type = tea_auto;
-      break;
-    default:
-      std::cout << curr_tok << std::endl;
-      fail("Type Decleration");
-    }
-
-    node->Type = type;
-
-    curr_tok = lex.getNxtToken();
-    if (curr_tok.type != lexer::tok_assign) {
-      fail("=");
-    }
-    // let x : int =
-
-    node->value = parse_expression();
-
-    // lex x: int = 5
-    if (curr_tok.type != lexer::tok_semicolon) {
-      fail(";");
-    }
-    return node;
-  } else {
-
-    // curr_tok = lex.getNxtToken();
-    if (curr_tok.type != lexer::tok_colon) {
-      fail(":");
-    }
-
-    ASTVariableDecl *node = new ASTVariableDecl();
-    node->identifier = identifier;
-
-    curr_tok = lex.getNxtToken();
-    Tealang_t type;
-    switch (curr_tok.type) {
-    case lexer::tok_type_int:
-      type = tea_int;
-      break;
-    case lexer::tok_type_string:
-      type = tea_string;
-      break;
-    case lexer::tok_type_bool:
-      type = tea_bool;
-      break;
-    case lexer::tok_type_float:
-      type = tea_float;
-      break;
-    case lexer::tok_type_char:
-      type = tea_char;
-      break;
-    case lexer::tok_type_auto:
-      type = tea_auto;
-      break;
-    default:
-      std::cout << curr_tok << std::endl;
-      fail("Type Decleration");
-    }
-
-    node->Type = type;
-
-    curr_tok = lex.getNxtToken();
-    if (curr_tok.type != lexer::tok_assign) {
-      fail("=");
-    }
-
-    // let x : int =
-
-    node->value = parse_expression();
-
-    // lex x: int = 5
-    if (curr_tok.type != lexer::tok_semicolon) {
-      fail(";");
-    }
-    return node;
+  if (curr_tok.type != lexer::tok_assign) {
+    fail("=");
   }
+
+  // let x : int =
+
+  node->value = parse_expression();
+
+  // lex x: int = 5
+  if (curr_tok.type != lexer::tok_semicolon) {
+    fail(";");
+  }
+  return node;
 }
 
 ASTPrintStatement *Parser::parse_print() {
@@ -397,65 +491,64 @@ ASTReturn *Parser::parse_return() {
   return node;
 }
 
-ASTAssignment *Parser::parse_assignment() {
-  std::string identifier = curr_tok.value;
+ASTArrayAssignment *Parser::parse_arr_assign() {
+  ASTArrayAssignment *node = new ASTArrayAssignment;
+  node->identifier = curr_tok.value;
+  ll1_tok.reset();
+  node->index = parse_expression();
+
+  if (curr_tok.type != lexer::tok_square_right) {
+    fail("]");
+  }
+
   curr_tok = lex.getNxtToken();
 
-  if (curr_tok.type == lexer::tok_square_left) {
-
-    ASTArrayAssignment *node = new ASTArrayAssignment;
-    node->identifier = identifier;
-
-    node->index = parse_expression();
-
-    if (curr_tok.type != lexer::tok_square_right) {
-      fail("]");
-    }
-
-    curr_tok = lex.getNxtToken();
-
-    if (curr_tok.type != lexer::tok_assign) {
-      fail("=");
-    }
-
-    try {
-      node->value = parse_expression();
-    } catch (const std::runtime_error &e) {
-      std::stringstream ss;
-      ss << "Unable to parse expression after assignment on line: "
-         << curr_tok.line_number << std::endl;
-      ss << e.what();
-      throw std::runtime_error(ss.str());
-    } catch (...) {
-      throw std::runtime_error("Unknown Exception");
-    }
-
-    // std::cout << "Assignment Success" << std::endl;
-    return node;
-
-  } else {
-
-    ASTAssignment *node = new ASTAssignment;
-    node->identifier = identifier;
-    if (curr_tok.type != lexer::tok_assign) {
-      fail("=");
-    }
-
-    try {
-      node->value = parse_expression();
-    } catch (const std::runtime_error &e) {
-      std::stringstream ss;
-      ss << "Unable to parse expression after assignment on line: "
-         << curr_tok.line_number << std::endl;
-      ss << e.what();
-      throw std::runtime_error(ss.str());
-    } catch (...) {
-      throw std::runtime_error("Unknown Exception");
-    }
-
-    // std::cout << "Assignment Success" << std::endl;
-    return node;
+  if (curr_tok.type != lexer::tok_assign) {
+    fail("=");
   }
+
+  try {
+    node->value = parse_expression();
+  } catch (const std::runtime_error &e) {
+    std::stringstream ss;
+    ss << "Unable to parse expression after assignment on line: "
+       << curr_tok.line_number << std::endl;
+    ss << e.what();
+    throw std::runtime_error(ss.str());
+  } catch (...) {
+    throw std::runtime_error("Unknown Exception");
+  }
+
+  // std::cout << "Assignment Success" << std::endl;
+  return node;
+}
+
+ASTAssignment *Parser::parse_assignment() {
+
+  ASTAssignment *node = new ASTAssignment;
+  node->identifier = curr_tok.value;
+  if (!ll1_tok.has_value()) {
+    curr_tok = lex.getNxtToken();
+    if (curr_tok.type != lexer::tok_assign) {
+      fail("=");
+    }
+  } else {
+    ll1_tok.reset();
+  }
+
+  try {
+    node->value = parse_expression();
+  } catch (const std::runtime_error &e) {
+    std::stringstream ss;
+    ss << "Unable to parse expression after assignment on line: "
+       << curr_tok.line_number << std::endl;
+    ss << e.what();
+    throw std::runtime_error(ss.str());
+  } catch (...) {
+    throw std::runtime_error("Unknown Exception");
+  }
+  // std::cout << "Assignment Success" << std::endl;
+  return node;
 }
 
 ASTBlock *Parser::parse_block() {
@@ -483,8 +576,9 @@ ASTBlock *Parser::parse_block() {
 }
 
 // Needs to start with identifier
-std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
-  std::vector<std::tuple<std::string, Tealang_t>> args;
+std::vector<std::tuple<std::string, Tealang_t, std::string>>
+Parser::parse_formal_params() {
+  std::vector<std::tuple<std::string, Tealang_t, std::string>> args;
   do {
     curr_tok = lex.getNxtToken();
 
@@ -522,10 +616,14 @@ std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
       case lexer::tok_type_char:
         y = tea_arr_char;
         break;
+      case lexer::tok_iden:
+        throw std::invalid_argument(
+            "Tealang does not currently support struct arrays");
+        break;
       default:
         fail("Type Decleration");
       }
-      args.push_back({x, y});
+      args.push_back({x, y, curr_tok.value});
     } else {
       if (curr_tok.type != lexer::tok_colon) {
         fail(":");
@@ -551,10 +649,13 @@ std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
       case lexer::tok_type_auto:
         y = tea_auto;
         break;
+      case lexer::tok_iden:
+        y = tea_struct;
+        break;
       default:
         fail("Type Decleration");
       }
-      args.push_back({x, y});
+      args.push_back({x, y, curr_tok.value});
     }
 
     curr_tok = lex.getNxtToken();
@@ -567,31 +668,38 @@ ASTFunctionDecl *Parser::parse_function_decl() {
 
   ASTFunctionDecl *node = new ASTFunctionDecl();
 
-  switch (curr_tok.type) {
-  case lexer::tok_type_bool:
-    node->type = tea_bool;
-    break;
-  case lexer::tok_type_float:
-    node->type = tea_float;
-    break;
-  case lexer::tok_type_int:
-    node->type = tea_int;
-    break;
-  case lexer::tok_type_string:
-    node->type = tea_string;
-    break;
-  case lexer::tok_type_auto:
-    node->type = tea_auto;
-    break;
-  default:
-    fail("Type Decleration");
-  }
-  // int
+  if (ll1_tok.has_value()) {
 
-  curr_tok = lex.getNxtToken();
-  if (curr_tok.type != lexer::tok_iden) {
-    fail("Identifier");
+    node->type_name = curr_tok.value;
+    node->type = tea_struct;
+    node->identifier = ll1_tok->value;
   } else {
+
+    switch (curr_tok.type) {
+    case lexer::tok_type_bool:
+      node->type = tea_bool;
+      break;
+    case lexer::tok_type_float:
+      node->type = tea_float;
+      break;
+    case lexer::tok_type_int:
+      node->type = tea_int;
+      break;
+    case lexer::tok_type_string:
+      node->type = tea_string;
+      break;
+    case lexer::tok_type_auto:
+      node->type = tea_auto;
+      break;
+    default:
+      fail("Type Decleration");
+    }
+    // int
+
+    curr_tok = lex.getNxtToken();
+    if (curr_tok.type != lexer::tok_iden) {
+      fail("Identifier");
+    }
     node->identifier = curr_tok.value;
   }
 
@@ -663,7 +771,11 @@ ASTForStatement *Parser::parse_for() {
   curr_tok = lex.getNxtToken();
   if (curr_tok.type == lexer::tok_let) {
     try {
-      node->init = parse_var_decl();
+      node->init = dynamic_cast<ASTVariableDecl *>(parse_decl());
+      if (node->init == NULL) {
+        throw std::invalid_argument(
+            "Tealang only supports variable decl in loop");
+      }
     } catch (const std::runtime_error &e) {
       std::stringstream ss;
       ss << "Unable to parse variable decleration in for loop on line: "
@@ -755,5 +867,74 @@ ASTIfStatement *Parser::parse_if() {
     curr_tok = lex.getNxtToken();
     node->eval_false = parse_block();
   }
+  return node;
+}
+
+ASTStructDefn *Parser::parse_struct_def() {
+  ASTStructDefn *node = new ASTStructDefn();
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_iden) {
+    fail("Identifier");
+  }
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_curly_left) {
+    fail("{");
+  }
+  curr_tok = lex.getNxtToken();
+  while (curr_tok.type != lexer::tok_curly_right) {
+    switch (curr_tok.type) {
+    case lexer::tok_let: {
+      auto var = dynamic_cast<ASTVariableDecl *>(parse_decl());
+      if (var == NULL) {
+        throw std::invalid_argument(
+            "Tealang 2 currently only supports var decls in structs");
+      }
+      node->vars.push_back(var);
+      break;
+    }
+    case lexer::tok_type_int:
+    case lexer::tok_type_float:
+    case lexer::tok_type_bool:
+    case lexer::tok_type_string:
+    case lexer::tok_type_auto:
+    case lexer::tok_iden: {
+      node->funcs.push_back(parse_function_decl());
+      break;
+    }
+    default:
+      fail("Variable or Function Decleration");
+    }
+    curr_tok = lex.getNxtToken();
+  }
+  return node;
+}
+
+ASTStructAssign *Parser::parse_struct_assign() {
+  ASTStructAssign *node = new ASTStructAssign();
+  node->name = curr_tok.value;
+  ll1_tok.reset();
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_iden) {
+    fail("Identifier");
+  }
+  node->element = curr_tok.value;
+
+  curr_tok = lex.getNxtToken();
+  if (curr_tok.type != lexer::tok_assign) {
+    fail("=");
+  }
+
+  try {
+    node->value = parse_expression();
+  } catch (const std::runtime_error &e) {
+    std::stringstream ss;
+    ss << "Unable to parse expression after assignment on line: "
+       << curr_tok.line_number << std::endl;
+    ss << e.what();
+    throw std::runtime_error(ss.str());
+  } catch (...) {
+    throw std::runtime_error("Unknown Exception");
+  }
+
   return node;
 }

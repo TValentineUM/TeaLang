@@ -41,6 +41,8 @@ enum tl_token {
   tok_relational,
   tok_assign,
   tok_type_auto,
+  tok_struct,
+  tok_decimal,
   tok_end,
   tok_comment = -1,
 } typedef tl_token;
@@ -79,12 +81,15 @@ static std::map<tl_token, std::string> tok_word = {
     {tok_relational, "tok_relational"},
     {tok_assign, "tok_assign"},
     {tok_type_auto, "tok_type_auto"},
-    {tok_end, "EOF"}};
+    {tok_struct, "tok_struct"},
+    {tok_end, "EOF"},
+    {tok_decimal, "tok_decimal"}};
 
 class Token {
 
 private:
   void match_token(std::string value, int state);
+  void eval_escape_codes();
 
 public:
   Token() {}

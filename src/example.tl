@@ -1,3 +1,56 @@
+tlstruct Vector {
+    let x:float = 0.0;
+    let y:float = 0.0;
+    let z:float = 0.0;
+
+	int Scale(s:float){
+		x = x * s;
+		y = y * s;
+		z = z * s;
+		return 0;
+	}
+
+	int Translate(tx:float, ty:float, tz:float){
+		x = x + tx;
+		y = y + tz;
+		z = z + tz;
+		return 0;
+	}
+}
+
+Vector Add(v1:Vector, v2:Vector){
+	let v3:Vector;
+	v3.x = v1.x + v2.x;
+	v3.y = v1.y + v2.y;
+	v3.z = v1.z + v2.z;
+	return v3;
+}
+
+let v1:Vector;
+v1.x = 1.0;
+v1.y = 2.0;
+v1.z = 2.0;
+
+let v2:Vector;
+v2.x = 2.0;
+v2.y = 1.2;
+v2.z = 0.0;
+
+let v3:Vector = Add(v1,v2);
+
+print v3.x;
+print v3.y;
+print v3.z;
+
+let tempVar:int = v3.translate(1.0,1.0,1.0);
+
+let v4:Vector = Add(v1,v3);
+
+print v4.x;
+print v4.y;
+print v4.z;
+
+
 float Square(x:float){
       return x*x;
 }
@@ -36,18 +89,20 @@ auto fib(a: int){
 
 let x:float = 2.4;
 let y:float = Square(2.5);
+print x;                        //2.4
 print y;                        //6.25
 print XGreaterThanY(x,2.3);     //true
+print fib(10);
+
 print XGreaterThanYv2(Square(1.5),y); // false
 print AverageOfThree(x,y,1.2);        //3.28
 print AverageOfThree(4,8,12);        //8
 print JoinStr("Hello", " World");     //Hello World
 
-print fib(10);
 
 auto OverUnder50(age: int){
     if(age<50){
-        return "UnderFifty";
+        return "UnderFifty\"";
    }else{
         return "OverFifty";    }
 }

@@ -116,7 +116,7 @@ private:
   dfa_state transition_table[23][16] = {
       /*       Di   De   Id   <>   =    !    };   FS   PM   AS   BS   DQ   SQ
          \n   Pr  Ukn*/
-      /*S0 */ {S1, SE, S4, S7, S5, S6, S9, S14, S10, S10, SE, S11, S19, SE, SE,
+      /*S0 */ {S1, S9, S4, S7, S5, S6, S9, S14, S10, S10, SE, S11, S19, SE, SE,
                SE},
       /*S1 */ {S1, S2, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},
       /*S2 */ {S3, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE, SE},

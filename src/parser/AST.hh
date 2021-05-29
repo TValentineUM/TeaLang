@@ -45,7 +45,8 @@ enum Tealang_t {
   tea_arr_int,
   tea_arr_bool,
   tea_arr_string,
-  tea_arr_char
+  tea_arr_char,
+  tea_struct
 
 } typedef Tealang_t;
 
@@ -205,13 +206,55 @@ public:
 class ASTFunctionDecl : public ASTStatement {
 public:
   Tealang_t type;
+  std::string type_name;
   std::string identifier;
-  std::vector<std::tuple<std::string, Tealang_t>>
-      arguments; /**< {Identifier, Type, IsArray?}*/
+  std::vector<std::tuple<std::string, Tealang_t, std::string>>
+      arguments; /**< <Variable Name, Type, Typename (if Struct)>*/
 
   std::vector<Tealang_t> param_types();
   std::vector<std::string> param_names();
   ASTBlock *body;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+// Struct Stuff
+//
+
+class ASTStructAccess : public ASTExpression {
+public:
+  std::string name;
+  std::string element;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+class ASTStructFunc : public ASTExpression {
+public:
+  std::string name;
+  std::string element;
+  std::vector<ASTExpression *> args;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+class ASTStructDefn : public ASTStatement {
+public:
+  std::string name;
+  std::vector<ASTVariableDecl *> vars;
+  std::vector<ASTFunctionDecl *> funcs;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+class ASTStructAssign : public ASTStatement {
+public:
+  std::string name;
+  std::string element;
+  ASTExpression *value;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+
+class ASTStructDecl : public ASTVariableDecl {
+public:
+  ASTStructDecl() { Type = tea_struct; }
+  std::string struct_name;
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 

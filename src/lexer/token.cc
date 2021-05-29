@@ -1,7 +1,9 @@
 #include "token.hh"
 using namespace lexer;
 
+#include <algorithm>
 #include <map>
+#include <regex>
 #include <string>
 
 std::map<std::string, tl_token> identifiers = {{"float", tok_type_float},
@@ -21,7 +23,8 @@ std::map<std::string, tl_token> identifiers = {{"float", tok_type_float},
                                                {"or", tok_add_op},
                                                {"and", tok_multi_op},
                                                {"char", tok_type_char},
-                                               {"auto", tok_type_auto}};
+                                               {"auto", tok_type_auto},
+                                               {"tlstruct", tok_struct}};
 
 void Token::match_token(std::string value, int state) {
 
@@ -72,6 +75,8 @@ void Token::match_token(std::string value, int state) {
     case ']':
       type = tok_square_right;
       break;
+    case '.':
+      type = tok_decimal;
     }
     break;
   case 10:
@@ -89,6 +94,7 @@ void Token::match_token(std::string value, int state) {
     type = tok_lit_string;
     value.erase(value.begin());
     value.erase(value.end() - 1, value.end());
+    eval_escape_codes();
     break;
   case 14:
     type = tok_multi_op;
@@ -109,4 +115,8 @@ void Token::match_token(std::string value, int state) {
     // throw std::invalid_argument("Unkown Production");
   }
   this->value = value;
+}
+
+void Token::eval_escape_codes() {
+  value = std::regex_replace(value, std::regex("\\n"), "\n");
 }
