@@ -103,8 +103,9 @@ void SemanticVisitor::Scope::add_var(Variable var) {
     current_scope.insert({var.name, var});
     variable_scope.push_back(current_scope);
   } else {
-    throw std::invalid_argument("Cannot redeclare variable with name: " +
-                                var.name + " in the current scope");
+    throw std::invalid_argument(
+        "Cannot redeclare variable with name: " + var.name +
+        " in the current scope" + std::to_string(variable_scope.size()));
   }
 };
 
@@ -191,17 +192,17 @@ void SemanticVisitor::visit(parser::ASTReturn *x) {
         std::get<0>(*function_type) != parser::tea_auto) {
       throw std::invalid_argument(
           "Return type does not match function signature");
-    } else if (token_type == parser::tea_struct &&
-               std::get<1>(*function_type) != token_name) {
-
-      throw std::invalid_argument(
-          "Struct type returned does not match!\n Expected: \"" +
-          std::get<1>(*function_type) + "\", Found: \"" + token_name + "\"");
-
     } else {
+      if (std::get<0>(*function_type) == parser::tea_struct &&
+          std::get<1>(*function_type) != token_name) {
+        throw std::invalid_argument(
+            "Struct type returned does not match!\n Expected: \"" +
+            std::get<1>(*function_type) + "\", Found: \"" + token_name + "\"");
+      }
       if (std::get<0>(*function_type) == parser::tea_auto &&
           token_type != parser::tea_auto) {
         std::get<0>(*function_type) = token_type;
+        std::cout << "Set type to " << token_name << std::endl;
         std::get<1>(*function_type) = token_name;
       }
       std::get<2>(*function_type) = true;
@@ -404,11 +405,19 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
     var.type = param_types[i];
     new_scope.insert({var.name, var});
   }
+  std::cout << "1. Scope Size " << std::to_string(scope.variable_scope.size())
+            << std::endl;
   scope.variable_scope.push_back(new_scope);
+  std::cout << "2. Scope Size " << std::to_string(scope.variable_scope.size())
+            << std::endl;
 
   eval_function_body(x->body, func.get_code());
-  // x->body->accept(this);
+
   scope.variable_scope.pop_back();
+
+  std::cout << "3. Scope Size " << std::to_string(scope.variable_scope.size())
+            << std::endl;
+
   if (!std::get<2>(*function_type)) {
     throw std::invalid_argument("Function does not return");
   } else {
@@ -431,29 +440,35 @@ void SemanticVisitor::eval_function_body(parser::ASTBlock *x,
   if (!is_auto) {
     x->accept(this);
     return;
-  }
-  for (int i = 0; i != x->source.size(); i++) {
-    if (x->source[i] != nullptr) {
-      try {
-        x->source[i]->accept(this);
-      } catch (...) {
-      }
-      if (is_auto) {
-        if (std::get<0>(*function_type) != parser::tea_auto) {
-          Function func = scope.get_func(name);
-          func.return_type = std::get<0>(*function_type);
-          scope.edit_func(func);
-          is_auto = false;
+  } else {
+    auto init_scope = scope.variable_scope.back();
+    for (int i = 0; i != x->source.size(); i++) {
+      if (x->source[i] != nullptr) {
+        try {
+          x->source[i]->accept(this);
+        } catch (...) {
+        }
+        if (is_auto) {
+          if (std::get<0>(*function_type) != parser::tea_auto) {
+            Function func = scope.get_func(name);
+            func.return_type = std::get<0>(*function_type);
+            func.type_name = std::get<1>(*function_type);
+            scope.edit_func(func);
+            is_auto = false;
+          }
         }
       }
     }
-  }
-  if (is_auto) {
-    throw std::runtime_error(
-        "Unable to determine function return type on initial pass");
-  } else {
-    // Running again with inferred type
-    x->accept(this);
+    if (is_auto) {
+      throw std::runtime_error(
+          "Unable to determine function return type on initial pass");
+    } else {
+      scope.variable_scope.pop_back();
+      scope.variable_scope.push_back(
+          init_scope); // Reset scope to initial state
+      // Running again with inferred type
+      x->accept(this);
+    }
   }
 }
 
