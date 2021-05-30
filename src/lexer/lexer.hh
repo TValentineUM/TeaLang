@@ -138,8 +138,8 @@ private:
       /*S14*/
       {SE, SE, SE, SE, SE, SE, SE, S18, SE, S15, SE, SE, SE, SE, SE, SE},
       /*S15*/
-      {S15, S15, S15, S15, S15, S15, S15, S15, S15, S16, S15, S15, SE, S15, S15,
-       SE},
+      {S15, S15, S15, S15, S15, S15, S15, S15, S15, S16, S15, S15, S15, S15,
+       S15, SE},
       /*S16*/
       {S15, S15, S15, S15, S15, S15, S15, S17, S15, S15, S15, S15, S15, S15,
        S15, SE},

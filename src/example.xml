@@ -48,7 +48,7 @@
 					</Block>
 				</FuncDecl>
 				<FuncDecl>
-					<Var Type="1">Translate</Var>
+					<Var Type="1">translate</Var>
 					<Arg typename="float">tx</Arg>
 					<Arg typename="float">ty</Arg>
 					<Arg typename="float">tz</Arg>
@@ -476,7 +476,7 @@
 		</While>
 		<FuncDecl>
 			<Var Type="1">Sum</Var>
-			<Arg typename="int">toAverage</Arg>
+			<Arg typename="arr_int">toAverage</Arg>
 			<Arg typename="int">count</Arg>
 			<Block>
 				<Decl>

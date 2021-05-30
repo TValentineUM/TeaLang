@@ -25,15 +25,16 @@ int main(int argc, char *argv[]) {
   file.open(tokenfile);
   file << lex;
 
-  // cout << "Lexed Fine" << endl;
+  cout << "Lexed Fine" << endl;
+
   parser::Parser test(infile);
   XMLVisitor xml(outfile);
   xml.visit(test.tree);
   // cout << test.lex << endl;
-  // SemanticVisitor sem;
+  SemanticVisitor sem;
 
-  // sem.visit(test.tree);
-  // cout << "Done from xml" << endl;
+  sem.visit(test.tree);
+  cout << "Done from xml" << endl;
 
   // cout << "Done from semantic" << endl;
 

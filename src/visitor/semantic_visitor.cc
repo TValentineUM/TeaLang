@@ -1,18 +1,63 @@
 #include "semantic_visitor.hh"
 #include <algorithm>
 
+void SemanticVisitor::token_setter(parser::Tealang_t type) {
+  token_type = type;
+  switch (type) {
+  case parser::tea_bool:
+    token_name = "bool";
+    break;
+  case parser::tea_char:
+    token_name = "char";
+    break;
+  case parser::tea_float:
+    token_name = "float";
+    break;
+  case parser::tea_int:
+    token_name = "int";
+    break;
+  case parser::tea_string:
+    token_name = "string";
+    break;
+  case parser::tea_arr_bool:
+    token_name = "arr_bool";
+    break;
+  case parser::tea_arr_float:
+    token_name = "arr_float";
+    break;
+  case parser::tea_arr_int:
+    token_name = "arr_int";
+    break;
+  case parser::tea_arr_string:
+    token_name = "arr_string";
+    break;
+  case parser::tea_arr_char:
+    token_name = "arr_char";
+    break;
+  }
+}
+
+std::string SemanticVisitor::Scope::code_generator(
+    std::string name,
+    std::vector<std::tuple<parser::Tealang_t, std::string>> args) {
+  std::string code = name;
+  for (auto arg : args) {
+    code += "&" + std::get<1>(arg);
+  }
+  return code;
+}
+
 std::string SemanticVisitor::Function::get_code() {
   if (code == "") {
-    code = name + "$";
+    code = name;
     for (auto arg : arguments) {
-      code += std::to_string(std::get<1>(arg));
+      code += "&" + std::get<2>(arg);
     }
     return code;
   } else {
     return code;
   }
 }
-
 void SemanticVisitor::Scope::add_var(Variable var) {
   auto current_scope = variable_scope.back();
   variable_scope.pop_back();
@@ -26,21 +71,36 @@ void SemanticVisitor::Scope::add_var(Variable var) {
 };
 
 void SemanticVisitor::Scope::add_func(Function func) {
-  if (function_scope.find(func.get_code()) == function_scope.end()) {
+  auto current_scope = function_scope.back();
+  function_scope.pop_back();
+  if (current_scope.find(func.get_code()) == current_scope.end()) {
     // None there can just insert
     std::cout << "Adding func: " << func.get_code() << std::endl;
-    function_scope.insert({func.get_code(), func});
+    current_scope.insert({func.get_code(), func});
+    function_scope.push_back(current_scope);
   } else {
     throw std::invalid_argument(
         "Cannot redeclare function with the same name and parameters");
   }
 }
 
-void SemanticVisitor::Scope::edit_func(Function func) {
+void SemanticVisitor::Scope::add_struct(Struct temp) {
+  if (struct_scope.find(temp.name) == struct_scope.end()) {
+    // None there can just insert
+    std::cout << "Adding struct: " << temp.name << std::endl;
+    struct_scope.insert({temp.name, temp});
+  } else {
+    throw std::invalid_argument("Cannot redeclare struct with the same name");
+  }
+}
 
-  if (function_scope.find(func.get_code()) != function_scope.end()) {
-    function_scope.erase(func.get_code());
-    function_scope.insert({func.get_code(), func});
+void SemanticVisitor::Scope::edit_func(Function func) {
+  auto current_scope = function_scope.back();
+  function_scope.pop_back();
+  if (current_scope.find(func.get_code()) != current_scope.end()) {
+    current_scope.erase(func.get_code());
+    current_scope.insert({func.get_code(), func});
+    function_scope.push_back(current_scope);
   } else {
     throw std::runtime_error("Function not found");
   }
@@ -60,18 +120,28 @@ SemanticVisitor::Variable SemanticVisitor::Scope::get_var(std::string str) {
 }
 
 SemanticVisitor::Function SemanticVisitor::Scope::get_func(std::string str) {
+  for (int i = function_scope.size(); i > 0; i--) {
+    try {
+      return function_scope[i - 1].at(str);
+    } catch (...) {
+    }
+  }
+  std::cout << function_scope.size() << std::endl;
+  throw std::invalid_argument("Function " + str +
+                              " does not exist in any scope");
+};
+
+SemanticVisitor::Struct SemanticVisitor::Scope::get_struct(std::string str) {
   try {
-    return function_scope.at(str);
+    return struct_scope.at(str);
   } catch (...) {
-    throw std::invalid_argument("Function " + str +
-                                " does not exist in any scope");
+    throw std::invalid_argument("Struct " + str + " does not exist");
   }
 
   return {};
-};
+}
 
 void SemanticVisitor::visit(parser::ASTProgram *x) {
-
   for (int i = 0; i < x->statements.size(); i++) {
     if (x->statements[i] != nullptr) {
       x->statements[i]->accept(this);
@@ -81,7 +151,6 @@ void SemanticVisitor::visit(parser::ASTProgram *x) {
 }
 
 void SemanticVisitor::visit(parser::ASTBlock *x) {
-
   for (int i = 0; i != x->source.size(); i++) {
     if (x->source[i] != nullptr) {
       x->source[i]->accept(this);
@@ -89,21 +158,27 @@ void SemanticVisitor::visit(parser::ASTBlock *x) {
   }
 }
 
-void SemanticVisitor::visit(parser::ASTLiteral *x) { token_type = x->type; }
+void SemanticVisitor::visit(parser::ASTLiteral *x) { token_setter(x->type); }
 
 void SemanticVisitor::visit(parser::ASTIdentifier *x) {
-  Variable var = current_scope.get_var(x->name);
-  token_type = var.type;
+  Variable var = scope.get_var(x->name);
+  token_setter(var.type);
+  // std::cout << "Token Name: " << x->name
+  //           << ", Token Type: " << var.type_name.value() << std::endl;
+  if (var.type == parser::tea_struct) {
+    token_name = var.type_name.value();
+  }
 }
 
 void SemanticVisitor::visit(parser::ASTFunctionCall *x) {
-  std::string code = x->name;
-  code += "$";
+  std::vector<std::tuple<parser::Tealang_t, std::string>> args;
   for (int i = 0; i < x->args.size(); i++) {
     x->args[i]->accept(this);
-    code += std::to_string(token_type);
+    args.push_back({token_type, token_name});
   }
-  current_scope.get_func(code);
+  Function func = scope.get_func(scope.code_generator(x->name, args));
+  token_type = func.return_type;
+  token_name = func.type_name;
 }
 
 void SemanticVisitor::visit(parser::ASTReturn *x) {
@@ -113,12 +188,20 @@ void SemanticVisitor::visit(parser::ASTReturn *x) {
         std::get<0>(*function_type) != parser::tea_auto) {
       throw std::invalid_argument(
           "Return type does not match function signature");
+    } else if (token_type == parser::tea_struct &&
+               std::get<1>(*function_type) != token_name) {
+
+      throw std::invalid_argument(
+          "Struct type returned does not match!\n Expected: \"" +
+          std::get<1>(*function_type) + "\", Found: \"" + token_name + "\"");
+
     } else {
       if (std::get<0>(*function_type) == parser::tea_auto &&
           token_type != parser::tea_auto) {
         std::get<0>(*function_type) = token_type;
+        std::get<1>(*function_type) = token_name;
       }
-      std::get<1>(*function_type) = true;
+      std::get<2>(*function_type) = true;
     }
   } else {
     throw std::invalid_argument("Cannot Call Return Statement outside block");
@@ -204,7 +287,7 @@ void SemanticVisitor::visit(parser::ASTBinOp *x) {
     case parser::op_neql:
     case parser::op_le:
     case parser::op_ge:
-      token_type = parser::tea_bool;
+      token_setter(parser::tea_bool);
       break;
     default:
       break;
@@ -232,11 +315,12 @@ void SemanticVisitor::visit(parser::ASTUnary *x) {
     throw std::invalid_argument("Cannot use unary operators on strings");
   case parser::tea_char:
     throw std::invalid_argument("Cannot use unary operators on char");
+  default:
+    throw std::invalid_argument("Unsupported type for unary operator");
   }
 }
 
 void SemanticVisitor::visit(parser::ASTVariableDecl *x) {
-
   Variable var;
   var.name = x->identifier;
   x->value->accept(this);
@@ -249,12 +333,14 @@ void SemanticVisitor::visit(parser::ASTVariableDecl *x) {
     }
   }
   var.type = token_type;
-  current_scope.add_var(var);
+  var.type_name = token_name;
+  std::cout << "Variable :" << var.name << ", Type: " << var.type_name.value()
+            << std::endl;
+  scope.add_var(var);
 }
 
 void SemanticVisitor::visit(parser::ASTAssignment *x) {
-
-  auto var = current_scope.get_var(x->identifier);
+  auto var = scope.get_var(x->identifier);
   x->value->accept(this);
   if (var.type != token_type) {
     throw std::invalid_argument("Variable assignment types dont match");
@@ -300,9 +386,10 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
   Function func;
   func.name = x->identifier;
   func.return_type = x->type;
+  func.type_name = x->type_name;
   func.arguments = x->arguments;
-  current_scope.add_func(func);
-  function_type = {x->type, false};
+  scope.add_func(func);
+  function_type = {x->type, x->type_name, false};
   std::vector<parser::Tealang_t> y;
 
   std::map<std::string, Variable> new_scope;
@@ -314,12 +401,12 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
     var.type = param_types[i];
     new_scope.insert({var.name, var});
   }
-  current_scope.variable_scope.push_back(new_scope);
+  scope.variable_scope.push_back(new_scope);
 
   eval_function_body(x->body, func.get_code());
   // x->body->accept(this);
-  current_scope.variable_scope.pop_back();
-  if (!std::get<1>(*function_type)) {
+  scope.variable_scope.pop_back();
+  if (!std::get<2>(*function_type)) {
     throw std::invalid_argument("Function does not return");
   } else {
     if (func.return_type == parser::tea_auto) {
@@ -333,6 +420,7 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
   function_type.reset();
 }
 
+// Auto Determining the return type
 void SemanticVisitor::eval_function_body(parser::ASTBlock *x,
                                          std::string name) {
 
@@ -349,9 +437,9 @@ void SemanticVisitor::eval_function_body(parser::ASTBlock *x,
       }
       if (is_auto) {
         if (std::get<0>(*function_type) != parser::tea_auto) {
-          Function func = current_scope.get_func(name);
+          Function func = scope.get_func(name);
           func.return_type = std::get<0>(*function_type);
-          current_scope.edit_func(func);
+          scope.edit_func(func);
           is_auto = false;
         }
       }
@@ -367,7 +455,7 @@ void SemanticVisitor::eval_function_body(parser::ASTBlock *x,
 }
 
 void SemanticVisitor::visit(parser::ASTArrayAccess *x) {
-  Variable arr = current_scope.get_var(x->name);
+  Variable arr = scope.get_var(x->name);
   switch (arr.type) {
   case parser::tea_arr_bool:
   case parser::tea_arr_float:
@@ -383,22 +471,21 @@ void SemanticVisitor::visit(parser::ASTArrayAccess *x) {
   if (token_type != parser::tea_int) {
     throw std::invalid_argument("Cannot use a non integer index");
   }
-  token_type = arr.type;
   switch (arr.type) {
   case parser::tea_arr_bool:
-    token_type = parser::tea_bool;
+    token_setter(parser::tea_bool);
     break;
   case parser::tea_arr_float:
-    token_type = parser::tea_float;
+    token_setter(parser::tea_float);
     break;
   case parser::tea_arr_int:
-    token_type = parser::tea_int;
+    token_setter(parser::tea_int);
     break;
   case parser::tea_arr_string:
-    token_type = parser::tea_string;
+    token_setter(parser::tea_string);
     break;
   case parser::tea_arr_char:
-    token_type = parser::tea_char;
+    token_setter(parser::tea_char);
     break;
   }
 }
@@ -406,6 +493,11 @@ void SemanticVisitor::visit(parser::ASTArrayAccess *x) {
 void SemanticVisitor::visit(parser::ASTArrayDecl *x) {
   Variable arr;
   arr.name = x->identifier;
+  x->size->accept(this);
+  if (token_type != parser::tea_int) {
+    throw std::invalid_argument("Array must have an integer type");
+  }
+
   if (x->value) {
     x->value->accept(this);
     switch (token_type) {
@@ -428,11 +520,11 @@ void SemanticVisitor::visit(parser::ASTArrayDecl *x) {
       throw std::invalid_argument("Array type and Literal type do not match");
     }
   }
-  current_scope.add_var(arr);
+  scope.add_var(arr);
 }
 
 void SemanticVisitor::visit(parser::ASTArrayAssignment *x) {
-  Variable arr = current_scope.get_var(x->identifier);
+  Variable arr = scope.get_var(x->identifier);
   x->index->accept(this);
   switch (arr.type) {
   case parser::tea_arr_bool:
@@ -471,19 +563,103 @@ void SemanticVisitor::visit(parser::ASTArrayLiteral *x) {
   }
   switch (token_type) {
   case parser::tea_bool:
-    token_type = parser::tea_arr_bool;
+    token_setter(parser::tea_arr_bool);
+
     break;
   case parser::tea_char:
-    token_type = parser::tea_arr_char;
+
+    token_setter(parser::tea_arr_char);
     break;
   case parser::tea_float:
-    token_type = parser::tea_arr_float;
+
+    token_setter(parser::tea_arr_float);
     break;
   case parser::tea_int:
-    token_type = parser::tea_arr_int;
+
+    token_setter(parser::tea_arr_int);
     break;
   case parser::tea_string:
-    token_type = parser::tea_arr_string;
+
+    token_setter(parser::tea_arr_string);
     break;
   }
+}
+
+void SemanticVisitor::visit(parser::ASTStructAccess *x) {
+  Variable var = scope.get_var(x->name);
+  if (var.type != parser::tea_struct) {
+    throw std::invalid_argument(
+        "Invalid operator on variable, it is not a struct in this scope");
+  } else {
+    Variable temp = (*var.members).at(x->element);
+    token_setter(temp.type);
+  }
+}
+
+void SemanticVisitor::visit(parser::ASTStructFunc *x) {
+  Variable var = scope.get_var(x->name);
+  if (var.type != parser::tea_struct) {
+    throw std::invalid_argument(
+        "Invalid operator on variable, it is not a struct in this scope");
+  } else {
+    std::vector<std::tuple<parser::Tealang_t, std::string>> args;
+    for (int i = 0; i < x->args.size(); i++) {
+      x->args[i]->accept(this);
+      args.push_back({token_type, token_name});
+    }
+    Struct base_type = scope.get_struct(*var.type_name);
+    try {
+      Function func =
+          base_type.base_functions.at(scope.code_generator(x->element, args));
+      token_setter(func.return_type);
+    } catch (...) {
+      throw std::invalid_argument("Unknown function \"" + x->element +
+                                  "\" called for struct:\"" + x->name +
+                                  "\" of type \"" + *var.type_name + "\"");
+    }
+  }
+}
+
+void SemanticVisitor::visit(parser::ASTStructDefn *x) {
+  Struct new_struct;
+  new_struct.name = x->name;
+  scope.variable_scope.push_back(new_struct.base_variables);
+  scope.function_scope.push_back(new_struct.base_functions);
+  for (auto var : x->vars) {
+    var->accept(this);
+  }
+  for (auto func : x->funcs) {
+    func->accept(this);
+  }
+  new_struct.base_variables = scope.variable_scope.back();
+  new_struct.base_functions = scope.function_scope.back();
+  scope.variable_scope.pop_back();
+  scope.function_scope.pop_back();
+  scope.add_struct(new_struct);
+}
+
+void SemanticVisitor::visit(parser::ASTStructAssign *x) {
+  Variable var = scope.get_var(x->name);
+  if (var.type != parser::tea_struct) {
+    throw std::invalid_argument(
+        "Invalid operator on variable, it is not a struct in this scope");
+  } else {
+    try {
+      Variable temp = var.members->at(x->element);
+      token_type = temp.type;
+    } catch (...) {
+      throw std::invalid_argument("Unkown member call for struct: " +
+                                  x->element);
+    }
+  }
+}
+
+void SemanticVisitor::visit(parser::ASTStructDecl *x) {
+  Variable var;
+  var.name = x->identifier;
+  var.type_name = x->struct_name;
+  var.type = x->Type;
+  Struct temp = scope.get_struct(x->struct_name);
+  var.members = temp.base_variables;
+  scope.add_var(var);
 }

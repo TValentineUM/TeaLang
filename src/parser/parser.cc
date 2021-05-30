@@ -601,21 +601,27 @@ Parser::parse_formal_params() {
       }
       curr_tok = lex.getNxtToken();
       Tealang_t y;
+      std::string z;
       switch (curr_tok.type) {
       case lexer::tok_type_int:
         y = tea_arr_int;
+        z = "arr_int";
         break;
       case lexer::tok_type_string:
         y = tea_arr_string;
+        z = "arr_string";
         break;
       case lexer::tok_type_bool:
         y = tea_arr_bool;
+        z = "arr_bool";
         break;
       case lexer::tok_type_float:
         y = tea_arr_float;
+        z = "arr_float";
         break;
       case lexer::tok_type_char:
         y = tea_arr_char;
+        z = "arr_char";
         break;
       case lexer::tok_iden:
         throw std::invalid_argument(
@@ -624,7 +630,7 @@ Parser::parse_formal_params() {
       default:
         fail("Type Decleration");
       }
-      args.push_back({x, y, curr_tok.value});
+      args.push_back({x, y, z});
     } else {
       if (curr_tok.type != lexer::tok_colon) {
         fail(":");
@@ -679,15 +685,19 @@ ASTFunctionDecl *Parser::parse_function_decl() {
     switch (curr_tok.type) {
     case lexer::tok_type_bool:
       node->type = tea_bool;
+      node->type_name = "bool";
       break;
     case lexer::tok_type_float:
       node->type = tea_float;
+      node->type_name = "float";
       break;
     case lexer::tok_type_int:
       node->type = tea_int;
+      node->type_name = "int";
       break;
     case lexer::tok_type_string:
       node->type = tea_string;
+      node->type_name = "string";
       break;
     case lexer::tok_type_auto:
       node->type = tea_auto;
