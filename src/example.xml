@@ -18,9 +18,12 @@
 			</Variables>
 			<Functions>
 				<FuncDecl>
-					<Var Type="1">Scale</Var>
+					<Var Type="1">scale</Var>
 					<Arg typename="float">s</Arg>
 					<Block>
+						<Print>
+							<StringConst>in scale</StringConst>
+						</Print>
 						<Assign>
 							<Var>x</Var>
 							<BinExprNode Op="*">
@@ -175,6 +178,18 @@
 		</Print>
 		<Print>
 			<StructAccess name="v4" element="z"/>
+		</Print>
+		<Print>
+			<Identifier>v4</Identifier>
+		</Print>
+		<Assign>
+			<Var>tempVar</Var>
+			<StructFunc name="v1" element="scale">
+				<FloatConst>10.0</FloatConst>
+			</StructFunc>
+		</Assign>
+		<Print>
+			<Identifier>v1</Identifier>
 		</Print>
 		<FuncDecl>
 			<Var Type="0">Square</Var>

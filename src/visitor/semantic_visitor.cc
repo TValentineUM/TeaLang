@@ -58,6 +58,44 @@ std::string SemanticVisitor::Function::get_code() {
     return code;
   }
 }
+
+SemanticVisitor::Variable SemanticVisitor::Scope::get_var(std::string str) {
+
+  for (int i = variable_scope.size(); i > 0; i--) {
+    try {
+      return variable_scope[i - 1].at(str);
+    } catch (...) {
+    }
+  }
+  std::cout << variable_scope.size() << std::endl;
+  throw std::invalid_argument("Variable " + str +
+                              " does not exist in any scope");
+}
+
+SemanticVisitor::Function SemanticVisitor::Scope::get_func(std::string str) {
+  for (int i = function_scope.size(); i > 0; i--) {
+    try {
+      return function_scope[i - 1].at(str);
+    } catch (...) {
+    }
+  }
+  std::cout << " !!!! " << function_scope[0].size() << std::endl;
+  for (auto it = function_scope[0].cbegin(); it != function_scope[0].cend();
+       ++it) {
+    std::cout << "{" << (*it).first << "}\n";
+  }
+  throw std::invalid_argument("Function " + str +
+                              " does not exist in any scope");
+};
+
+SemanticVisitor::Struct SemanticVisitor::Scope::get_struct(std::string str) {
+  try {
+    return struct_scope.at(str);
+  } catch (...) {
+    throw std::invalid_argument("Struct " + str + " does not exist");
+  }
+}
+
 void SemanticVisitor::Scope::add_var(Variable var) {
   auto current_scope = variable_scope.back();
   variable_scope.pop_back();
@@ -104,41 +142,6 @@ void SemanticVisitor::Scope::edit_func(Function func) {
   } else {
     throw std::runtime_error("Function not found");
   }
-}
-
-SemanticVisitor::Variable SemanticVisitor::Scope::get_var(std::string str) {
-
-  for (int i = variable_scope.size(); i > 0; i--) {
-    try {
-      return variable_scope[i - 1].at(str);
-    } catch (...) {
-    }
-  }
-  std::cout << variable_scope.size() << std::endl;
-  throw std::invalid_argument("Variable " + str +
-                              " does not exist in any scope");
-}
-
-SemanticVisitor::Function SemanticVisitor::Scope::get_func(std::string str) {
-  for (int i = function_scope.size(); i > 0; i--) {
-    try {
-      return function_scope[i - 1].at(str);
-    } catch (...) {
-    }
-  }
-  std::cout << function_scope.size() << std::endl;
-  throw std::invalid_argument("Function " + str +
-                              " does not exist in any scope");
-};
-
-SemanticVisitor::Struct SemanticVisitor::Scope::get_struct(std::string str) {
-  try {
-    return struct_scope.at(str);
-  } catch (...) {
-    throw std::invalid_argument("Struct " + str + " does not exist");
-  }
-
-  return {};
 }
 
 void SemanticVisitor::visit(parser::ASTProgram *x) {
@@ -660,6 +663,12 @@ void SemanticVisitor::visit(parser::ASTStructDecl *x) {
   var.type_name = x->struct_name;
   var.type = x->Type;
   Struct temp = scope.get_struct(x->struct_name);
+  if (x->value) {
+    x->value->accept(this);
+    if (token_type != parser::tea_struct || token_name != x->struct_name) {
+      throw std::invalid_argument("Cannot convert to struct type");
+    }
+  }
   var.members = temp.base_variables;
   scope.add_var(var);
 }

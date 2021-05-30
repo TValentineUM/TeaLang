@@ -3,8 +3,7 @@ tlstruct Vector {
 	let y:float = 0.0;
 	let z:float = 0.0;
 
-
-	int Scale(s:float){
+	int scale(s:float){
 		x = x * s;
 		y = y * s;
 		z = z * s;
@@ -39,16 +38,23 @@ v2.y = 1.2;
 v2.z = 0.0;
 
 let v3:Vector = Add(v1,v2);
-print v3.x;
-print v3.y;
-print v3.z;
+print v3.x; // 3
+print v3.y; // 3.2
+print v3.z; // 2
 
 let tempVar:int = v3.translate(1.0,1.0,1.0);
 
 let v4:Vector = Add(v1,v3);
-print v4.x;
-print v4.y;
-print v4.z;
+print v4.x; // 3+1=     4
+print v4.y; // 3.2+2=   5.2
+print v4.z; // 2+2=     4
+
+print v4;
+
+tempVar = v1.scale(10.0);
+
+print v1;
+
 
 
 float Square(x:float){
