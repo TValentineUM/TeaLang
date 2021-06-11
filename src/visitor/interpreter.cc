@@ -16,6 +16,7 @@ Variable Scope::get_var(std::string str) {
     } catch (...) {
     }
   }
+  throw std::runtime_error("Was unable to resolve variable during exectution");
 }
 
 void Scope::update_var(std::string str, Variable var) {
@@ -32,6 +33,7 @@ void Scope::update_var(std::string str, Variable var) {
     } catch (...) {
     }
   }
+  throw std::runtime_error("Was unable to resolve variable during exectution");
 }
 
 void Scope::add_var(Variable var) {

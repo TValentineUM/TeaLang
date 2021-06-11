@@ -4,41 +4,81 @@
 #include "visitor/semantic_visitor.hh"
 #include "visitor/xmlvisitor.hh"
 #include <fstream>
+#include <getopt.h>
 #include <iostream>
 #include <string>
+#include <unistd.h>
 using namespace std;
 
+void display_help();
+
 int main(int argc, char *argv[]) {
-  string source = "example";
-  string infile = source + ".tl";
-  string outfile = source + ".xml";
-  string tokenfile = source + ".to";
 
-  // lexer::Lexer lexed(infile);
-  // ofstream file;
-  // file.open(outfile);
-  // file << lexed;
-  // file.close();
-  lexer::Lexer lex(infile);
+  map<char, string> args; // Map of Arguments
+  char c;
 
-  std::fstream file;
-  file.open(tokenfile);
-  file << lex;
+  static struct option long_options[] = {
+      {"xml", required_argument, NULL, 'x'},
+      {"lexer", required_argument, NULL, 'l'},
+      {"output", required_argument, NULL, 'o'},
+      {"help", no_argument, NULL, 'h'},
+      {NULL, 0, NULL, 0}};
 
-  // cout << "Lexed Fine" << endl;
-  XMLVisitor xml(outfile);
-  parser::Parser test(infile);
+  int option_index = 0;
+  while ((c = getopt_long(argc, argv, "l:x:o:h", long_options,
+                          &option_index)) != -1) {
+    switch (c) {
+    case 'l':
+    case 'x':
+    case 'o':
+      args.insert({c, optarg});
+      break;
+    case 'h':
+      display_help();
+      return 0;
+    default:
+      cerr << "Unknown flag provided, for more information run " << argv[0]
+           << " again with '--help'" << endl;
+      return 0;
+    }
+  }
 
-  // cout << test.lex << endl;
-  SemanticVisitor sem;
-  xml.visit(test.tree);
+  vector<string> extra_args;
+  for (; optind < argc; optind++) {
+    extra_args.push_back(argv[optind]);
+  }
+  if (extra_args.size() == 0) {
+    cerr << "Missing input file, for more information run " << argv[0]
+         << "again with '--help'" << endl;
+  }
 
-  // cout << "Done from xml" << endl;
+  lexer::Lexer l(extra_args[0]);
+  if (args.find('l') != args.end()) {
+    ofstream file;
+    file.open(args.at('l'));
+    file << l;
+    file.close();
+  }
 
-  sem.visit(test.tree);
-  // cout << "Done from semantic" << endl;
+  parser::Parser p(extra_args[0]);
+  if (args.find('x') != args.end()) {
+    XMLVisitor xml(args.at('x'), p.tree);
+  }
 
-  Interpreter please;
-  please.visit(test.tree);
+  SemanticVisitor semantic_visitor;
+  semantic_visitor.visit(p.tree);
+  Interpreter interpreter;
+  interpreter.visit(p.tree);
   return 0;
+}
+
+void display_help() {
+  cout << "Welcome to the Tealang interpreter" << endl;
+  cout << "Usage: tealang [options] file" << endl;
+  cout << "Options:" << endl;
+  cout << " -l <file> \t Places the lexed input into <file>" << endl;
+  cout << " -x <file> \t Places the parsed input in xml form into <file>"
+       << endl;
+  cout << " -o <file> \t Redirects the output of the interpreter into <file>"
+       << endl;
 }
