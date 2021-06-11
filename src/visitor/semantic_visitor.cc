@@ -114,7 +114,6 @@ void SemanticVisitor::Scope::add_func(Function func) {
   function_scope.pop_back();
   if (current_scope.find(func.get_code()) == current_scope.end()) {
     // None there can just insert
-    std::cout << "Adding func: " << func.get_code() << std::endl;
     current_scope.insert({func.get_code(), func});
     function_scope.push_back(current_scope);
   } else {
@@ -126,7 +125,6 @@ void SemanticVisitor::Scope::add_func(Function func) {
 void SemanticVisitor::Scope::add_struct(Struct temp) {
   if (struct_scope.find(temp.name) == struct_scope.end()) {
     // None there can just insert
-    std::cout << "Adding struct: " << temp.name << std::endl;
     struct_scope.insert({temp.name, temp});
   } else {
     throw std::invalid_argument("Cannot redeclare struct with the same name");
@@ -202,7 +200,6 @@ void SemanticVisitor::visit(parser::ASTReturn *x) {
       if (std::get<0>(*function_type) == parser::tea_auto &&
           token_type != parser::tea_auto) {
         std::get<0>(*function_type) = token_type;
-        std::cout << "Set type to " << token_name << std::endl;
         std::get<1>(*function_type) = token_name;
       }
       std::get<2>(*function_type) = true;
@@ -338,8 +335,6 @@ void SemanticVisitor::visit(parser::ASTVariableDecl *x) {
   }
   var.type = token_type;
   var.type_name = token_name;
-  std::cout << "Variable :" << var.name << ", Type: " << var.type_name.value()
-            << std::endl;
   scope.add_var(var);
 }
 
@@ -405,19 +400,10 @@ void SemanticVisitor::visit(parser::ASTFunctionDecl *x) {
     var.type = param_types[i];
     new_scope.insert({var.name, var});
   }
-  std::cout << "1. Scope Size " << std::to_string(scope.variable_scope.size())
-            << std::endl;
   scope.variable_scope.push_back(new_scope);
-  std::cout << "2. Scope Size " << std::to_string(scope.variable_scope.size())
-            << std::endl;
-
   eval_function_body(x->body, func.get_code());
 
   scope.variable_scope.pop_back();
-
-  std::cout << "3. Scope Size " << std::to_string(scope.variable_scope.size())
-            << std::endl;
-
   if (!std::get<2>(*function_type)) {
     throw std::invalid_argument("Function does not return");
   } else {

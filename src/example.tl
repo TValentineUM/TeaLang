@@ -19,7 +19,7 @@ tlstruct Vector {
 
 }
 
-Vector Add(v1:Vector, v2:Vector){
+auto Add(v1:Vector, v2:Vector){
 	let v3:Vector;
 	v3.x = v1.x + v2.x;
 	v3.y = v1.y + v2.y;
@@ -54,8 +54,6 @@ print v4;
 tempVar = v1.scale(10.0);
 
 print v1;
-
-
 
 float Square(x:float){
       return x*x;

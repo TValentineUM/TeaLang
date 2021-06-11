@@ -17,7 +17,7 @@ MKDIR_P = mkdir -p
 		$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 main: $(MAINOBJ)
-		$(CXX) -o $@ $^ $(CXXFLAGS)
+		$(CXX) -o tealang $^ $(CXXFLAGS)
 
 clean:
 	rm -rf **/*.o
