@@ -1,0 +1,21 @@
+digraph finite_state_machine {
+rankdir=LR;
+
+node [margin=2 fontsize=32 width=1.3 shape=circle]
+node [shape = circle, label="S0", fontsize=14, fixedsize=true] S0;
+node [shape = circle, label="S11", fontsize=14] S11;
+node [shape = circle, label="S12", fontsize=14] S12;
+node [shape = doublecircle, label="S13", fontsize=14] S13;
+
+
+node [shape = point width=0.25 style=invis ] qi;
+qi -> S0;
+
+
+// String Literal
+S0 -> S11   [ label = "\""];
+S11 -> S12  [ label = "\\"];
+S12 -> S11  [ label = "[0x20-0x7E]"];
+S11 -> S13  [ label = "\""];
+
+}
