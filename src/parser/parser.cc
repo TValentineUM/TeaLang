@@ -117,6 +117,7 @@ ASTExpression *Parser::parse_term() {
 
 std::vector<ASTExpression *> Parser::parse_actual_params() {
   std::vector<ASTExpression *> x;
+
   do {
     x.push_back(parse_expression());
   } while (curr_tok.type == lexer::tok_comma);
