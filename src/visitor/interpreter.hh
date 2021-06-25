@@ -28,11 +28,6 @@ public:
   std::any value; /**< Using the enum for the get*/
 };
 
-// Scope is gonna be more of a problem now since we have stack frames with
-// recursive calls
-//
-//
-
 class Scope {
 public:
   Scope() : function_call{false} {
@@ -87,7 +82,6 @@ public:
   void visit(parser::ASTWhileStatement *) override;
   void visit(parser::ASTReturn *) override;
   void visit(parser::ASTFunctionDecl *) override;
-  Variable eval_function(parser::ASTFunctionCall *);
 };
 
 } // namespace visitor

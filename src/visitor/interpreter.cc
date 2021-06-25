@@ -60,7 +60,7 @@ void Interpreter::visit(parser::ASTBlock *x) {
   for (int i = 0; i != x->source.size(); i++) {
     if (x->source[i] != nullptr) {
       x->source[i]->accept(this);
-      if (return_value.has_value()) {
+      if (return_value.has_value()) { // Used for Function Body
         token_type = *return_type;
         token_value = *return_value;
         break;
@@ -69,7 +69,6 @@ void Interpreter::visit(parser::ASTBlock *x) {
   }
 }
 
-// DONE
 void Interpreter::visit(parser::ASTLiteral *x) {
   token_type = x->type;
   switch (token_type) {
@@ -90,55 +89,49 @@ void Interpreter::visit(parser::ASTLiteral *x) {
   }
 }
 
-// DONE
 void Interpreter::visit(parser::ASTIdentifier *x) {
   auto var = scope.get_var(x->name);
   token_type = var.var_type;
-  // std::cout << "before val" << std::endl;
   token_value = var.value;
-  //  std::cout << "after val" << std::endl;
 }
 
 void Interpreter::visit(parser::ASTFunctionCall *x) {
   auto func = scope.get_func(x->name);
-  if (scope.function_call) {
-    //  std::cout << "Recursive Statment" << std::endl;
 
-    //  std::cout << "1" << std::endl;
-    std::map<std::string, Variable> func_scope;
+  // Recursive Call
+  if (scope.function_call) {
+
+    std::map<std::string, Variable> func_scope; // Variable Scope for Function
     auto func_args = func.arguments;
 
-    //  std::cout << "2 Re" << std::endl;
-    // create scope
     for (int i = 0; i < x->args.size(); i++) {
 
       x->args[i]->accept(this);
       Variable temp;
-
-      //     std::cout << "2.5 Re" << std::endl;
       temp.name = std::get<0>(func_args[i]);
-
-      //  std::cout << temp.name << std::endl;
       temp.var_type = std::get<1>(func_args[i]);
-
       temp.value = token_value;
-
       func_scope.insert({temp.name, temp});
     }
+
+    // Removing Parent Scope
     auto current_scope = scope.variable_scope.back();
     scope.variable_scope.pop_back();
-    // Creating New Scope
+
+    // New Scope For Execution
     scope.variable_scope.push_back(func_scope);
-    // std::cout << "3" << std::endl;
     func.function_body->accept(this);
-    // Removing new scope
     scope.variable_scope.pop_back();
+
+    // Removing new scope and adding parent scope back
     token_type = return_type.value();
     token_value = return_value.value();
     scope.variable_scope.push_back(current_scope);
-    //  std::cout << "end Recursive Statment" << std::endl;
+
   } else {
-    //  std::cout << "Else Statment" << std::endl;
+
+    // Initial Function Call
+    //
     scope.function_call = true;
     std::map<std::string, Variable> func_scope;
     auto func_args = func.arguments;
@@ -151,15 +144,16 @@ void Interpreter::visit(parser::ASTFunctionCall *x) {
       temp.value = token_value;
       func_scope.insert({temp.name, temp});
     }
+
     // Creating New Scope
     scope.variable_scope.push_back(func_scope);
-
     func.function_body->accept(this);
-    // Removing new scope
     scope.variable_scope.pop_back();
+
     token_type = *return_type;
     token_value = *return_value;
     scope.function_call = false;
+    // Initial Call end
   }
   return_type.reset();
   return_value.reset();
@@ -192,10 +186,8 @@ void Interpreter::visit(parser::ASTPrintStatement *x) {
   }
 }
 
-// DONE
 void Interpreter::visit(parser::ASTSubExpression *x) { x->expr->accept(this); }
 
-// DONE
 void Interpreter::visit(parser::ASTBinOp *x) {
 
   x->left->accept(this);

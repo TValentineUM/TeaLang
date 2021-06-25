@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="0">Square</Var>
+			<Arg Type="0">x</Arg>
+			<Block>
+				<Return>
+					<BinExprNode Op="*">
+						<Identifier>x</Identifier>
+						<Identifier>x</Identifier>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="0">y</Var>
+				<FuncCall Id="Square">
+					<FloatConst>2.5</FloatConst>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<Identifier>y</Identifier>
+		</Print>
+	</Prog>
+</root>

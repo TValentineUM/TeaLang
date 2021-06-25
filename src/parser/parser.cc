@@ -29,39 +29,29 @@ ASTProgram *Parser::parse_program() {
 }
 
 ASTStatement *Parser::parse_statement() {
-  // std::cout << curr_tok << std::endl;
   switch (curr_tok.type) {
   case lexer::tok_let:
-    // std::cout << "Parsing let" << std::endl;
     return parse_var_decl();
     break;
   case lexer::tok_end:
-    // std::cout << "Reached End" << std::endl;
     break;
   case lexer::tok_print:
-    // std::cout << "Parsing print" << std::endl;
     return parse_print();
     break;
   case lexer::tok_return:
-    // std::cout << "Parsing Return" << std::endl;
     return parse_return();
     break;
   case lexer::tok_if:
-    // std::cout << "Parsing If" << std::endl;
     return parse_if();
     break;
   case lexer::tok_for:
-    // std::cout << "Parsing For" << std::endl;
     return parse_for();
     break;
   case lexer::tok_while:
-    // std::cout << "Parsing While" << std::endl;
     return parse_while();
     break;
   case lexer::tok_iden: {
-    // std::cout << "Parsing Assignment" << std::endl;
     auto x = parse_assignment();
-
     if (curr_tok.type != lexer::tok_semicolon) {
       fail(";");
     }
@@ -72,15 +62,12 @@ ASTStatement *Parser::parse_statement() {
   case lexer::tok_type_float:
   case lexer::tok_type_bool:
   case lexer::tok_type_string:
-    // std::cout << "Parsing Function Decleration" << std::endl;
     return parse_function_decl();
     break;
   case lexer::tok_curly_left:
-    // std::cout << "Parsing Block" << std::endl;
     return parse_block();
     break;
   default:
-    // std::cout << curr_tok << std::endl;
     std::cout << "Not Implemented Yet" << std::endl;
   }
   return nullptr;
@@ -157,11 +144,8 @@ ASTExpression *Parser::parse_factor() {
   }
 
   case lexer::tok_iden: {
-
     ll1_tok = lex.getNxtToken();
     if (ll1_tok->type == lexer::tok_round_left) {
-      // parse function call
-      // std::cout << "function call!" << std::endl;
       ASTFunctionCall *node = new ASTFunctionCall();
       node->name = curr_tok.value;
       node->args = parse_actual_params();
@@ -353,8 +337,18 @@ ASTBlock *Parser::parse_block() {
 // Needs to start with identifier
 std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
   std::vector<std::tuple<std::string, Tealang_t>> args;
+
+  bool initial = true;
   do {
     curr_tok = lex.getNxtToken();
+
+    if (initial) {
+      if (curr_tok.type == lexer::tok_round_right) {
+        break;
+      } else {
+        initial = false;
+      }
+    }
 
     auto x = curr_tok.value;
     if (curr_tok.type != lexer::tok_iden) {
@@ -387,6 +381,7 @@ std::vector<std::tuple<std::string, Tealang_t>> Parser::parse_formal_params() {
     args.push_back({x, y});
     curr_tok = lex.getNxtToken();
   } while (curr_tok.type == lexer::tok_comma);
+
   return args;
 }
 

@@ -24,11 +24,14 @@ private:
   } /**< Decreases the current amount of indentation */
 
 public:
-  XMLVisitor(std::string filename) : file{filename, std::ofstream::out} {}
-  XMLVisitor(std::string filename, parser::ASTProgram *p)
+  explicit XMLVisitor(std::string &filename)
+      : file{filename, std::ofstream::out} {}
+
+  XMLVisitor(std::string &filename, parser::ASTProgram *p)
       : file{filename, std::ofstream::out} {
     visit(p);
   }
+
   ~XMLVisitor() {}
   void visit(parser::ASTLiteral *) override;
   void visit(parser::ASTIdentifier *) override;

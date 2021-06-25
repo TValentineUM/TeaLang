@@ -3,11 +3,14 @@
 #include "visitor/interpreter.hh"
 #include "visitor/semantic_visitor.hh"
 #include "visitor/xmlvisitor.hh"
+#include <cstdio>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
+#include <stdio.h>
 #include <string>
 #include <unistd.h>
+
 using namespace std;
 
 void display_help();
@@ -67,8 +70,16 @@ int main(int argc, char *argv[]) {
 
   SemanticVisitor semantic_visitor;
   semantic_visitor.visit(p.tree);
+
   Interpreter interpreter;
-  interpreter.visit(p.tree);
+  if (args.find('o') != args.end()) {
+    auto fp = freopen(args.at('o').c_str(), "w", stdout);
+    interpreter.visit(p.tree);
+    fclose(fp);
+  } else {
+    interpreter.visit(p.tree);
+  }
+
   return 0;
 }
 

@@ -14,6 +14,10 @@ header-includes:
  - \usepackage{url}
  - \usepackage{xcolor}
  - \usepackage{hhline}
+ - \usepackage{fvextra}
+ - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+ - \pagenumbering{gobble}
+ - \usepackage{listings}
 bibliography: refs.bib
 csl: ieee.csl
 ---
@@ -22,113 +26,13 @@ csl: ieee.csl
 \tableofcontents
 \newpage
 
-
-# Language Definition
-
-Below is a copy of the Tealang EBNF with changes from TealangV1 and TealangV2 highlighted in blue.
-
-\begin{grammar}
-
-<Letter> ::= [A-Za-z]
-
-<Digit> ::= [0-9]
-
-<Printable> ::= [\textbackslash x20-\textbackslash x7E]
-
-<Type> ::= `float' | `int' | `bool' | `string'
-
-<BooleanLiteral> ::= `true' | `false'
-
-<IntegerLiteral> ::= <Digit> \{ <Digit> \}
-
-<FloatLiteral> ::= <Digit> \{ <Digit> \} `.' <Digit> \{ <Digit> \}
-
-<StringLiteral> ::= `"' \{ <Printable> \} `"'
-
-<Literal> ::= <BooleanLiteral>
-\alt <IntegerLiteral>
-\alt <FloatLiteral>
-\alt <StringLiteral>
-
-<Identifier> ::= ( `\_' | <Letter> )  \{ `\_' | <Letter> | <Digit> \}
-
-<MultiplicativeOp> ::= `*' | `/' | `and' 
-
-<AdditiveOp> ::= `+' | `-' | `or' 
-
-<RelationalOp> ::= `<' | `>' | `==' | `!=' | `<=' | `>=' 
-
-<ActualParams> ::= <Expression> \{ `,' <Expression> \}
-
-<FunctionCall> ::= <Identifier> `(' [ <ActualParams> ] `)' 
-
-<SubExpression> ::= `(' <Expression> `)' 
-
-<Unary> ::= ( `-' | `not' ) <Expression>
-
-<Factor> ::=  <Literal>
-\alt <Identifier>
-\alt <FunctionCall>
-\alt <SubExpression>
-\alt <Unary>
-
-<Term> ::= <Factor> \{ <MultiplicativeOp> <Factor> \}
-
-<SimpleExpression> ::= <Term> \{ <AdditiveOp> <Term> \}
-
-<Expression> ::= <SimpleExpression> \{ <RelationalOp> <SimpleExpression> \}
-
-<Assignment> ::= <Identifier> `=' <Expression>
-
-<VariableDecl> ::= `let' <Identifier> `:' <Type> `=' <Expression>
-
-<PrintStatement> ::= `print' <Expression>
-
-<RtrnStatement> ::= `return' <Expression>
-
-<IfStatement> ::= `if' `(' <Expression> `)' <Block> [ `else' <Block> ]
-
-<ForStatement> ::= `for' `(' [ <VariableDecl> ] ';' <Expression> ';' [ <Assignment> ] `)' <Block>
-
-<WhileStatement> ::= `while' `(' <Expression> `)' <Block> 
-
-<FormalParam> ::= <Identifier> `:' <Type>
-
-<FormalParams> ::= <FormalParam> \{ `,' <FormalParam> \}
-
-<FunctionDecl> ::= <type> <Identifier> `(' [ <FormalParams> ] `)' <Block>
-
-<Statement> ::=	<VariableDecl> `;'
-\alt <Assignment> `;'
-\alt <PrintStatement> `;'
-\alt <IfStatement>
-\alt <ForStatement>
-\alt <WhileStatement>
-\alt <RtrnStatement> `;'
-\alt <FunctionDecl>
-\alt <Block>
-
-<Block> ::= `{' \{ <Statement> \} `}' 
-
-<Program> ::= \{ <Statement> \}
-
-\end{grammar}
+\pagenumbering{arabic}
 
 \newpage
 
 # Lexer
 
-The lexer for Tealang is implemented using a table driver scanner [@eac-scanner]. A table driven scanner is an implementation of a backtracking finite state automaton, meaning that the lexer will attempt to recover to the last valid acceptance state if the error state is entered.
-
-\[
-  \begin{array}{ r || c | c }
-    & 0 & 1 \\
-    \hhline{===}
-    \rightarrow q_0 & q_2 & q_0 \\
-    \relax    * q_1 & q_1 & q_1 \\
-                q_2 & q_2 & q_1
-  \end{array}
-\]
+The lexer for Tealang is implemented using a table driver scanner [@eac-scanner]. A table driven scanner is an implementation of a backtracking finite state automaton, this means the lexer will attempt to recover to the last valid acceptance state if the error state is entered.
 
 
 ## Character Classes
@@ -155,6 +59,10 @@ Finite Automata transitions are triggered by reading characters and then using a
 | Printable   | All printable ascii symbols 32-126             |
 
 The character classes are implemented such that there is no overlap between any two classes except for the printable classification. The implementation of the character classifier is such that the *printable* class can assigned if the tests for other classes failed.
+
+This approach does cause a degradation in performance as compared with implementing a transition for each ascii character, as an extra function call and a switch statement is required to deduce the character class. 
+
+
 
 \newpage 
 ## Automaton components
@@ -189,7 +97,7 @@ Escaped sequences are evaluated after the entire string has been accepted by the
 
 ### Language Punctuation
 
-Tealang makes use of a C-style syntax and as such required multiple single character tokens. The single characters required are defined by the *puncutation* character class. Since the DFA accepts multiple characters in the same state the accepted string is cast to a `char` to allow resolution using a `switch` to increase performance. 
+Tealang makes use of a C-style syntax and as such required multiple single character tokens. The single characters required are defined by the *punctuation* character class. Since the DFA accepts multiple characters in the same state the accepted string is cast to a `char` to allow resolution using a `switch` to increase performance. 
 
 
 ![Punctuation Automaton](automaton/punctuation.png){.class width=40%}
@@ -198,7 +106,7 @@ Tealang makes use of a C-style syntax and as such required multiple single chara
 ### Binary Operators
 
 
-Tealang implements 4 base binary arithmetic operators [`+`, `-`, `*`, `/`]. The binary operators were implemented separately to the Punctuation recognition character class to allow for more flexibility to implement features such as increment (`++`), decrement (`--`) and exponentiation (`**`) in Tealang 2, however the features did not make it into the language specification. 
+Tealang implements 4 base binary arithmetic operators [`+`, `-`, `*`, `/`]. The binary operators were implemented separately to the Punctuation recognition character class to allow for more flexibility to implement features such as increment (`++`), decrement (`--`) and exponentiation (`**`) in future versions of the language.
 
 Since the character used for division is also used in the comment syntax the recognition of the token is implemented in the comment section of the DFA.
 
@@ -218,42 +126,45 @@ As previously mentioned Tealang has a C-style syntax and as such has C-style sin
 
 \clearpage
 
+\begin{figure}
+\[
+  \begin{array}{ r || c | c | c | c | c | c | c | c | c | c | c | c | c | c | c }
+     & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\
+    \hhline{================}
+      S0 & S1 &  SE &  S4 &  S7 &  S5 &  S6 &  S9 &  S14 &  S10 &  S10 &  SE &  S11 &  SE &  SE &  SE \\
+      S1  &  S1 &  S2 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S2  &  S3 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S3  &  S3 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S4  &  S4 &  SE &  S4 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S5  &  SE &  SE &  SE &  SE &  S8 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S6  &  SE &  SE &  SE &  SE &  S8 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S7  &  SE &  SE &  SE &  SE &  S8 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S8  &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S9  &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S10  & SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S11  & S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S12 &  S13 &  SE &  S11 & SE \\
+      S12  & S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  S11 &  SE &  S11 &  SE \\
+      S13 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S14 &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  S18 &  SE &  S15 &  SE &  SE &  SE &  SE &  SE \\
+      S15  &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  S16 &  S15 &  S15 &  S15 &  S15 &  SE \\
+      S16  &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  S17 &  S15 &  S15 &  S15 &  S15 &  S15 &  S15 &  SE \\
+      S17  &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE \\
+      S18  &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S18 &  S17 &  S18 &  SE \\
+      SE  &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE &  SE 
+  \end{array}
+\]
+\caption{Full State Transition Table}
+\end{figure}
+
+\clearpage
+
 # Parser
 
-The Tealang parser is implemented as an LL(k) parser, with more than one lookahead only used in a small number of situations. An example of which is determining if an identifier is for a variable or a function call. 
-
-The implementation closely follows the one laid out in [@eac-parser]. The implementation works by creating parse functions for the various construction rules inside the BNF. When parsing the FIRST set is used to determine the correct production, with an example first set for `parse_statement` found below.
-
-
- | Production Rule      | Token Type   |
- |----------------------|--------------|
- | Variable Decleration | `let`        |
- | Print Statement      | `print`      |
- | Return Statement     | `return`     |
- | If Statement         | `if`         |
- | For Statement        | `for`        |
- | While Statement      | `while`      |
- | Assignment           | *identifier* |
- | Function Decleration | *type*       |
- | Block                | `{`          |
-Table: First Set Production Rules with Structs
-
-
-```{.cpp eval=False}
-
-ASTProgram *Parser::parse_program() {
-  ASTProgram *node = new ASTProgram();
-  do {
-    node->statements.push_back(parse_statement());
-  } while (curr_tok.type != lexer::tok_end);
-  return node;
-}
-```
+The Tealang parser is implemented as an LL(k) parser, with more than one lookahead only used in a small number of situations. An example of which is determining if an identifier is for a variable or a function call. The implementation closely follows the one laid out in [@eac-parser]. The implementation works by creating parse functions for the various construction rules inside the EBNF. 
 
 ## Parsing Statements
 
-
-The `parse_statement` function then uses switches over a first set to determine which production rule to use based on the lookahead token.
+Parsing statements requires the deduction of the correct production rule from a list of 8 possible productions. Since the grammar is LL(1) in this instance a lookahead table can be constructed and then switched over to call the correct production rule.
 
 | Token Type   | Production Rule      |
 |--------------|----------------------|
@@ -267,7 +178,31 @@ The `parse_statement` function then uses switches over a first set to determine 
 | `{`          | Block                |
 Table: First Set Production Rules
 
-Once a `statement` node is reached the production rules are applied one by one. Single tokens are evaluated inside the function block, with other productions evaluated by calling the corresponding parse function. An example of this can be seen in the code snippet below.
+```{.cpp .numberLines}
+ASTStatement *Parser::parse_statement() {
+  switch (curr_tok.type) {
+  case lexer::tok_let:
+    return parse_var_decl();
+    break;
+ case lexer::tok_print:
+    return parse_print();
+    break;
+  case lexer::tok_return:
+    return parse_return();
+    break;
+  case lexer::tok_if:
+    return parse_if();
+    break;
+```
+
+\newpage
+
+### Parsing a Function Decleration
+
+If the first token in a statement production is a *type* then the `parse_function_decl` function will be called to evaluate the production.The function works by either checking the type of the incoming token, or calling the corresponding production rule. 
+
+If the production rule fails at any step the `fail` function is called to provide the user with an error message, which includes the expected token, the token found, and the line number of the failure.
+
 
 
 ```{.cpp eval=False}
@@ -306,23 +241,6 @@ $\vdots$
 
   // Parse Parameters
   node->arguments = parse_formal_params();
-
-  // Checking for ) token
-  if (curr_tok.type != lexer::tok_round_right) {
-    fail(")");
-  }
-
-   // Checking for { token 
-  curr_tok = lex.getNxtToken();
-  if (curr_tok.type != lexer::tok_curly_left) {
-    fail("{");
-  }
-  
-  // Parsing Function Block
-  node->body = parse_block();
-  return node;
-}
-
 ```
 
 \newpage 
@@ -350,35 +268,27 @@ ASTExpression *Parser::parse_simple_expression() {
 
 ```
 
-Expression parsing is also the only time in Tealang where a lookahead of more than 1 token is needed. When evaluating a factor the production rules for *Identifier*, *ArrayAccess*, and *FunctionCall* all share the same First token. To resolve this another lookahead token is used to check for the existence of a '`[`' or '`(`' token, the absence of which is interpreted as an identifier call.
+Expression parsing is also the only time in Tealang where a lookahead of more than 1 token is needed. When evaluating a factor the production rules for *Identifier* and *FunctionCall* share the same first token. To resolve this another lookahead token is used to check for the existence of a  '`(`' token, the absence of which is interpreted as an identifier call.
 
 ```{.cpp eval=False}
- case lexer::tok_iden: {
-    ll1_tok = lex.getNxtToken(); // Getting Extra Lookahead
-    if (ll1_tok->type == lexer::tok_round_left) { /** Function Call */
+case lexer::tok_iden: {
+    ll1_tok = lex.getNxtToken();                    // Lookahead Token
+    if (ll1_tok->type == lexer::tok_round_left) {   // Function Call
       ASTFunctionCall *node = new ASTFunctionCall();
       node->name = curr_tok.value;
       node->args = parse_actual_params();
       curr_tok = lex.getNxtToken();
       ll1_tok.reset();
       return node;
-    } else if (ll1_tok->type ==
-               lexer::tok_square_left) { /**< Array Index Operation*/
-      ASTArrayAccess *node = new ASTArrayAccess();
-      node->name = curr_tok.value;
-      node->index = parse_expression();
-      curr_tok = lex.getNxtToken();
-      ll1_tok.reset();
-      return node;
-    } else {
-      ASTIdentifier *node = new ASTIdentifier(); /** Variable */
+    } else {                                        // Identifier
+      ASTIdentifier *node = new ASTIdentifier();
       node->name = curr_tok.value;
       curr_tok = ll1_tok.value();
       ll1_tok.reset();
       return node;
     }
     break;
-  }
+}
 ```
 
 \newpage
@@ -386,18 +296,41 @@ Expression parsing is also the only time in Tealang where a lookahead of more th
 
 ## Abstract Syntax Tree
 
-The Abstracy Syntax tree for Tealang is built top-down during parsing. The tree is built to leverage OOP poly-morphism, in this was a statement can contain an expression without needing to store the specific expression type. 
-
-
-The Abstract Syntax tree for Tealang was implemented to leverage the Visitor design pattern [@visitor]. This allows poly-morphism to determine the type of the node and call the correct function automatically.
-
-
-Each `parse_production` function inside the Parser returns a pointer to a new AST Node. This has an almost one to one mapping with the EBNF, where all *Statement* productions are a subclass of `ASTStatement` and all *Expression* productions are a subclass of `ASTExpression`. There are some  exceptions to this rule, with `ASTArrayAssignment` being implemented as a subclass of `ASTAssignment` due to the large amount of overlap and an identical First token. Another other exception is the *Expression*, *SimpleExpression*, and *Term* productions which are all implemented with the same `ASTBinOp` node. The full class diagram can be seen in Figure 11.
-
+The Abstract Syntax tree for Tealang was implemented to leverage the Visitor design pattern [@visitor]. This allows poly-morphism to determine the type of the node and call the correct function automatically, thus eliminating the need to store production numbers in the parent nodes .
 
 ![Visitor Design Pattern [@wikivisitor]](diagrams/visitor.jpg)
 
-![Abstract Syntax Tree Class Hierarchy](diagrams/astuml.png)
+Each parse function inside of the Parser returns a pointer to the new AST node to be added to the tree. To increase code readability a class hierarchy was created, where all *Statement* productions extend the `ASTStatement` class, and all *Expression* productions extend the `ASTExpression` class. 
+
+
+```{.cpp .numberLines}
+class ASTFunctionCall : public ASTExpression {
+public:
+  std::string name;
+  std::vector<ASTExpression *> args;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+```
+
+
+Not all production rules have their own class with *Expression*, *SimpleExpression*, and *Term* being prime examples. Since the production rules were created to implement order precedence, and this is fixed after parsing, then all the productions can be implemented using one class. This also helps to reduces the amount of code needed to write for the visitor later on.
+
+
+```{.cpp .numberLines}
+class ASTBinOp : public ASTExpression {
+public:
+  ASTExpression *left, *right;
+  Operators op;
+  std::string value;
+  inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
+};
+```
+
+
+![Abstract Syntax Tree Class Hierarchy](diagrams/ast-inheritence.png){.class width=70% #fig:class-diagram}
+
+
+
 
 \newpage
 
@@ -495,14 +428,689 @@ print fib(10);
 
 The goal of semantic analysis is to filter out the set of valid Tealang programs from the set of Tealang programs accepted by the EBNF.
 
-## Type Checking
+## Variables
 
-According to the specification of Tealang, the language is not to perform any implicit/automatic typecasting. As such all operations between variables are required to operate on the same types. 
+Tealang features a deceleration with assignment approach to variables, as such type checking needs to be performed during variable deceleration. The other instance in which type checking between variables and expression needs to be performed is during variable re-assignment.
+
+Since the visitor functions are designed to return nothing, state must be stored inside the Visitor class. During expression evaluation the type is stored in `token_type` which can then be checked against the type of the variable.
+
+```{.cpp .numberLines}
+void SemanticVisitor::visit(parser::ASTVariableDecl *x) {
+  auto var = res_var_local(x->identifier); // Checking if the variable is already declared in this scope
+  if (var.has_value()) {
+    throw std::invalid_argument(
+        "Cannot redeclare variable with the same name in the same scope");
+  } else {
+    x->value->accept(this);
+    if (token_type != x->Type) { // Checking for type compatibility
+      throw std::invalid_argument(
+          "Variable Declaration and Assignment have incompatible types");
+    } else {
+```
+
+
+```{.cpp .numberLines}
+void SemanticVisitor::visit(parser::ASTAssignment *x) {
+  auto var = res_var_all(x->identifier); // Checking the variable has been initialised in any scope
+  if (var.has_value()) {
+    x->value->accept(this);
+    if (var.value() != token_type) { // Checking the new type matches the initialised type
+      throw std::invalid_argument("Variable assignment types dont match");
+    }
+  } else {
+    throw std::invalid_argument("Variable not initialised");
+  }
+}
+```
+
+Another consideration during with variables is the current scope, variables can be re-declared so long as they are not within the same scope. To track this the `SemanticVisitor` class uses a stack of maps from variable name to variable type. The `res_var_all` function is used to check all scopes for the existence of a variable, and to return its type if found. The implementation of the function will always return the variable in the closest scope, as to be inline with the C programming language. `res_var_local` is used to check the existence of a variable in the current scope, this function is used when declaring new variables.
+
+```{.cpp .numberLines}
+std::vector<std::map<std::string, parser::Tealang_t>> variable_scope; 
+
+std::optional<parser::Tealang_t> res_var_all(std::string); 
+      
+std::optional<parser::Tealang_t> res_var_local(std::string); 
+```
+
+\newpage
+
+### Return Statements
+
+Tealang's EBNF allows return statements to be called outside of function calls. To resolve this issue an optional variable `function_type` is used to determine if the return statement is being called inside of a function call. 
+
+```{.cpp .numberLines}
+std::optional<std::tuple<parser::Tealang_t, bool>> function_type; 
+```
+
+When a function deceleration node is encountered, `function_type` is set to a tuple containing the desired return type of the function and a false boolean. The boolean is used as a flag to check if the function returns, as return nodes are implemented to set the flag to true so long as their type matches. This one variable therefore implements both type checking for returns, failure for return statements outside of functions, and return guarantees for functions.
+
+### Operators
+
+Tealang is statically types language defined as having no implicit/automatic typecasting. As such typechecking is a rather simple implementation. The only point of note is to check the usage of operators between types, and to change the return type to a boolean when using relational operators
+
+#### Type Checking
+
+\
+
+```{.cpp .numberLines}
+void SemanticVisitor::visit(parser::ASTBinOp *x) {
+
+  x->left->accept(this);
+  parser::Tealang_t left = token_type.value();
+  x->right->accept(this);
+  parser::Tealang_t right = token_type.value();
+  if (left != right) {
+    throw std::invalid_argument(
+        "Binary Operator Nodes can only work on same types");
+  } else {
+    switch (token_type.value()) {
+```
+
+
+#### Operator Checking 
+
+The first switch is used to determine the type of the variables being operated upon, wherein a secondary switch is  used to check for cases where operators not defined on said types are being used.
+
+```{.cpp .numberLines}
+case parser::tea_float:
+case parser::tea_int: {
+      switch (x->op) { // Checking the operators
+      case parser::op_and:
+      case parser::op_or:
+        throw std::invalid_argument(
+            "Numerical types cannot be operated upon by boolean operators");
+      default:
+        // All other operators are valid, so do nothing
+        break;
+      }
+      break;
+    }
+break;
+}
+```
+
+
+
+#### Relational Operators
+
+At the end of all the evaluation a final switch is used to update the return type when using relational operator nodes 
+
+```{.cpp .numberLines}
+switch (x->op) {
+    case parser::op_and:
+    case parser::op_or:
+    case parser::op_less:
+    case parser::op_grtr:
+    case parser::op_eql:
+    case parser::op_neql:
+    case parser::op_le:
+    case parser::op_ge:
+      token_type = parser::tea_bool;
+      break;
+    default:
+      break;
+    }
+```
+
+#### Control Flow
+
+`If`, `For`, and `While` statements all feature a conditional boolean expression to dictate control flow. This is checked by visiting the expression node and checking `token_type` is a boolean expression.
 
 
 \newpage
 
+# Interpreter
+
+The interpreter implementation for Tealang is designed around the traversal and evaluation of the AST. This does cause significant performance degradation as compared with a bytecode based implementation, however performance was not the main aim of the assignment.
+
+## Changes from Semantic Analysis
+
+The scope, variable and function representation from the semantic analyser were overhauled and improved for the interpreter as new problems such as stack frames became an issue. Functions relating to scope checking were also removed as the interpreter works with the assumption of a correct input program.
+
+### Variables
+
+```{.cpp .numberLines}
+class Variable {
+public:
+  parser::Tealang_t var_type;
+  std::string name;
+  std::any value; /**< Using the enum for the get*/
+};
+```
+
+Variables are now represented by a `Variable` class, with the value stored in a C++ `any`. The `any` class is self descriptive in that *any* value can be stored inside of it. To get back the value of the `any` it must be cast back to the original type which is tracked using the `var_type` variable.
+
+### Functions
+
+```{.cpp .numberLines}
+class Function {
+public:
+  std::string name;
+  parser::Tealang_t return_type;
+  std::vector<std::tuple<std::string, parser::Tealang_t>> arguments;
+  parser::ASTBlock *function_body;
+};
+```
+
+Functions are represented by the `Function` class, and store the same information as the interpreter such as arguments and return types. The new piece of information is the `function_body` variable, which points to the code block to be executed on function call. 
+
+### Scope
+
+```{.cpp .numberLines}
+class Scope {
+public:
+  Function get_func(std::string); /**< Finds Function*/
+
+  Variable get_var(std::string); /**< Find variable starting from top scope */
+
+  void update_var(std::string, Variable); /**< Updates a variable starting from top scope*/
+
+  void add_var(Variable);
+  
+  bool function_call;
+```
+
+Scope is now also represented by a class, with functions to find variables or functions, as well as adding or updating variables in the scope.
+
+## Code Evalation
+
+### Operator Evaluation
+
+With types and operator validity being checked by the semantic analyser, operator evaluation is as simple as casting to the correct type and calling the operator. The values are then stored in the `token_value` variable found in the `Interpreter` class.
+
+```{.cpp .numberLines}
+void Interpreter::visit(parser::ASTBinOp *x) {
+
+  x->left->accept(this);
+  parser::Tealang_t left_type = token_type;
+  auto left_val = token_value;
+  x->right->accept(this);
+  parser::Tealang_t right_type = token_type;
+
+switch (left_type) {
+  case parser::tea_bool: {
+    switch (x->op) {
+    case parser::op_eql:
+      token_value =
+          std::any_cast<bool>(left_val) == std::any_cast<bool>(right_val);
+      break;
+    case parser::op_neql:
+      token_value =
+          std::any_cast<bool>(left_val) != std::any_cast<bool>(right_val);
+        break;
+```
+
+### Literal Evaluation
+
+Literal evaluation involves the conversion of string types into floats, integers or booleans. This is handled neatly through the c++ STL with `stoi` handling conversion to integers, and `stof` handling conversion to floats. Usage of `stoi` and `stof` allows for `0` initialised literals to be properly handled, as they are deemed valid by the EBNF. Booleans are evaluated using the `boolalpha` stream modifier, the implementation of which causes any string except `"true"` to evaluate to false.
+
+\newpage
+
+### Function Evaluation
+
+When evaluating function calls a global flag is used to determine if the current function call is the first call, or a recursive one. Initial function calls are required to create a new variable scope and push it to the scope stack. Recursive function calls need to first remove their parents scope, create their own variable scope and execute, before removing their own scope and placing their parents scope back onto the stack.
+
+The reasoning behind having recursive function calls remove the parent scope was to allow functions to access global variables. This behaviour is important for both recursive functions like generating the Fibonacci numbers, or iterative functions referencing one another.
+
+
+
+```{.cpp .numberLines}
+#include <iostream>
+
+int global = 10;
+
+void bar(){
+  std::cout << global << std::endl;
+}
+
+void foo(){
+  int global = 12;
+  bar();
+}
+
+int main(void) {
+  foo();
+}
+```
+
+The function `bar` is designed to print the variable `global` which is initialised to 10. The function `foo` is designed to create a new variable called `global` initialised to 12, and then call the `bar` function. 
+ 
+If the `bar` function is able to access the scope created when `foo` was called, then the result from `bar` would be 12. Compiling and running this code reveals that the actual result is 10, meaning that calling a function from inside function will remove the parents scope.
+
+
+\newpage
+
+# Testing
+
+## Function Call
+
+
+### Source Code
+
+```{.c .numberLines}
+float Square(x:float){
+      return x*x;
+}
+
+let y:float = Square(2.5);
+print y;                        //6.25
+```
+
+
+### Code Output
+
+```
+6.25
+```
+
+
+
+### Generated AST 
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="0">Square</Var>
+			<Arg Type="0">x</Arg>
+			<Block>
+				<Return>
+					<BinExprNode Op="*">
+						<Identifier>x</Identifier>
+						<Identifier>x</Identifier>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="0">y</Var>
+				<FuncCall Id="Square">
+					<FloatConst>2.5</FloatConst>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<Identifier>y</Identifier>
+		</Print>
+	</Prog>
+</root>
+
+```
+\newpage
+
+## Recursive Functions
+
+### Source Code
+
+```{.c .numberLines}
+int fib(a: int){
+  if (a < 2) {
+    return a;
+  }
+  return fib(a - 1) + fib(a - 2);
+}
+
+print fib(7);
+```
+
+### Interpreter Output
+
+```
+13
+6765
+832040
+```
+
+
+### Generated XML
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="1">fib</Var>
+			<Arg Type="1">a</Arg>
+			<Block>
+				<If>
+					<Condition>
+						<BinExprNode Op="&lt">
+							<Identifier>a</Identifier>
+							<IntConst>2</IntConst>
+						</BinExprNode>
+					</Condition>
+					<EvalTrue>
+						<Block>
+							<Return>
+								<Identifier>a</Identifier>
+							</Return>
+						</Block>
+					</EvalTrue>
+					<Else>
+					</Else>
+				</If>
+				<Return>
+					<BinExprNode Op="+">
+						<FuncCall Id="fib">
+							<BinExprNode Op="-">
+								<Identifier>a</Identifier>
+								<IntConst>1</IntConst>
+							</BinExprNode>
+						</FuncCall>
+						<FuncCall Id="fib">
+							<BinExprNode Op="-">
+								<Identifier>a</Identifier>
+								<IntConst>2</IntConst>
+							</BinExprNode>
+						</FuncCall>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Print>
+			<FuncCall Id="fib">
+				<IntConst>7</IntConst>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="fib">
+				<IntConst>20</IntConst>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="fib">
+				<IntConst>30</IntConst>
+			</FuncCall>
+		</Print>
+	</Prog>
+</root>
+
+```
+
+\newpage
+
+
+## Looping Functions
+
+### Source Code
+
+```{.c .numberLines}
+string OverUnder50(age: int){
+    if(age<50){
+        return "UnderFifty";
+    }else{
+        return "OverFifty";
+    }
+}
+
+let z:int = 45;
+
+while(z<50){
+	print OverUnder50(z); //"UnderFifty"x5
+	z=z+1;
+}
+
+print OverUnder50(z); //"OverFifty"
+
+for(let i:int = 0; i<5; i=i+1){
+	print i;
+}
+```
+
+
+### Interpreter Output
+
+```
+UnderFifty
+UnderFifty
+UnderFifty
+UnderFifty
+UnderFifty
+OverFifty
+0
+1
+2
+3
+4
+
+```
+
+
+### Generated AST
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="3">OverUnder50</Var>
+			<Arg Type="1">age</Arg>
+			<Block>
+				<If>
+					<Condition>
+						<BinExprNode Op="&lt">
+							<Identifier>age</Identifier>
+							<IntConst>50</IntConst>
+						</BinExprNode>
+					</Condition>
+					<EvalTrue>
+						<Block>
+							<Return>
+								<StringConst>UnderFifty</StringConst>
+							</Return>
+						</Block>
+					</EvalTrue>
+					<Else>
+						<Block>
+							<Return>
+								<StringConst>OverFifty</StringConst>
+							</Return>
+						</Block>
+					</Else>
+				</If>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="1">z</Var>
+				<IntConst>45</IntConst>
+		</Decl>
+		<While>
+			<Condition>
+				<BinExprNode Op="&lt">
+					<Identifier>z</Identifier>
+					<IntConst>50</IntConst>
+				</BinExprNode>
+			</Condition>
+			<EvalTrue>
+				<Block>
+					<Print>
+						<FuncCall Id="OverUnder50">
+							<Identifier>z</Identifier>
+						</FuncCall>
+					</Print>
+					<Assign>
+						<Var>z</Var>
+						<BinExprNode Op="+">
+							<Identifier>z</Identifier>
+							<IntConst>1</IntConst>
+						</BinExprNode>
+					</Assign>
+				</Block>
+			</EvalTrue>
+		</While>
+		<Print>
+			<FuncCall Id="OverUnder50">
+				<Identifier>z</Identifier>
+			</FuncCall>
+		</Print>
+		<For>
+			<Decl>
+				<Var Type="1">loopvar</Var>
+					<IntConst>0</IntConst>
+			</Decl>
+			<Condition>
+				<BinExprNode Op="<">
+					<Identifier>loopvar</Identifier>
+					<IntConst>5</IntConst>
+				</BinExprNode>
+			</Condition>
+			<Assign>
+				<Var>loopvar</Var>
+				<BinExprNode Op="+">
+					<Identifier>loopvar</Identifier>
+					<IntConst>1</IntConst>
+				</BinExprNode>
+			</Assign>
+			<EvalTrue>
+				<Block>
+					<Print>
+						<Identifier>loopvar</Identifier>
+					</Print>
+				</Block>
+			</EvalTrue>
+		</For>
+	</Prog>
+</root>
+```
+
+\newpage
+
+## Branching Code
+
+### Source Code
+
+```{.c .numberLines}
+float Pow(x:float, n:int){
+    let y:float = 1.0;
+    if(n>0){
+        for(;n>0;n=n-1){
+            y = y * x;
+        }
+    }else{
+        for(;n<0;n=n-1){
+            y = y/x;
+        }
+    }
+    return y;
+}
+
+let temp:float = Pow(2.1,10);
+print temp; //prints to console 1667.988
+```
+
+### Interpreter Output
+
+```
+1667.99
+```
+
+
+### Generated XML
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="0">Pow</Var>
+			<Arg Type="0">x</Arg>
+			<Arg Type="1">n</Arg>
+			<Block>
+				<Decl>
+					<Var Type="0">y</Var>
+						<FloatConst>1.0</FloatConst>
+				</Decl>
+				<If>
+					<Condition>
+						<BinExprNode Op=">">
+							<Identifier>n</Identifier>
+							<IntConst>0</IntConst>
+						</BinExprNode>
+					</Condition>
+					<EvalTrue>
+						<Block>
+							<For>
+								<Condition>
+									<BinExprNode Op=">">
+										<Identifier>n</Identifier>
+										<IntConst>0</IntConst>
+									</BinExprNode>
+								</Condition>
+								<Assign>
+									<Var>n</Var>
+									<BinExprNode Op="-">
+										<Identifier>n</Identifier>
+										<IntConst>1</IntConst>
+									</BinExprNode>
+								</Assign>
+								<EvalTrue>
+									<Block>
+										<Assign>
+											<Var>y</Var>
+											<BinExprNode Op="*">
+												<Identifier>y</Identifier>
+												<Identifier>x</Identifier>
+											</BinExprNode>
+										</Assign>
+									</Block>
+								</EvalTrue>
+							</For>
+						</Block>
+					</EvalTrue>
+					<Else>
+						<Block>
+							<For>
+								<Condition>
+									<BinExprNode Op="<">
+										<Identifier>n</Identifier>
+										<IntConst>0</IntConst>
+									</BinExprNode>
+								</Condition>
+								<Assign>
+									<Var>n</Var>
+									<BinExprNode Op="-">
+										<Identifier>n</Identifier>
+										<IntConst>1</IntConst>
+									</BinExprNode>
+								</Assign>
+								<EvalTrue>
+									<Block>
+										<Assign>
+											<Var>y</Var>
+											<BinExprNode Op="/">
+												<Identifier>y</Identifier>
+												<Identifier>x</Identifier>
+											</BinExprNode>
+										</Assign>
+									</Block>
+								</EvalTrue>
+							</For>
+						</Block>
+					</Else>
+				</If>
+				<Return>
+					<Identifier>y</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="0">temp</Var>
+				<FuncCall Id="Pow">
+					<FloatConst>2.1</FloatConst>
+					<IntConst>10</IntConst>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<Identifier>temp</Identifier>
+		</Print>
+	</Prog>
+</root>
+```
+
+\newpage
+
+
 
 \clearpage
-
 # References

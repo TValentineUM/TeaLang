@@ -35,10 +35,10 @@ static std::map<std::string, Operators> tok_to_op = {
 };
 
 enum Tealang_t {
-  tea_float = 0,
-  tea_int = 1,
-  tea_bool = 2,
-  tea_string = 3
+  tea_float,
+  tea_int,
+  tea_bool,
+  tea_string,
 } typedef Tealang_t;
 
 class AST {
@@ -56,29 +56,7 @@ public:
   Tealang_t type;
   std::string value;
   std::string type_name;
-  ASTLiteral(lexer::Token tok) {
-
-    switch (tok.type) {
-    case lexer::tok_lit_bool:
-      type = tea_bool;
-      type_name = "Boolean";
-      break;
-    case lexer::tok_lit_int:
-      type = tea_int;
-      type_name = "Integer";
-      break;
-    case lexer::tok_lit_float:
-      type = tea_float;
-      type_name = "Float";
-      break;
-    case lexer::tok_lit_string:
-      type = tea_string;
-      type_name = "String";
-      break;
-    }
-
-    value = tok.value;
-  }
+  ASTLiteral(lexer::Token tok);
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
 
@@ -196,24 +174,8 @@ public:
   Tealang_t type;
   std::string identifier;
   std::vector<std::tuple<std::string, Tealang_t>> arguments;
-  std::vector<Tealang_t> param_types() {
-    std::vector<Tealang_t> types;
-    types.resize(arguments.size());
-    std::transform(arguments.begin(), arguments.end(), types.begin(),
-                   [](std::tuple<std::string, Tealang_t> const &tuple) {
-                     return std::get<1>(tuple);
-                   });
-    return types;
-  };
-  std::vector<std::string> param_names() {
-    std::vector<std::string> names;
-    names.resize(arguments.size());
-    std::transform(arguments.begin(), arguments.end(), names.begin(),
-                   [](std::tuple<std::string, Tealang_t> const &tuple) {
-                     return std::get<0>(tuple);
-                   });
-    return names;
-  }
+  std::vector<Tealang_t> param_types();
+  std::vector<std::string> param_names();
   ASTBlock *body;
   inline void accept(visitor::Visitor *visitor) { visitor->visit(this); }
 };
