@@ -753,7 +753,6 @@ void Interpreter::visit(parser::ASTArrayAssignment *x) {
 void Interpreter::visit(parser::ASTArrayLiteral *x) {
   switch (token_type) {
   case parser::tea_bool:
-
     eval_arr_lit<bool>(x->values);
     token_setter(parser::tea_arr_bool);
     break;
@@ -799,18 +798,23 @@ void Interpreter::visit(parser::ASTArrayDecl *x) {
   switch (arr.type) {
   case parser::tea_arr_bool:
     arr.value = std::vector<bool>(*arr.size);
+    token_type = parser::tea_bool;
     break;
   case parser::tea_arr_int:
     arr.value = std::vector<int>(*arr.size);
+    token_type = parser::tea_int;
     break;
   case parser::tea_arr_float:
     arr.value = std::vector<float>(*arr.size);
+    token_type = parser::tea_float;
     break;
   case parser::tea_arr_string:
     arr.value = std::vector<std::string>(*arr.size);
+    token_type = parser::tea_string;
     break;
   case parser::tea_arr_char:
     arr.value = std::vector<char>(*arr.size);
+    token_type = parser::tea_char;
     break;
   default:
     throw std::invalid_argument(
@@ -822,6 +826,7 @@ void Interpreter::visit(parser::ASTArrayDecl *x) {
     switch (token_type) {
     case parser::tea_arr_bool: {
       arr.value = std::any_cast<std::vector<bool>>(token_value);
+      break;
     }
     case parser::tea_arr_int: {
       arr.value = std::any_cast<std::vector<int>>(token_value);

@@ -595,8 +595,14 @@ void SemanticVisitor::visit(parser::ASTStructAccess *x) {
     throw std::invalid_argument(
         "Invalid operator on variable, it is not a struct in this scope");
   } else {
-    Variable temp = (*var.members).at(x->element);
-    token_setter(temp.type);
+    try {
+      Variable temp = (*var.members).at(x->element);
+      token_setter(temp.type);
+    } catch (...) {
+      throw std::invalid_argument("Unknown variable \"" + x->element +
+                                  "\" called for struct:\"" + x->name +
+                                  "\" of type \"" + *var.type_name + "\"");
+    }
   }
 }
 

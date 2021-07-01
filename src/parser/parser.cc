@@ -898,7 +898,11 @@ ASTStructDefn *Parser::parse_struct_def() {
     switch (curr_tok.type) {
     case lexer::tok_let: {
       auto var = dynamic_cast<ASTVariableDecl *>(parse_decl());
-      if (var == NULL) {
+      if (dynamic_cast<ASTArrayDecl *>(var) != NULL) {
+        throw std::invalid_argument(
+            "Tealang 2 currently only supports var decls in structs");
+      }
+      if (dynamic_cast<ASTStructDecl *>(var) != NULL) {
         throw std::invalid_argument(
             "Tealang 2 currently only supports var decls in structs");
       }
@@ -909,8 +913,7 @@ ASTStructDefn *Parser::parse_struct_def() {
     case lexer::tok_type_float:
     case lexer::tok_type_bool:
     case lexer::tok_type_string:
-    case lexer::tok_type_auto:
-    case lexer::tok_iden: {
+    case lexer::tok_type_auto: {
       node->funcs.push_back(parse_function_decl());
       break;
     }
