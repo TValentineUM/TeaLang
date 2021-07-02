@@ -1,0 +1,4 @@
+Integer Average of three
+25
+Float Average of three
+16.8333

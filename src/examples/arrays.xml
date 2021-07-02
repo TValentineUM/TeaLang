@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<Decl>
+			<Array Type="-1">x</Array>
+			<Size>
+				<IntConst>4</IntConst>
+			</Size>
+			<Value>
+				<ArrayLiteral>
+					<Item index="0">
+						<FloatConst>1.0</FloatConst>
+					</Item>
+					<Item index="1">
+						<FloatConst>2.0</FloatConst>
+					</Item>
+					<Item index="2">
+						<FloatConst>3.0</FloatConst>
+					</Item>
+					<Item index="3">
+						<FloatConst>4.0</FloatConst>
+					</Item>
+					</ArrayLiteral>
+				</Value>
+			</Decl>
+			<Print>
+				<Identifier>x</Identifier>
+			</Print>
+			<ArrayAssign>
+				<Index>
+					<BinExprNode Op="+">
+						<IntConst>2</IntConst>
+						<IntConst>1</IntConst>
+					</BinExprNode>
+				</Index>
+				<Var>x</Var>
+				<FloatConst>7.0</FloatConst>
+			</ArrayAssign>
+			<Print>
+				<ArrayAccess Id="x">
+					<Index>
+						<IntConst>3</IntConst>
+					</Index>
+				</ArrayAccess>
+			</Print>
+			<Print>
+				<Identifier>x</Identifier>
+			</Print>
+			<Decl>
+				<Array Type="8">z</Array>
+				<Size>
+					<IntConst>4</IntConst>
+				</Size>
+				<Value>
+					<ArrayLiteral>
+						<Item index="0">
+							<StringConst>hello</StringConst>
+						</Item>
+						<Item index="1">
+							<StringConst>world</StringConst>
+						</Item>
+						<Item index="2">
+							<StringConst>!</StringConst>
+						</Item>
+						</ArrayLiteral>
+					</Value>
+				</Decl>
+				<Print>
+					<Identifier>z</Identifier>
+				</Print>
+				<Decl>
+					<Array Type="9">a</Array>
+					<Size>
+						<IntConst>2</IntConst>
+					</Size>
+					<Value>
+						<ArrayLiteral>
+							<Item index="0">
+								<CharConst>h</CharConst>
+							</Item>
+							<Item index="1">
+								<CharConst>i</CharConst>
+							</Item>
+							</ArrayLiteral>
+						</Value>
+					</Decl>
+					<Print>
+						<Identifier>a</Identifier>
+					</Print>
+					<Decl>
+						<Array Type="7">b</Array>
+						<Size>
+							<IntConst>2</IntConst>
+						</Size>
+						<Value>
+							<ArrayLiteral>
+								<Item index="0">
+									<BoolConst>true</BoolConst>
+								</Item>
+								<Item index="1">
+									<BoolConst>false</BoolConst>
+								</Item>
+								</ArrayLiteral>
+							</Value>
+						</Decl>
+						<Print>
+							<Identifier>b</Identifier>
+						</Print>
+						<Decl>
+							<Array Type="6">c</Array>
+							<Size>
+								<IntConst>2</IntConst>
+							</Size>
+							<Value>
+								<ArrayLiteral>
+									<Item index="0">
+										<IntConst>10</IntConst>
+									</Item>
+									<Item index="1">
+										<IntConst>5</IntConst>
+									</Item>
+									</ArrayLiteral>
+								</Value>
+							</Decl>
+							<Print>
+								<Identifier>c</Identifier>
+							</Print>
+						</Prog>
+</root>

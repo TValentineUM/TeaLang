@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="1">Sum</Var>
+			<Arg typename="arr_int">arr</Arg>
+			<Arg typename="int">count</Arg>
+			<Block>
+				<Decl>
+					<Var Type="1">total</Var>
+						<IntConst>0</IntConst>
+				</Decl>
+				<For>
+					<Decl>
+						<Var Type="1">i</Var>
+							<IntConst>0</IntConst>
+					</Decl>
+					<Condition>
+						<BinExprNode Op="&lt;">
+							<Identifier>i</Identifier>
+							<Identifier>count</Identifier>
+						</BinExprNode>
+					</Condition>
+					<Assign>
+						<Var>i</Var>
+						<BinExprNode Op="+">
+							<Identifier>i</Identifier>
+							<IntConst>1</IntConst>
+						</BinExprNode>
+					</Assign>
+					<EvalTrue>
+						<Block>
+							<Assign>
+								<Var>total</Var>
+								<BinExprNode Op="+">
+									<Identifier>total</Identifier>
+									<ArrayAccess Id="arr">
+										<Index>
+											<Identifier>i</Identifier>
+										</Index>
+									</ArrayAccess>
+								</BinExprNode>
+							</Assign>
+						</Block>
+					</EvalTrue>
+				</For>
+				<Return>
+					<Identifier>total</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Array Type="-1">temp</Array>
+			<Size>
+				<IntConst>4</IntConst>
+			</Size>
+			<Value>
+				<ArrayLiteral>
+					<Item index="0">
+						<IntConst>1</IntConst>
+					</Item>
+					<Item index="1">
+						<IntConst>2</IntConst>
+					</Item>
+					<Item index="2">
+						<IntConst>3</IntConst>
+					</Item>
+					<Item index="3">
+						<IntConst>4</IntConst>
+					</Item>
+					</ArrayLiteral>
+				</Value>
+			</Decl>
+			<Print>
+				<FuncCall Id="Sum">
+					<Identifier>temp</Identifier>
+					<IntConst>4</IntConst>
+				</FuncCall>
+			</Print>
+		</Prog>
+</root>

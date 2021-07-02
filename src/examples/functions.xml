@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="0">AverageOfThree</Var>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
+			<Arg typename="float">z</Arg>
+			<Block>
+				<Print>
+					<StringConst>Float Average of three</StringConst>
+				</Print>
+				<Decl>
+					<Var Type="0">total</Var>
+						<BinExprNode Op="+">
+							<Identifier>x</Identifier>
+							<BinExprNode Op="+">
+								<Identifier>y</Identifier>
+								<Identifier>z</Identifier>
+							</BinExprNode>
+						</BinExprNode>
+				</Decl>
+				<Return>
+					<BinExprNode Op="/">
+						<Identifier>total</Identifier>
+						<FloatConst>3.0</FloatConst>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<FuncDecl>
+			<Var Type="1">AverageOfThree</Var>
+			<Arg typename="int">x</Arg>
+			<Arg typename="int">y</Arg>
+			<Arg typename="int">z</Arg>
+			<Block>
+				<Print>
+					<StringConst>Integer Average of three</StringConst>
+				</Print>
+				<Decl>
+					<Var Type="1">total</Var>
+						<BinExprNode Op="/">
+							<BinExprNode Op="+">
+								<Identifier>x</Identifier>
+								<BinExprNode Op="+">
+									<Identifier>y</Identifier>
+									<Identifier>z</Identifier>
+								</BinExprNode>
+							</BinExprNode>
+							<IntConst>3</IntConst>
+						</BinExprNode>
+				</Decl>
+				<Return>
+					<Identifier>total</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Print>
+			<FuncCall Id="AverageOfThree">
+				<IntConst>10</IntConst>
+				<IntConst>20</IntConst>
+				<IntConst>45</IntConst>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="AverageOfThree">
+				<FloatConst>12.5</FloatConst>
+				<FloatConst>7.5</FloatConst>
+				<FloatConst>30.5</FloatConst>
+			</FuncCall>
+		</Print>
+	</Prog>
+</root>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="-1">fib</Var>
+			<Arg typename="int">a</Arg>
+			<Block>
+				<If>
+					<Condition>
+						<BinExprNode Op="&lt;">
+							<Identifier>a</Identifier>
+							<IntConst>2</IntConst>
+						</BinExprNode>
+					</Condition>
+					<EvalTrue>
+						<Block>
+							<Return>
+								<Identifier>a</Identifier>
+							</Return>
+						</Block>
+					</EvalTrue>
+					<Else>
+					</Else>
+				</If>
+				<Return>
+					<BinExprNode Op="+">
+						<FuncCall Id="fib">
+							<BinExprNode Op="-">
+								<Identifier>a</Identifier>
+								<IntConst>1</IntConst>
+							</BinExprNode>
+						</FuncCall>
+						<FuncCall Id="fib">
+							<BinExprNode Op="-">
+								<Identifier>a</Identifier>
+								<IntConst>2</IntConst>
+							</BinExprNode>
+						</FuncCall>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<FuncDecl>
+			<Var Type="-1">XGreaterThanY</Var>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
+			<Block>
+				<Return>
+					<BinExprNode Op="&gt;">
+						<Identifier>x</Identifier>
+						<Identifier>y</Identifier>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="-1">x</Var>
+				<FloatConst>2.4</FloatConst>
+		</Decl>
+		<Decl>
+			<Var Type="-1">y</Var>
+				<FloatConst>2.3</FloatConst>
+		</Decl>
+		<Print>
+			<FuncCall Id="XGreaterThanY">
+				<Identifier>x</Identifier>
+				<Identifier>y</Identifier>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="fib">
+				<IntConst>12</IntConst>
+			</FuncCall>
+		</Print>
+	</Prog>
+</root>

@@ -65,8 +65,16 @@ int main(int argc, char *argv[]) {
 
   SemanticVisitor semantic_visitor;
   semantic_visitor.visit(p.tree);
+
   Interpreter interpreter;
-  interpreter.visit(p.tree);
+  if (args.find('o') != args.end()) {
+    auto fp = freopen(args.at('o').c_str(), "w", stdout);
+    interpreter.visit(p.tree);
+    fclose(fp);
+  } else {
+    interpreter.visit(p.tree);
+  }
+
   return 0;
 }
 

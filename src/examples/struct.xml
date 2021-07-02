@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<StructDefn name="Vector">
+			<Variables>
+				<Decl>
+					<Var Type="0">x</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+				<Decl>
+					<Var Type="0">y</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+				<Decl>
+					<Var Type="0">z</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+			</Variables>
+			<Functions>
+				<FuncDecl>
+					<Var Type="1">scale</Var>
+					<Arg typename="float">s</Arg>
+					<Block>
+						<Assign>
+							<Var>x</Var>
+							<BinExprNode Op="*">
+								<Identifier>x</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>y</Var>
+							<BinExprNode Op="*">
+								<Identifier>y</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>z</Var>
+							<BinExprNode Op="*">
+								<Identifier>z</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Return>
+							<IntConst>0</IntConst>
+						</Return>
+					</Block>
+				</FuncDecl>
+				<FuncDecl>
+					<Var Type="1">translate</Var>
+					<Arg typename="float">tx</Arg>
+					<Arg typename="float">ty</Arg>
+					<Arg typename="float">tz</Arg>
+					<Block>
+						<Assign>
+							<Var>x</Var>
+							<BinExprNode Op="+">
+								<Identifier>x</Identifier>
+								<Identifier>tx</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>y</Var>
+							<BinExprNode Op="+">
+								<Identifier>y</Identifier>
+								<Identifier>tz</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>z</Var>
+							<BinExprNode Op="+">
+								<Identifier>z</Identifier>
+								<Identifier>tz</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Return>
+							<IntConst>0</IntConst>
+						</Return>
+					</Block>
+				</FuncDecl>
+			</Functions>
+		</StructDefn>
+		<FuncDecl>
+			<Var Type="-1">Add</Var>
+			<Arg typename="Vector">v1</Arg>
+			<Arg typename="Vector">v2</Arg>
+			<Block>
+				<Decl>
+					<Var Type="Vector">vTemp</Var>
+				</Decl>
+				<StructAssign name="vTemp" element="x">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="x"/>
+						<StructAccess name="v2" element="x"/>
+					</BinExprNode>
+				</StructAssign>
+				<StructAssign name="vTemp" element="y">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="y"/>
+						<StructAccess name="v2" element="y"/>
+					</BinExprNode>
+				</StructAssign>
+				<StructAssign name="vTemp" element="z">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="z"/>
+						<StructAccess name="v2" element="z"/>
+					</BinExprNode>
+				</StructAssign>
+				<Return>
+					<Identifier>vTemp</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="Vector">v1</Var>
+		</Decl>
+		<StructAssign name="v1" element="x">
+			<FloatConst>1.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v1" element="y">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v1" element="z">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<Decl>
+			<Var Type="Vector">v2</Var>
+		</Decl>
+		<StructAssign name="v2" element="x">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v2" element="y">
+			<FloatConst>1.2</FloatConst>
+		</StructAssign>
+		<StructAssign name="v2" element="z">
+			<FloatConst>0.0</FloatConst>
+		</StructAssign>
+		<Decl>
+			<Var Type="Vector">v3</Var>
+				<FuncCall Id="Add">
+					<Identifier>v1</Identifier>
+					<Identifier>v2</Identifier>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<StructAccess name="v3" element="x"/>
+		</Print>
+		<Print>
+			<StructAccess name="v3" element="y"/>
+		</Print>
+		<Print>
+			<StructAccess name="v3" element="z"/>
+		</Print>
+		<Decl>
+			<Var Type="1">tempVar</Var>
+				<StructFunc name="v3" element="translate">
+					<FloatConst>1.0</FloatConst>
+					<FloatConst>1.0</FloatConst>
+					<FloatConst>1.0</FloatConst>
+				</StructFunc>
+		</Decl>
+		<Print>
+			<Identifier>v3</Identifier>
+		</Print>
+		<Decl>
+			<Var Type="Vector">v4</Var>
+				<FuncCall Id="Add">
+					<Identifier>v1</Identifier>
+					<Identifier>v3</Identifier>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<Identifier>v4</Identifier>
+		</Print>
+		<Assign>
+			<Var>tempVar</Var>
+			<StructFunc name="v1" element="scale">
+				<FloatConst>10.0</FloatConst>
+			</StructFunc>
+		</Assign>
+		<Print>
+			<Identifier>v1</Identifier>
+		</Print>
+	</Prog>
+</root>

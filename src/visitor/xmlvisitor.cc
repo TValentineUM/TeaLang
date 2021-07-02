@@ -1,5 +1,5 @@
-#include "xmlvisitor.hh"
 #include "../parser/AST.hh"
+#include "xmlvisitor.hh"
 using namespace visitor;
 
 void XMLVisitor::visit(parser::ASTLiteral *x) {
@@ -18,6 +18,9 @@ void XMLVisitor::visit(parser::ASTLiteral *x) {
     break;
   case parser::tea_bool:
     file << "<BoolConst>" << x->value << "</BoolConst>" << std::endl;
+    break;
+  case parser::tea_char:
+    file << "<CharConst>" << x->value << "</CharConst>" << std::endl;
     break;
   }
 }

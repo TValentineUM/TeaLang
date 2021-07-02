@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<Decl>
+			<Var Type="4">c1</Var>
+				<CharConst>h</CharConst>
+		</Decl>
+		<Decl>
+			<Var Type="4">c2</Var>
+				<CharConst>j</CharConst>
+		</Decl>
+		<If>
+			<Condition>
+				<BinExprNode Op="==">
+					<Identifier>c1</Identifier>
+					<Identifier>c2</Identifier>
+				</BinExprNode>
+			</Condition>
+			<EvalTrue>
+				<Block>
+					<Print>
+						<StringConst>c1 and c2 are the same</StringConst>
+					</Print>
+				</Block>
+			</EvalTrue>
+			<Else>
+				<Block>
+					<Print>
+						<StringConst>c1 and c2 are different</StringConst>
+					</Print>
+				</Block>
+			</Else>
+		</If>
+		<Print>
+			<Identifier>c1</Identifier>
+		</Print>
+		<Print>
+			<Identifier>c2</Identifier>
+		</Print>
+	</Prog>
+</root>

@@ -13,6 +13,9 @@ header-includes:
  - \usepackage{mathtools}
  - \usepackage{url}
  - \usepackage{xcolor}
+ - \usepackage{fvextra}
+ - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+ - \pagenumbering{gobble}
 bibliography: refs.bib
 csl: ieee.csl
 ---
@@ -21,10 +24,399 @@ csl: ieee.csl
 \tableofcontents
 \newpage
 
+\pagenumbering{arabic}
 
+\newpage 
+# Chars and Arrays
+
+## Chars
+
+Support for the `char` type required alterations to the lexer to allow for the recognition of `CharLiterals`, this included a new Single Quote character class as well as new transition states to recognise the `'[0-9]|[A-z]'` pattern. The parser also required the addition of the `char` token when checking for *Type* tokens.
+
+\begin{figure}
+\begin{grammar}
+\color{blue}
+<CharLiteral> ::= ``' <Letter> | <Digit> `\''
+\color{black}
+
+<Type> ::= `float' | `int' | `bool' | `string' \color{blue} |  `char'  \color{black}
+
+<Literal> ::= <BooleanLiteral>
+\alt <IntegerLiteral>
+\alt <FloatLiteral>
+\alt <StringLiteral>
+\color{blue}
+\alt <CharLiteral>
+\color{black}
+
+\end{grammar}
+\caption{EBNF Alterations for Char support}
+\end{figure}
+
+The changes to `SemanticVisitor` and `Interpreter` were also minimal requiring type checking and implementation of operators on `char` types.
+
+\newpage
+
+## Arrays
+
+Array support required little alteration to the lexer outside of including ``[]`' as part of the punctuation character class. On the other hand parsing introduced significantly more issues due to sharing the same first token as *Variable* and *FunctionCall*.
+
+\begin{figure}
+\begin{grammar}
+
+<Literal> ::= <BooleanLiteral>
+\alt <IntegerLiteral>
+\alt <FloatLiteral>
+\alt <StringLiteral>
+\color{blue}
+\alt <ArrayLiteral>
+\color{black}
+
+\color{blue}
+<ArrayLiteral> ::= `{' <Expression> \{ `,' <Expression> \} `}'
+
+<ArrayAccess> ::= <Identifier> `[' <Expression> `]'
+\color{black}
+
+<Factor> ::=  <Literal>
+\alt <Identifier>
+\alt <FunctionCall>
+\alt <SubExpression>
+\alt <Unary>
+\color{blue}
+\alt <ArrayAccess>
+\color{black}
+
+
+\color{blue}
+<ArrayAssign> ::= <Identifier> `[' <Expression> `]' `=' <Expression>
+\color{black}
+
+\color{blue}
+<ArrayDecl> ::=  `let' <Identifier> `[' <Expression> `]' `:' <Type> [ `=' <ArrayLiteral> ]
+\color{black}
+
+<Statement> ::=	<VariableDecl> `;'
+\alt <Assignment> `;'
+\alt <PrintStatement> `;'
+\alt <IfStatement>
+\alt <ForStatement>
+\alt <WhileStatement>
+\alt <RtrnStatement> `;'
+\alt <FunctionDecl>
+\color{blue}
+\alt <ArrayDecl>  `;'
+\color{black}
+\alt <Block>
+\end{grammar}
+
+\caption{EBNF Alterations for Array Implementation}
+\end{figure}
+
+
+### Parsing
+
+#### Decleration and Assignment
+
+With array assignment sharing the first symbol with variable assignment, and array deceleration sharing two symbols with array deceleration a reworking of the parser was required. 
+
+For deceleration statements this involved creating a base `parse_decl` function to read the input stream up to the *Identifier*. From there a lookahead is used to differentiate between array and variable declarations. Array assignments also use a base `parse_assignment` function to determine the correct production with a lookahead.
+
+#### Expressions
+
+In part 1 of the assignment we discussed the process of determining the difference between identifiers and function calls, the process here is nearly identical with introducing a lookahead check for `[` along with the check for `(`.
+
+### Semantic Analysis
+
+Array size is declared using an *Expression* type and as such only type checking can be performed during semantic analysis. This applies to both *ArrayDecl* and *ArrayAssign*.
+
+When evaluating *ArrayLiteral* the first elements type is taken as the type for the entire array, if subsequent element types do not agree then an error is thrown. Once the element type checking has completed the `token_type` is set to the corresponding array type equivalent.
+
+The use of unique types for arrays allows for easier checks when performing function calls as a separate flag is not required to differentiate between normal and array types. This was also needed for the implementation of function overloading in question 4.
+
+### Interpreter
+
+The use of c++ `any` allows the implementation of arrays to be almost identical to that of normal variables. The `token_type` is used to determine the correct casting before performing any operation.
+
+One important note about the implementation is that the elements in an array are initialised according to c++ vector initialisation. This helps to alleviate memory issues in the implementation when accessing array elements. For an int array of size 5 the initialisation would be; `vector<int>(5)`.
+
+
+\newpage
+# Auto Type Deduction
+
+Changes to the lexer and parser were minimal in this section, `auto` was added as a *Type* in the EBNF and the token was added to the list of keywords in the lexer. The implementation is primarily in the semantic analysis section where upon successful completion produces a properly typed AST.
+
+## Variables
+
+Variable type deduction was implemented by evaluating the type of the expression following the `=` and then editing the AST to change the type from `auto` to the deduced type.
+
+This implementation does break the principle of the Visitor design pattern by altering the structure, however this implementation lead to the cleanest solution.
+
+
+## Functions
+
+Type dedication for function was more complicated as the type is deduced from *Return* statements, which may contain recursive calls.
+
+The solution involves running the semantic analysis of the *Block* twice, where the first pass tries to set the type of the function from *Return* statements. If no *Statement* returns a concrete type then an error is thrown, otherwise the `ASTFunctionDecl` node is altered and the semantic analysis is run again to ensure type compatibility with possible recursive calls. This allows the base case for recursive functions to be located in any line of the function body, as opposed to forcing base cases to be first.
+
+\newpage
+# Structs
+
+Struct implementation required the most significant amount of overhaul to the parser and the BNF. The most important piece of information is that an *Identifier* can now be used in the same place as a type parameter.
+
+\begin{grammar}
+\color{blue}
+<StructFunc> ::= <Identifier> `.' <Identifier> `(' <ActualParams> `)' 
+
+<StructAccess> ::= <Identifier> `.' <Identifier>
+\color{black}
+
+<Factor> ::=  <Literal>
+\alt <Identifier>
+\alt <FunctionCall>
+\alt <SubExpression>
+\alt <Unary>
+\color{blue}
+\alt <ArrayAccess>
+\alt <StructFunc>
+\alt <StructAccess>
+\color{black}
+
+\color{blue}
+<StructDecl> ::= `let' <Identifier> `:' <Identifier> [ `=' <Expression> ]
+\color{black}
+
+
+\color{blue}
+<StructDef> ::= `tlstruct' <Identifier> `{' \{ <VariableDecl> `;' | <FunctionDecl> \} `}'
+\color{black}
+
+
+<FormalParam> ::= <Identifier> `:' \color{blue} ( <Type> | <Identifier> ) \color{black}
+
+
+
+<FunctionDecl> ::= \color{blue} ( <type> | <Identifier> ) \color{black} <Identifier> `(' [ <FormalParams> ] `)' <Block>
+
+
+\color{blue}
+<StructAssign> ::= <Identifier> `.' <Identifier> `=' <Expression>
+\color{black}
+
+<Statement> ::=	<VariableDecl> `;'
+\alt <Assignment> `;'
+\alt <PrintStatement> `;'
+\alt <IfStatement>
+\alt <ForStatement>
+\alt <WhileStatement>
+\alt <RtrnStatement> `;'
+\alt <FunctionDecl>
+\color{blue}
+\alt <ArrayDecl>  `;'
+\alt <StructDecl> `;'
+\alt <StructDef>
+\alt <StructAssign> `;'
+\color{black}
+\alt <Block>
+
+\end{grammar}
+
+\newpage
+
+## Parsing
+
+### Statement Parsing
+
+When parsing statements the *Identifier* token can now lead to 4 possible productions
+
+- Variable Assignment
+- Array Assignment
+- Function Decleration
+- Struct Assignment
+
+To deduce the correct production a lookahead token was used, the set of possible tokens for the lookahead is unique and as such can be switched over and the correct production called.
+
+```{.cpp}
+case lexer::tok_iden: {
+    ll1_tok = lex.getNxtToken();
+    // Switching over lookahead token
+    switch ((*ll1_tok).type) { 
+        case lexer::tok_assign: {
+            auto x = parse_assignment();
+            if (curr_tok.type != lexer::tok_semicolon) {
+            fail(";");
+            }
+            return x;
+        }
+        case lexer::tok_iden: {
+            return parse_function_decl();
+        }
+        case lexer::tok_decimal: {
+            return parse_struct_assign();
+        }
+        case lexer::tok_square_left:
+            return parse_arr_assign();
+        }
+    break;
+}
+```
+
+### Struct Definition
+
+The struct body is defined to contain either variable or function declarations. The code here can be copied from the updated `parse_statement`, with some extra type checking for `ASTVariableDecl`.
+
+### Variable Decleration
+
+Since the `let` token used for *VariableDecl* is also shared with *ArrayDecl* and *StructDecl*, a  generic `parse_decl` node was implemented to handle all three deceleration types. Since the return type of this is the base class `ASTStatement`, extra type information needs to be extracted. The implementation leverages c++ `dynamic_cast` which allows for safe casting up and down inheritance hierarchies. The node returned is first cast to `ASTVariableDecl` which is always valid as `ASTStructDecl` and `ASTArrayDecl` are implemented as subclasses. Following this the program attempts to cast the `ASTVariableDecl` node into a `ASTArrayDecl` and `ASTStructDecl` node, if both return null values then the proper type of the node is `ASTVariableDecl`.
+
+
+```{.cpp .numberLines}
+  case lexer::tok_let: {
+      auto var = dynamic_cast<ASTVariableDecl *>(parse_decl());
+      if (dynamic_cast<ASTArrayDecl *>(var) != NULL) {
+        throw std::invalid_argument(
+            "Tealang 2 currently only supports var decls in structs");
+      }
+      if (dynamic_cast<ASTStructDecl *>(var) != NULL) {
+        throw std::invalid_argument(
+            "Tealang 2 currently only supports var decls in structs");
+      }
+      node->vars.push_back(var);
+      break;
+    }
+   
+```
+
+### Function Decleration
+
+With structs only being defined to contain base variable types the function return types were also limited to supporting base types. Due Tealang currently not supporting `void` return types setter-functions must also include a return statement.
+
+
+\newpage
+
+## Semantic Analysis
+
+To help with the type deduction and member checking for structs  a `Struct` class was created. The class contains two maps, `base_variables` which maps variable names to a `Variable` class (see documentation for Tealang 1) and `base_functions` which maps function names to a `Function` class. The `Struct` class is created and added to the global scope once semantic analysis has been run on the `StructDefn` node in the AST.
+
+```{.cpp .numberLines}
+  class Struct {
+  public:
+    std::string name;
+    std::map<std::string, Variable>
+        base_variables; /**< Provides the default initialised variables*/
+    std::map<std::string, Function>
+        base_functions; /**< Provides all the member functions of a struct */
+  };
+
+```
+
+
+### Struct Functions
+
+To check struct functions the type of the variable must first be checked. If the type is `tea_struct` then the `type_name` string can be used to get the corresponding `Struct` class. From there all the function arguments and the function name are passed to the `code_generator` (see part 4) to get the function name. Finally the `base_functions` map can used to check for the existence of the function, and if successful the correct return type is set.
+
+```{.cpp .numberLines}
+void SemanticVisitor::visit(parser::ASTStructFunc *x) {
+  Variable var = scope.get_var(x->name);
+  if (var.type != parser::tea_struct) {
+    throw std::invalid_argument(
+        "Invalid operator on variable, it is not a struct in this scope");
+  } else {
+    std::vector<std::tuple<parser::Tealang_t, std::string>> args;
+    for (int i = 0; i < x->args.size(); i++) {
+      x->args[i]->accept(this);
+      args.push_back({token_type, token_name});
+    }
+    Struct base_type = scope.get_struct(*var.type_name);
+    try {
+      Function func =
+          base_type.base_functions.at(scope.code_generator(x->element, args));
+      token_setter(func.return_type);
+    } catch (...) {
+      throw std::invalid_argument("Unknown function \"" + x->element +
+                                  "\" called for struct:\"" + x->name +
+                                  "\" of type \"" + *var.type_name + "\"");
+    }
+  }
+}
+```
+
+
+### Struct Access and Assignment
+
+To perform type checking and member checking for structs a `members` map was added to the `Variable` class which links member names to a `Variable`. This approach could have been simplified to just mapping member types, however the code is intended to be re-used by the interpreter.
+
+```{.cpp .numberLines}
+void SemanticVisitor::visit(parser::ASTStructAccess *x) {
+  Variable var = scope.get_var(x->name);
+  if (var.type != parser::tea_struct) {
+    throw std::invalid_argument(
+        "Invalid operator on variable, it is not a struct in this scope");
+  } else {
+    try {
+      Variable temp = (*var.members).at(x->element);
+      token_setter(temp.type);
+    } catch (...) {
+      throw std::invalid_argument("Unknown variable \"" + x->element +
+                                  "\" called for struct:\"" + x->name +
+                                  "\" of type \"" + *var.type_name + "\"");
+    }
+  }
+}
+```
+
+
+\newpage
+# Interpreter
+
+The interpreter implementation to support structs is near identical to the semantic analysis. The only difference is that the `member` map is now used as the internal state, and the values of the variables inside are updated during execution.
+
+As mentioned previously during execution variables are stored in a C++ `any`, this allows structs to be returned from functions by only returning the `member` map and setting the `token_type` and `type_name` variables inside of the scope.
+
+
+```{.cpp .numberLines}
+void Interpreter::visit(parser::ASTStructDecl *x) {
+  Variable var;
+  var.name = x->identifier;
+  var.type_name = x->struct_name;
+  var.type = x->Type;
+  Struct temp = scope.get_struct(x->struct_name);
+  // Decleration with Assignment
+  if (x->value) {
+    x->value->accept(this);
+    // setting member variables
+    var.members = std::any_cast<std::map<std::string, Variable>>(token_value);
+  } else {
+    // using default initialisation
+    var.members = temp.base_variables;
+  }
+  scope.add_var(var);
+}
+
+```
+
+\newpage
+
+# Function Overloading
+
+Function overloading is the ability to define functions of the same name, so long as the combination and order of types passed it are unique. Inspired by C and C++ a name mangling scheme was developed to allow for unique code generation for functions. 
+
+The implementation works by concatenating the function typenames and the `&` character to the function name. The use of the `&` symbol when concatenating is to prevent a ambiguities when dealing with structs. Given two structs `str` and `ing`, the generated code for `foo(str, ing)` would be `foo&str&ing`, where the `&` symbol clears up the ambiguity with native `string` type.
+
+```{.cpp .numberLines}
+std::string Interpreter::Scope::code_generator( std::string name, std::vector<std::tuple<parser::Tealang_t, std::string>> args) {
+  std::string code = name;
+  for (auto arg : args) {
+    code += "&" + std::get<1>(arg);
+  }
+  return code;
+}
+```
+
+\newpage
 # Language Definition
 
-Below is a copy of the Tealang EBNF with changes from TealangV1 and TealangV2 highlighted in blue.
+Below is the full Tealang EBNF with changes from TealangV1 and TealangV2 highlighted in blue.
 
 \begin{grammar}
 
@@ -166,302 +558,273 @@ Below is a copy of the Tealang EBNF with changes from TealangV1 and TealangV2 hi
 
 \newpage
 
-# Lexer
+# Testing
 
-The lexer for Tealang is implemented using a table driver scanner [@eac-scanner]. A table driven scanner is an implementation of a backtracking finite state automaton, meaning that the lexer will attempt to recover to the last valid acceptance state if the error state is entered.
+## Testing Characters
 
+### Source code
 
-## Character Classes
+```{.c .numberLines}
+let c1:char = 'h';
 
-Finite Automata transitions are triggered by reading characters and then using a look-up table to determine the new state. To reduce the complexity of the transition table (reduce the number of states) characters were grouped into character classes based on the needs of the lexer.
+let c2:char = 'j';
 
-
-| Class Name  | Class Capture Group                            |
-|-------------+------------------------------------------------|
-| Digit       | Numbers: [0-9]                                 |
-| Decimal     | Period/Decimal Point: .                        |
-| Identifier  | ASCII Letters and Underscore                   |
-| Comparison  | Angle Brackets                                 |
-| Equals      | Equality Sign                                  |
-| Bang        | Exclamation Mark                               |
-| Punctuation | Brackets (Curly and Round), Semi/Normal Colons |
-| FSlash      | Forward Slash Symbol                           |
-| PlusMinus   | Plus and Minus symbol                          |
-| Asterisk    | Asterisk Sign                                  |
-| BSlash      | Backslash symbol                               |
-| DQuote      | Captures double Quotes                         |
-| SQuote      | Captures Single Quotes                         |
-| Newline     | ASCII Newline character                        |
-| Printable   | All printable ascii symbols 32-126             |
-
-The character classes are implemented such that there is no overlap between any two classes except for the printable classification. The implementation of the character classifier is such that the *printable* class can assigned if the tests for other classes failed.
-
-\newpage 
-## Automaton components
-
-### Identifiers and Keywords
-
-Keywords are reserved identifiers used by the language. In Tealang the set of all keywords is a subset of all valid identifiers, and as such keyword identification is implemented as extension to identifier identification.
-
-When an identifier token is identified it is passed through a map to determine and locate the corresponding keyword in logarithmic time. If no match is found then the token is classified as an identifier.
-
-![Identifier Automaton](automaton/identifier.png){.class width=35%}
-
-### Integers and Floats
-
-Observing the EBNF for the Tealang it can be seen that the definition for `float` is an extension of the definition for `int`. This allows the DFA for `float` to only require an extra 2 states which reduces the size of the transition table.
-
-An important fact about the definitions is that both `float` and `int` can start with any number of zeros, this means that `00000123.0` and `000` are both valid. These do not cause error conditions inside the evaluation of any expression and follow the behaviour of `std::stoi` and `std::stof` from c++.
-
-![Integer and Float Automaton](automaton/nums.png){.class width=60%}
-
-### Chars
-
-As of Tealang 2 the language now supports the `char` datatype. Currently the char data type does only supports alpha-numeric characters.
-
-![Char Automaton](automaton/chars.png){.class width=50%}
-
-### Relational Operators and Equality
-
-![Relational and Equality Automaton](automaton/eqcomp.png){.class width=40%}
-
-### Strings
-
-Typically string literals in programming languages need to include features such as escaped sequences like `\n` for newline or `\t` for tab. Tealang implements a crude form of this wherein if a `\` character is received then the next *printable* character is accepted into the string by default.
-
-Escaped sequences are evaluated after the entire string has been accepted by the lexer, where a regex find and replace is ran on all known escape codes. Codes which are not known to the language are left in their original form, meaning that `hello\"` would be printed as `hello"` whilst `hello\4` will be printed as `hello\4`.
-
-![String Automaton](automaton/strings.png){.class width=50%}
-
-### Language Punctuation
-
-Tealang makes use of a C-style syntax and as such required multiple single character tokens. The single characters required are defined by the *puncutation* character class. Since the DFA accepts multiple characters in the same state the accepted string is cast to a `char` to allow resolution using a `switch` to increase performance. 
-
-
-![Punctuation Automaton](automaton/punctuation.png){.class width=40%}
-
-
-### Binary Operators
-
-
-Tealang implements 4 base binary arithmetic operators [`+`, `-`, `*`, `/`]. The binary operators were implemented separately to the Punctuation recognition character class to allow for more flexibility to implement features such as increment (`++`), decrement (`--`) and exponentiation (`**`) in Tealang 2, however the features did not make it into the language specification. 
-
-Since the character used for division is also used in the comment syntax the recognition of the token is implemented in the comment section of the DFA.
-
-![Binary Operator Automaton](automaton/binop.png){.class width=40%}
-
-
-### Comments
-
-As previously mentioned Tealang has a C-style syntax and as such has C-style single and multiline comments. Single comments are denoted by `//` and continue till the end of the line, multiline comments are enclosed in `/**/` and will ignore anything inside the opening (`/*`) and closing brace (`*/`).
-
-
-![Comment Automaton](automaton/comments.png){.class width=80%}
-
-\newpage
-
-![Full DFA](automaton/fulldfa.png)
-
-\clearpage
-
-# Parser
-
-The Tealang parser is implemented as an LL(k) parser, with more than one lookahead only used in a small number of situations. An example of which is determining if an identifier is for a variable or a function call. 
-
-The implementation closely follows the one laid out in [@eac-parser]. The majority of the construction rules are implemented as functions inside the `Parser` class, where each function returns an node to be added to the Abstract syntax tree.
-
-The first function to be called is `parse_program` which returns the entire AST when it has finished. Since a `program` is defined as a list of statements then we attempt to parse a `statement` until the end of file is reached.
-
-```{.cpp eval=False}
-
-ASTProgram *Parser::parse_program() {
-  ASTProgram *node = new ASTProgram();
-  do {
-    node->statements.push_back(parse_statement());
-  } while (curr_tok.type != lexer::tok_end);
-  return node;
-}
-```
-
-## Parsing Statements
-
-
-The `parse_statement` function then uses switches over a first set to determine which production rule to use based on the lookahead token.
-
-| Token Type   | Production Rule      |
-|--------------|----------------------|
-| `let`        | Variable Decleration |
-| `print`      | Print Statement      |
-| `return`     | Return Statement     |
-| `if`         | If Statement         |
-| `for`        | For Statement        |
-| *identifier* | Assignment           |
-| *type*       | Function Decleration |
-| `{`          | Block                |
-Table: First Set Production Rules
-
-Once a `statement` node is reached the production rules are applied one by one. Single tokens are evaluated inside the function block, with other productions evaluated by calling the corresponding parse function. An example of this can be seen in the code snippet below.
-
-
-```{.cpp eval=False}
-
-ASTFunctionDecl *Parser::parse_function_decl() {
-
-  ASTFunctionDecl *node = new ASTFunctionDecl();
-
-// Determining the Return Type of the Function
-  switch (curr_tok.type) {
-    case lexer::tok_type_bool:
-    node->type = tea_bool;
-    break;
-```
-
-$\vdots$
-
-```{.cpp eval=False}
-  default:
-    fail("Type Decleration");
-  }
-
-    // Determining the function name
-  curr_tok = lex.getNxtToken();
-  if (curr_tok.type != lexer::tok_iden) {
-    fail("Identifier");
-  }else{
-    node->identifier = curr_tok.value;
-  }
-  
-  // Checking for ( token
-  curr_tok = lex.getNxtToken();
-  if (curr_tok.type != lexer::tok_round_left) {
-    fail("(");
-  }
-
-  // Parse Parameters
-  node->arguments = parse_formal_params();
-
-  // Checking for ) token
-  if (curr_tok.type != lexer::tok_round_right) {
-    fail(")");
-  }
-
-   // Checking for { token 
-  curr_tok = lex.getNxtToken();
-  if (curr_tok.type != lexer::tok_curly_left) {
-    fail("{");
-  }
-  
-  // Parsing Function Block
-  node->body = parse_block();
-  return node;
+if(c1==c2){
+    print "c1 and c2 are the same";
+}else{
+    print "c1 and c2 are different";
 }
 
-```
-
-\newpage 
-
-## Parsing Expressions
-
-Expression parsing is implemented in a similar fashion to statement parsing, where single tokens are checked as needed and further productions are recursively called.
-
-
-```{.cpp eval=False}
-
-ASTExpression *Parser::parse_simple_expression() {
-  ASTExpression *x = parse_term();
-  if (curr_tok.type == lexer::tok_add_op) {
-    ASTBinOp *node = new ASTBinOp();
-    node->left = x;
-    node->value = curr_tok.value;
-    node->op = tok_to_op[curr_tok.value];
-    node->right = parse_simple_expression(); // Recursive Evaluation
-    return node;
-  } else {
-    return x;
-  }
-}
+print c1;
+print c2;
 
 ```
 
-Expression parsing is also the only time in Tealang where a lookahead of more than 1 token is needed. When evaluating a factor the production rules for *Identifier*, *ArrayAccess*, and *FunctionCall* all share the same First token. To resolve this another lookahead token is used to check for the existence of a '`[`' or '`(`' token, the absence of which is interpreted as an identifier call.
+### Interpreter output
 
-```{.cpp eval=False}
- case lexer::tok_iden: {
-    ll1_tok = lex.getNxtToken(); // Getting Extra Lookahead
-    if (ll1_tok->type == lexer::tok_round_left) { /** Function Call */
-      ASTFunctionCall *node = new ASTFunctionCall();
-      node->name = curr_tok.value;
-      node->args = parse_actual_params();
-      curr_tok = lex.getNxtToken();
-      ll1_tok.reset();
-      return node;
-    } else if (ll1_tok->type ==
-               lexer::tok_square_left) { /**< Array Index Operation*/
-      ASTArrayAccess *node = new ASTArrayAccess();
-      node->name = curr_tok.value;
-      node->index = parse_expression();
-      curr_tok = lex.getNxtToken();
-      ll1_tok.reset();
-      return node;
-    } else {
-      ASTIdentifier *node = new ASTIdentifier(); /** Variable */
-      node->name = curr_tok.value;
-      curr_tok = ll1_tok.value();
-      ll1_tok.reset();
-      return node;
-    }
-    break;
-  }
 ```
+c1 and c2 are different
+h
+j
+```
+
+### Generated AST
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<Decl>
+			<Var Type="4">c1</Var>
+				<CharConst>h</CharConst>
+		</Decl>
+		<Decl>
+			<Var Type="4">c2</Var>
+				<CharConst>j</CharConst>
+		</Decl>
+		<If>
+			<Condition>
+				<BinExprNode Op="==">
+					<Identifier>c1</Identifier>
+					<Identifier>c2</Identifier>
+				</BinExprNode>
+			</Condition>
+			<EvalTrue>
+				<Block>
+					<Print>
+						<StringConst>c1 and c2 are the same</StringConst>
+					</Print>
+				</Block>
+			</EvalTrue>
+			<Else>
+				<Block>
+					<Print>
+						<StringConst>c1 and c2 are different</StringConst>
+					</Print>
+				</Block>
+			</Else>
+		</If>
+		<Print>
+			<Identifier>c1</Identifier>
+		</Print>
+		<Print>
+			<Identifier>c2</Identifier>
+		</Print>
+	</Prog>
+</root>
+```
+
 
 \newpage
 
 
-## Abstract Syntax Tree
-
-The Abstract Syntax tree for Tealang was implemented to leverage the Visitor design pattern [@visitor]. This allows poly-morphism to determine the type of the node and call the correct function automatically.
-
-Each `parse_production` function inside the Parser returns a pointer to a new AST Node. This has an almost one to one mapping with the EBNF, where all *Statement* productions are a subclass of `ASTStatement` and all *Expression* productions are a subclass of `ASTExpression`. There are some  exceptions to this rule, with `ASTArrayAssignment` being implemented as a subclass of `ASTAssignment` due to the large amount of overlap and an identical First token. Another other exception is the *Expression*, *SimpleExpression*, and *Term* productions which are all implemented with the same `ASTBinOp` node. The full class diagram can be seen in Figure 11.
+## Testing Arrays
 
 
-![Visitor Design Pattern [@wikivisitor]](diagrams/visitor.jpg)
+### Source code
 
-![Abstract Syntax Tree Class Hierarchy](diagrams/astuml.png)
+```{.c .numberLines}
+let x[4]:auto = {1.0,2.0,3.0,4.0};
+
+print x;
+
+x[2+1] = 7.0;
+
+print x[3];
+
+print x;
+
+let z[4]:string = {"hello", "world", "!"};
+
+print z;
+
+let a[2]:char = {'h','i'};
+
+print a;
+
+let b[2]:bool = {true, false};
+
+print b;
+
+let c[2]:int = {10,5};
+
+print c;
+```
+
+### Interpreter output
+
+```
+{1,2,3,4,}
+7
+{1,2,3,7,}
+{hello,world,!,}
+{h,i,}
+{true,false,}
+{10,5,}
+```
+
+### Generated AST
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<Decl>
+			<Array Type="-1">x</Array>
+			<Size>
+				<IntConst>4</IntConst>
+			</Size>
+			<Value>
+				<ArrayLiteral>
+					<Item index="0">
+						<FloatConst>1.0</FloatConst>
+					</Item>
+					<Item index="1">
+						<FloatConst>2.0</FloatConst>
+					</Item>
+					<Item index="2">
+						<FloatConst>3.0</FloatConst>
+					</Item>
+					<Item index="3">
+						<FloatConst>4.0</FloatConst>
+					</Item>
+					</ArrayLiteral>
+				</Value>
+			</Decl>
+			<Print>
+				<Identifier>x</Identifier>
+			</Print>
+			<ArrayAssign>
+				<Index>
+					<BinExprNode Op="+">
+						<IntConst>2</IntConst>
+						<IntConst>1</IntConst>
+					</BinExprNode>
+				</Index>
+				<Var>x</Var>
+				<FloatConst>7.0</FloatConst>
+			</ArrayAssign>
+			<Print>
+				<ArrayAccess Id="x">
+					<Index>
+						<IntConst>3</IntConst>
+					</Index>
+				</ArrayAccess>
+			</Print>
+			<Print>
+				<Identifier>x</Identifier>
+			</Print>
+			<Decl>
+				<Array Type="8">z</Array>
+				<Size>
+					<IntConst>4</IntConst>
+				</Size>
+				<Value>
+					<ArrayLiteral>
+						<Item index="0">
+							<StringConst>hello</StringConst>
+						</Item>
+						<Item index="1">
+							<StringConst>world</StringConst>
+						</Item>
+						<Item index="2">
+							<StringConst>!</StringConst>
+						</Item>
+						</ArrayLiteral>
+					</Value>
+				</Decl>
+				<Print>
+					<Identifier>z</Identifier>
+				</Print>
+				<Decl>
+					<Array Type="9">a</Array>
+					<Size>
+						<IntConst>2</IntConst>
+					</Size>
+					<Value>
+						<ArrayLiteral>
+							<Item index="0">
+								<CharConst>h</CharConst>
+							</Item>
+							<Item index="1">
+								<CharConst>i</CharConst>
+							</Item>
+							</ArrayLiteral>
+						</Value>
+					</Decl>
+					<Print>
+						<Identifier>a</Identifier>
+					</Print>
+					<Decl>
+						<Array Type="7">b</Array>
+						<Size>
+							<IntConst>2</IntConst>
+						</Size>
+						<Value>
+							<ArrayLiteral>
+								<Item index="0">
+									<BoolConst>true</BoolConst>
+								</Item>
+								<Item index="1">
+									<BoolConst>false</BoolConst>
+								</Item>
+								</ArrayLiteral>
+							</Value>
+						</Decl>
+						<Print>
+							<Identifier>b</Identifier>
+						</Print>
+						<Decl>
+							<Array Type="6">c</Array>
+							<Size>
+								<IntConst>2</IntConst>
+							</Size>
+							<Value>
+								<ArrayLiteral>
+									<Item index="0">
+										<IntConst>10</IntConst>
+									</Item>
+									<Item index="1">
+										<IntConst>5</IntConst>
+									</Item>
+									</ArrayLiteral>
+								</Value>
+							</Decl>
+							<Print>
+								<Identifier>c</Identifier>
+							</Print>
+						</Prog>
+</root>
+```
+
 
 \newpage
 
-### XML Generation
+## Testing Auto Type Deduction
 
-To debug and analyse the output of the generated Abstract syntax tree an XML visitor was created. The visitor is able to traverse the tree and output semantically correct XML to the specified file. 
+### Source Code 
 
-Each subclass of `ASTStatement` and `ASTExpression` have functions to output the information for the current node. Indentation is tracked in the `XMLVisitor` class where `indent()` and `unindent()` push and pop `\t` characters to a string buffer.
-
-```{.cpp}
-void XMLVisitor::visit(parser::ASTVariableDecl *x) {
-  file << indentation << "<Decl>" << std::endl;
-  indent();
-  file << indentation << "<Var Type=\"" << x->Type << "\">" << x->identifier
-       << "</Var>" << std::endl;
-  indent();
-  x->value->accept(this);
-  unindent();
-  unindent();
-  file << indentation << "</Decl>" << std::endl;
-}
-```
-
-### AST Generation Example
-
-The following code snippet is a valid Tealang program which utilises a decent amount of the language features. The generated XML for this program is almost 100 lines long and as such only the XML for the `XGreaterThanY` function is included here. In the final section of this document is a testing section with the full output.
-
-**Source Code**
-```{.go eval=False}
-bool XGreaterThanY(x: float, y:float) {
-     let ans:bool = true;
-     if (y>x) { ans = false; }
-     return ans;
-}
-
+```{.c .numberLines}
 auto fib(a: int){
   if (a < 2) {
     return a;
@@ -469,87 +832,505 @@ auto fib(a: int){
   return fib(a - 1) + fib(a - 2);
 }
 
-let x:float = 2.4;
-let y:float = Square(2.5);
-print x;                        //2.4
-print y;                        //6.25
-print XGreaterThanY(x,2.3);     //true
-print fib(10);
+auto XGreaterThanY(x:float, y:float){
+     return x > y;
+}
+
+
+let x:auto = 2.4;
+let y:auto = 2.3;
+print XGreaterThanY(x,y);     //true
+print fib(12);
 
 ```
 
-\newpage
 
-**XML for XGreaterThanY**
+### Interpreter Output
+
+
+```
+true
+144
+```
+
+### Generated AST 
+
 ```{.xml}
-
-<FuncDecl>
-  <Var Type="2">XGreaterThanY</Var>
-  <Arg Type="0">x</Arg>
-  <Arg Type="0">y</Arg>
-  <Block>
-    <Decl>
-      <Var Type="2">ans</Var>
-        <BoolConst>true</BoolConst>
-    </Decl>
-    <If>
-      <Condition>
-        <BinExprNode Op="&gt;">
-          <Identifier>y</Identifier>
-          <Identifier>x</Identifier>
-        </BinExprNode>
-      </Condition>
-      <EvalTrue>
-        <Block>
-          <Assign>
-            <Var>ans</Var>
-            <BoolConst>false</BoolConst>
-          </Assign>
-        </Block>
-      </EvalTrue>
-      <Else>
-      </Else>
-    </If>
-    <Return>
-      <Identifier>ans</Identifier>
-    </Return>
-  </Block>
-</FuncDecl>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="-1">fib</Var>
+			<Arg typename="int">a</Arg>
+			<Block>
+				<If>
+					<Condition>
+						<BinExprNode Op="&lt;">
+							<Identifier>a</Identifier>
+							<IntConst>2</IntConst>
+						</BinExprNode>
+					</Condition>
+					<EvalTrue>
+						<Block>
+							<Return>
+								<Identifier>a</Identifier>
+							</Return>
+						</Block>
+					</EvalTrue>
+					<Else>
+					</Else>
+				</If>
+				<Return>
+					<BinExprNode Op="+">
+						<FuncCall Id="fib">
+							<BinExprNode Op="-">
+								<Identifier>a</Identifier>
+								<IntConst>1</IntConst>
+							</BinExprNode>
+						</FuncCall>
+						<FuncCall Id="fib">
+							<BinExprNode Op="-">
+								<Identifier>a</Identifier>
+								<IntConst>2</IntConst>
+							</BinExprNode>
+						</FuncCall>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<FuncDecl>
+			<Var Type="-1">XGreaterThanY</Var>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
+			<Block>
+				<Return>
+					<BinExprNode Op="&gt;">
+						<Identifier>x</Identifier>
+						<Identifier>y</Identifier>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="-1">x</Var>
+				<FloatConst>2.4</FloatConst>
+		</Decl>
+		<Decl>
+			<Var Type="-1">y</Var>
+				<FloatConst>2.3</FloatConst>
+		</Decl>
+		<Print>
+			<FuncCall Id="XGreaterThanY">
+				<Identifier>x</Identifier>
+				<Identifier>y</Identifier>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="fib">
+				<IntConst>12</IntConst>
+			</FuncCall>
+		</Print>
+	</Prog>
+</root>
 ```
-
-\newpage 
-
-# Semantic Analysis
-
-The goal of semantic analysis is to filter out the set of valid Tealang programs from the set of Tealang programs accepted by the EBNF.
-
-## Type Checking
-
-According to the specification of Tealang, the language is not to perform any implicit/automatic typecasting. As such all operations between variables are required to operate on the same types. 
-
 
 \newpage
 
-# Tealang Classes
+## Testing Structs 
 
-The introduction of class based objects into the Tealang languaged required significant reworking of program internals. This was mainly related to the fact that now the *Identifier* token is being used in more situation. This causes First set conflicts and increases the need to use a look-ahead to determine the correct production. This rang true for both Expressions and Statements.
+### Source Code 
 
- | Production Rule          | Token Type             |
- |--------------------------|------------------------|
- | Variable Decleration     | `let`                  |
- | Array Decleration        | `let`                  |
- | Struct Decleration       | `let`                  |
- | Print Statement          | `print`                |
- | Return Statement         | `return`               |
- | If Statement             | `if`                   |
- | For Statement            | `for`                  |
- | Assignment               | *identifier*           |
- | Struct Member Assignment | *identifier*           |
- | Struct Definition        | `tlstruct`             |
- | Function Decleration     | *type* or *identifier* |
- | Block                    | `{`                    |
-Table: First Set Production Rules with Structs
+```{.c .numberLines}
+tlstruct Vector {
+	let x:float = 0.0;
+	let y:float = 0.0;
+	let z:float = 0.0;
+
+	int scale(s:float){
+		x = x * s;
+		y = y * s;
+		z = z * s;
+		return 0;
+	}
+
+	int translate(tx:float, ty:float, tz:float){
+		x = x + tx;
+		y = y + tz;
+		z = z + tz;
+		return 0;
+	}
+
+}
+
+auto Add(v1:Vector, v2:Vector){
+	let vTemp:Vector;
+	vTemp.x = v1.x + v2.x;
+	vTemp.y = v1.y + v2.y;
+	vTemp.z = v1.z + v2.z;
+	return vTemp;
+}
+
+let v1:Vector;
+v1.x = 1.0;
+v1.y = 2.0;
+v1.z = 2.0;
+
+let v2:Vector;
+v2.x = 2.0;
+v2.y = 1.2;
+v2.z = 0.0;
+
+let v3:Vector = Add(v1,v2);
+print v3.x; // 3
+print v3.y; // 3.2
+print v3.z; // 2
+
+let tempVar:int = v3.translate(1.0,1.0,1.0); // adds 1 to every element
+
+print v3;
+
+let v4:Vector = Add(v1,v3);
+
+print v4;
+
+tempVar = v1.scale(10.0);
+
+print v1;
+```
+
+
+### Interpreter Output
+
+
+```
+3
+3.2
+2
+Vector:{
+   x = 4,
+   y = 4.2,
+   z = 3,
+}
+Vector:{
+   x = 5,
+   y = 6.2,
+   z = 5,
+}
+Vector:{
+   x = 10,
+   y = 20,
+   z = 20,
+}
+```
+
+### Generated AST 
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<StructDefn name="Vector">
+			<Variables>
+				<Decl>
+					<Var Type="0">x</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+				<Decl>
+					<Var Type="0">y</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+				<Decl>
+					<Var Type="0">z</Var>
+						<FloatConst>0.0</FloatConst>
+				</Decl>
+			</Variables>
+			<Functions>
+				<FuncDecl>
+					<Var Type="1">scale</Var>
+					<Arg typename="float">s</Arg>
+					<Block>
+						<Assign>
+							<Var>x</Var>
+							<BinExprNode Op="*">
+								<Identifier>x</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>y</Var>
+							<BinExprNode Op="*">
+								<Identifier>y</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>z</Var>
+							<BinExprNode Op="*">
+								<Identifier>z</Identifier>
+								<Identifier>s</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Return>
+							<IntConst>0</IntConst>
+						</Return>
+					</Block>
+				</FuncDecl>
+				<FuncDecl>
+					<Var Type="1">translate</Var>
+					<Arg typename="float">tx</Arg>
+					<Arg typename="float">ty</Arg>
+					<Arg typename="float">tz</Arg>
+					<Block>
+						<Assign>
+							<Var>x</Var>
+							<BinExprNode Op="+">
+								<Identifier>x</Identifier>
+								<Identifier>tx</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>y</Var>
+							<BinExprNode Op="+">
+								<Identifier>y</Identifier>
+								<Identifier>tz</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Assign>
+							<Var>z</Var>
+							<BinExprNode Op="+">
+								<Identifier>z</Identifier>
+								<Identifier>tz</Identifier>
+							</BinExprNode>
+						</Assign>
+						<Return>
+							<IntConst>0</IntConst>
+						</Return>
+					</Block>
+				</FuncDecl>
+			</Functions>
+		</StructDefn>
+		<FuncDecl>
+			<Var Type="-1">Add</Var>
+			<Arg typename="Vector">v1</Arg>
+			<Arg typename="Vector">v2</Arg>
+			<Block>
+				<Decl>
+					<Var Type="Vector">vTemp</Var>
+				</Decl>
+				<StructAssign name="vTemp" element="x">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="x"/>
+						<StructAccess name="v2" element="x"/>
+					</BinExprNode>
+				</StructAssign>
+				<StructAssign name="vTemp" element="y">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="y"/>
+						<StructAccess name="v2" element="y"/>
+					</BinExprNode>
+				</StructAssign>
+				<StructAssign name="vTemp" element="z">
+					<BinExprNode Op="+">
+						<StructAccess name="v1" element="z"/>
+						<StructAccess name="v2" element="z"/>
+					</BinExprNode>
+				</StructAssign>
+				<Return>
+					<Identifier>vTemp</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Decl>
+			<Var Type="Vector">v1</Var>
+		</Decl>
+		<StructAssign name="v1" element="x">
+			<FloatConst>1.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v1" element="y">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v1" element="z">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<Decl>
+			<Var Type="Vector">v2</Var>
+		</Decl>
+		<StructAssign name="v2" element="x">
+			<FloatConst>2.0</FloatConst>
+		</StructAssign>
+		<StructAssign name="v2" element="y">
+			<FloatConst>1.2</FloatConst>
+		</StructAssign>
+		<StructAssign name="v2" element="z">
+			<FloatConst>0.0</FloatConst>
+		</StructAssign>
+		<Decl>
+			<Var Type="Vector">v3</Var>
+				<FuncCall Id="Add">
+					<Identifier>v1</Identifier>
+					<Identifier>v2</Identifier>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<StructAccess name="v3" element="x"/>
+		</Print>
+		<Print>
+			<StructAccess name="v3" element="y"/>
+		</Print>
+		<Print>
+			<StructAccess name="v3" element="z"/>
+		</Print>
+		<Decl>
+			<Var Type="1">tempVar</Var>
+				<StructFunc name="v3" element="translate">
+					<FloatConst>1.0</FloatConst>
+					<FloatConst>1.0</FloatConst>
+					<FloatConst>1.0</FloatConst>
+				</StructFunc>
+		</Decl>
+		<Print>
+			<Identifier>v3</Identifier>
+		</Print>
+		<Decl>
+			<Var Type="Vector">v4</Var>
+				<FuncCall Id="Add">
+					<Identifier>v1</Identifier>
+					<Identifier>v3</Identifier>
+				</FuncCall>
+		</Decl>
+		<Print>
+			<Identifier>v4</Identifier>
+		</Print>
+		<Assign>
+			<Var>tempVar</Var>
+			<StructFunc name="v1" element="scale">
+				<FloatConst>10.0</FloatConst>
+			</StructFunc>
+		</Assign>
+		<Print>
+			<Identifier>v1</Identifier>
+		</Print>
+	</Prog>
+</root>
+
+```
+
+\newpage
+
+## Testing Function Overloading
+
+### Source Code 
+
+```{.c .numberLines}
+float AverageOfThree (x:float, y:float, z:float){
+    print "Float Average of three";
+    let total:float = x+y+z;
+    return total/3.0;
+}
+
+int AverageOfThree (x:int, y:int, z:int){
+    print "Integer Average of three";
+    let total:int = (x+y+z)/3;
+    return total;
+}
+
+print AverageOfThree(10,20,45);
+
+print AverageOfThree(12.5,7.5,30.5);
+
+```
+
+
+### Interpreter Output
+
+
+```
+Integer Average of three
+25
+Float Average of three
+16.8333
+```
+
+### Generated AST 
+
+```{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<root description="Tealang AST Generation">
+	<Prog>
+		<FuncDecl>
+			<Var Type="0">AverageOfThree</Var>
+			<Arg typename="float">x</Arg>
+			<Arg typename="float">y</Arg>
+			<Arg typename="float">z</Arg>
+			<Block>
+				<Print>
+					<StringConst>Float Average of three</StringConst>
+				</Print>
+				<Decl>
+					<Var Type="0">total</Var>
+						<BinExprNode Op="+">
+							<Identifier>x</Identifier>
+							<BinExprNode Op="+">
+								<Identifier>y</Identifier>
+								<Identifier>z</Identifier>
+							</BinExprNode>
+						</BinExprNode>
+				</Decl>
+				<Return>
+					<BinExprNode Op="/">
+						<Identifier>total</Identifier>
+						<FloatConst>3.0</FloatConst>
+					</BinExprNode>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<FuncDecl>
+			<Var Type="1">AverageOfThree</Var>
+			<Arg typename="int">x</Arg>
+			<Arg typename="int">y</Arg>
+			<Arg typename="int">z</Arg>
+			<Block>
+				<Print>
+					<StringConst>Integer Average of three</StringConst>
+				</Print>
+				<Decl>
+					<Var Type="1">total</Var>
+						<BinExprNode Op="/">
+							<BinExprNode Op="+">
+								<Identifier>x</Identifier>
+								<BinExprNode Op="+">
+									<Identifier>y</Identifier>
+									<Identifier>z</Identifier>
+								</BinExprNode>
+							</BinExprNode>
+							<IntConst>3</IntConst>
+						</BinExprNode>
+				</Decl>
+				<Return>
+					<Identifier>total</Identifier>
+				</Return>
+			</Block>
+		</FuncDecl>
+		<Print>
+			<FuncCall Id="AverageOfThree">
+				<IntConst>10</IntConst>
+				<IntConst>20</IntConst>
+				<IntConst>45</IntConst>
+			</FuncCall>
+		</Print>
+		<Print>
+			<FuncCall Id="AverageOfThree">
+				<FloatConst>12.5</FloatConst>
+				<FloatConst>7.5</FloatConst>
+				<FloatConst>30.5</FloatConst>
+			</FuncCall>
+		</Print>
+	</Prog>
+</root>
+
+```
+
+
 
 
 

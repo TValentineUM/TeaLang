@@ -724,27 +724,37 @@ void Interpreter::visit(parser::ASTArrayAssignment *x) {
   }
   x->value->accept(this);
   switch (token_type) {
-  case parser::tea_bool:
-    std::any_cast<std::vector<bool>>(arr.value)[index] =
-        std::any_cast<bool>(token_value);
+  case parser::tea_bool: {
+    auto temp_arr = std::any_cast<std::vector<bool>>(arr.value);
+    temp_arr[index] = std::any_cast<bool>(token_value);
+    arr.value = temp_arr;
     break;
-  case parser::tea_float:
-    std::any_cast<std::vector<float>>(arr.value)[index] =
-        std::any_cast<float>(token_value);
+  }
+  case parser::tea_float: {
+    auto temp_arr = std::any_cast<std::vector<float>>(arr.value);
+    temp_arr[index] = std::any_cast<float>(token_value);
+    arr.value = temp_arr;
     break;
+  }
   case parser::tea_int: {
     auto temp_arr = std::any_cast<std::vector<int>>(arr.value);
     temp_arr[index] = std::any_cast<int>(token_value);
     arr.value = temp_arr;
     break;
   }
-  case parser::tea_string:
-    std::any_cast<std::vector<std::string>>(arr.value)[index] =
-        std::any_cast<std::string>(token_value);
+  case parser::tea_string: {
+    auto temp_arr = std::any_cast<std::vector<std::string>>(arr.value);
+    temp_arr[index] = std::any_cast<std::string>(token_value);
+    arr.value = temp_arr;
     break;
-  case parser::tea_arr_char:
-    std::any_cast<std::vector<char>>(arr.value)[index] =
-        std::any_cast<char>(token_value);
+  }
+  case parser::tea_arr_char: {
+    auto temp_arr = std::any_cast<std::vector<char>>(arr.value);
+    temp_arr[index] = std::any_cast<char>(token_value);
+    arr.value = temp_arr;
+    break;
+  }
+  default:
     break;
   }
   scope.update_var(arr.name, arr);
