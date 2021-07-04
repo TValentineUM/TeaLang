@@ -146,6 +146,12 @@ One important note about the implementation is that the elements in an array are
 
 Changes to the lexer and parser were minimal in this section, `auto` was added as a *Type* in the EBNF and the token was added to the list of keywords in the lexer. The implementation is primarily in the semantic analysis section where upon successful completion produces a properly typed AST.
 
+\begin{grammar}
+
+<Type> ::= `float' | `int' | `bool' | `string' \color{blue} |  `char' | `auto' \color{black}
+
+\end{grammar}
+
 ## Variables
 
 Variable type deduction was implemented by evaluating the type of the expression following the `=` and then editing the AST to change the type from `auto` to the deduced type.
@@ -155,9 +161,10 @@ This implementation does break the principle of the Visitor design pattern by al
 
 ## Functions
 
-Type dedication for function was more complicated as the type is deduced from *Return* statements, which may contain recursive calls.
+Type deduction for functions was more complicated as the type is deduced from *Return* statements, which may contain recursive calls.
 
-The solution involves running the semantic analysis of the *Block* twice, where the first pass tries to set the type of the function from *Return* statements. If no *Statement* returns a concrete type then an error is thrown, otherwise the `ASTFunctionDecl` node is altered and the semantic analysis is run again to ensure type compatibility with possible recursive calls. This allows the base case for recursive functions to be located in any line of the function body, as opposed to forcing base cases to be first.
+The solution involves running the semantic analysis of the *Block* twice, where the first pass tries to set the type of the function from *Return* statements. If no statement returns a concrete type then an error is thrown, otherwise the `ASTFunctionDecl` node is altered and the semantic analysis is run again to ensure type compatibility with possible recursive calls. 
+
 
 \newpage
 # Structs
@@ -367,7 +374,7 @@ void SemanticVisitor::visit(parser::ASTStructAccess *x) {
 
 
 \newpage
-# Interpreter
+## Interpreter
 
 The interpreter implementation to support structs is near identical to the semantic analysis. The only difference is that the `member` map is now used as the internal state, and the values of the variables inside are updated during execution.
 

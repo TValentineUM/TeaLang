@@ -20,24 +20,26 @@
 						</Block>
 					</EvalTrue>
 					<Else>
+						<Block>
+							<Return>
+								<BinExprNode Op="+">
+									<FuncCall Id="fib">
+										<BinExprNode Op="-">
+											<Identifier>a</Identifier>
+											<IntConst>1</IntConst>
+										</BinExprNode>
+									</FuncCall>
+									<FuncCall Id="fib">
+										<BinExprNode Op="-">
+											<Identifier>a</Identifier>
+											<IntConst>2</IntConst>
+										</BinExprNode>
+									</FuncCall>
+								</BinExprNode>
+							</Return>
+						</Block>
 					</Else>
 				</If>
-				<Return>
-					<BinExprNode Op="+">
-						<FuncCall Id="fib">
-							<BinExprNode Op="-">
-								<Identifier>a</Identifier>
-								<IntConst>1</IntConst>
-							</BinExprNode>
-						</FuncCall>
-						<FuncCall Id="fib">
-							<BinExprNode Op="-">
-								<Identifier>a</Identifier>
-								<IntConst>2</IntConst>
-							</BinExprNode>
-						</FuncCall>
-					</BinExprNode>
-				</Return>
 			</Block>
 		</FuncDecl>
 		<FuncDecl>

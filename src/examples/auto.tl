@@ -1,8 +1,9 @@
 auto fib(a: int){
   if (a < 2) {
     return a;
+  }else{
+    return fib(a - 1) + fib(a - 2);
   }
-  return fib(a - 1) + fib(a - 2);
 }
 
 auto XGreaterThanY(x:float, y:float){
