@@ -176,7 +176,7 @@ Parsing statements requires the deduction of the correct production rule from a 
 | *identifier* | Assignment           |
 | *type*       | Function Decleration |
 | `{`          | Block                |
-Table: First Set Production Rules
+Table: First Token Production Possibilities
 
 ```{.cpp .numberLines}
 ASTStatement *Parser::parse_statement() {
