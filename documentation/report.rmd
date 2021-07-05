@@ -30,6 +30,8 @@ csl: ieee.csl
 
 \newpage
 
+
+
 # Lexer
 
 The lexer for Tealang is implemented using a table driver scanner [@eac-scanner]. A table driven scanner is an implementation of a backtracking finite state automaton, this means the lexer will attempt to recover to the last valid acceptance state if the error state is entered.
@@ -613,6 +615,7 @@ public:
 
 Scope is now also represented by a class, with functions to find variables or functions, as well as adding or updating variables in the scope.
 
+
 ## Code Evalation
 
 ### Operator Evaluation
@@ -677,6 +680,27 @@ int main(void) {
 The function `bar` is designed to print the variable `global` which is initialised to 10. The function `foo` is designed to create a new variable called `global` initialised to 12, and then call the `bar` function. 
  
 If the `bar` function is able to access the scope created when `foo` was called, then the result from `bar` would be 12. Compiling and running this code reveals that the actual result is 10, meaning that calling a function from inside function will remove the parents scope.
+
+
+\newpage
+
+# Running Tealang
+
+To compile Tealang navigate to the `src` directory and run `make -B`, the Tealang interpreter will then be compiled into the `tealang` binary.
+
+```{.bash}
+cd src
+make -B          # Compiles the program
+./tealang --help # Lists the help menu
+./tealang <file> # Runs the specified file
+```
+
+## Tealang Flags
+
+- `-x` or `--xml` will output the generated XML into a specified file
+- `-l` or `--lexer` will output the lexer tokens into a specified file
+- `-o` or `--output` will redirect `stdout` to the specified file
+
 
 
 \newpage
