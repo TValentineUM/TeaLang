@@ -1,0 +1,100 @@
+\hypertarget{lexer_8hh}{}\doxysection{src/lexer/lexer.hh File Reference}
+\label{lexer_8hh}\index{src/lexer/lexer.hh@{src/lexer/lexer.hh}}
+
+
+Table Driven Lexer.  
+
+
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}token.\+hh\char`\"{}}\newline
+Include dependency graph for lexer.\+hh\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=311pt]{lexer_8hh__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{lexer_8hh__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classlexer_1_1_lexer}{lexer\+::\+Lexer}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacelexer}{lexer}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3}{lexer\+::dfa\+\_\+state}} \{ \newline
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a7c15655e25435fafbbb91ba41e40ab3b}{lexer\+::\+S0}} = 0, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3aeac7c5bb5d55e008d2486cf9f203d8fb}{lexer\+::\+S1}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3aa572e5fe435c492d6ef7c70cb4950201}{lexer\+::\+S2}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3aa1b4a6313550a555139e83774a9aa1d6}{lexer\+::\+S3}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a8b3a5fc8c3a6aad5f20d0d950d59a426}{lexer\+::\+S4}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a7546cec89a9d661abb494e064a553429}{lexer\+::\+S5}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a28fdfa69484c7dca71f7b4d3ad3f778b}{lexer\+::\+S6}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a835ab892af45288a816dd2a7f9c73719}{lexer\+::\+S7}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3ab15bb3a32014cbd6275ab99cac813681}{lexer\+::\+S8}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3ae2281d3a9ac7e71a7e7edb85b783a9f7}{lexer\+::\+S9}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3ad01aae07f8cbd4cf29fd04a2eb09bf76}{lexer\+::\+S10}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a97c009d8f51025da8e3316447ddf0e13}{lexer\+::\+S11}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a164216196c89303c558aca2a66bb02d3}{lexer\+::\+S12}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a25189ff705c8f5516cd986a3cdefaeb5}{lexer\+::\+S13}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3ac33d11b56c974b70dfec07762c369bf1}{lexer\+::\+S14}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a8aae3716b02acbd0f93ea6492499aa5a}{lexer\+::\+S15}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a7d69854c46b4c8f5aa23e05607e60db2}{lexer\+::\+S16}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a1cc6233efe330f4163332e58d068fbf7}{lexer\+::\+S17}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a9edc74acd8fb0210251e0b0596ef7889}{lexer\+::\+S18}}, 
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a9ec95b4c17d096b98eb38826d34f3b9b}{lexer\+::\+SE}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_ac9be817a1841c3643f4d051c9acf0bf3a907bba6b08c115a2a6c2e255a1dc8b86}{lexer\+::\+B\+AD}}
+ \}
+\item 
+enum \mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366}{lexer\+::char\+\_\+class}} \{ \newline
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366af810a177747c087fc0bd27515067a891}{lexer\+::\+Digit}} = 0, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366aec858ce97dd89c8a5c82eafdbe908f21}{lexer\+::\+Decimal}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a7bf2f1e11efc2391992644f04a082d32}{lexer\+::\+Identifier}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366aed747075a6c407ec827256577878cf67}{lexer\+::\+Comparison}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a919a65d5ae00c85575c62b3222c34f61}{lexer\+::\+Equals}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a56c008c15ae87cebb24cc6406c53b26d}{lexer\+::\+Bang}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a1c56fc452a9bfc215e8a8a0a27bf1dad}{lexer\+::\+F\+Slash}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366ab884b52e3dbb00f8a968895544383cf8}{lexer\+::\+Plus\+Minus}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a9844a7dd7ef77eab4c25c7a0ce6822b5}{lexer\+::\+Asterisk}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a9d0037a83b1a52f1abd70bb73041e081}{lexer\+::\+B\+Slash}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a81d5a625726c4b663e7da0964b2b10f9}{lexer\+::\+Qoute}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366aa042ffcbdd3ffad85c74e9b372c579c3}{lexer\+::\+Newline}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366ae6cf8ddb6f6780b0adeeb577c63b846b}{lexer\+::\+Printable}}, 
+\mbox{\hyperlink{namespacelexer_aa8b2cf4469098dc9d4c8b642912db366a6db6d28d201eb96db69487d4a5aeaa25}{lexer\+::\+Err}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Table Driven Lexer. 
+
+\begin{DoxyAuthor}{Author}
+Tony Valentine This header file contains the main implementation of a table driven lexer for the Tea\+Lang programming language. The implementation is heavily based of the examples given in the \char`\"{}\+Engineering a Compiler\char`\"{} book.
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+30 March 2020 
+\end{DoxyDate}

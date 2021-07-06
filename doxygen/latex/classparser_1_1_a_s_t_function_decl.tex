@@ -1,0 +1,102 @@
+\hypertarget{classparser_1_1_a_s_t_function_decl}{}\doxysection{parser\+::A\+S\+T\+Function\+Decl Class Reference}
+\label{classparser_1_1_a_s_t_function_decl}\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+
+
+{\ttfamily \#include $<$A\+S\+T.\+hh$>$}
+
+
+
+Inheritance diagram for parser\+::A\+S\+T\+Function\+Decl\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=215pt]{classparser_1_1_a_s_t_function_decl__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for parser\+::A\+S\+T\+Function\+Decl\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=259pt]{classparser_1_1_a_s_t_function_decl__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{Tealang\+\_\+t}} $>$ \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_a69836aa0698a891df2647fa0d19f3e3f}{param\+\_\+types}} ()
+\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_a80ff2e684b4b26f1f67a59c56b3ccd95}{param\+\_\+names}} ()
+\item 
+void \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_ace0fd376f24d033dc50115f79b42a3fd}{accept}} (\mbox{\hyperlink{classvisitor_1_1_visitor}{visitor\+::\+Visitor}} $\ast$visitor)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{Tealang\+\_\+t}} \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_a0d68f50cffb4b711d5157ad3517a6189}{type}}
+\item 
+std\+::string \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_a8edb973809a0458252b9fae261066760}{identifier}}
+\item 
+std\+::vector$<$ std\+::tuple$<$ std\+::string, \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{Tealang\+\_\+t}} $>$ $>$ \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_a4e0cade9787af2afe42bc89e877cfbb6}{arguments}}
+\item 
+\mbox{\hyperlink{classparser_1_1_a_s_t_block}{A\+S\+T\+Block}} $\ast$ \mbox{\hyperlink{classparser_1_1_a_s_t_function_decl_aa77cbe6ba433ab46d3b5840b2977efb4}{body}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_ace0fd376f24d033dc50115f79b42a3fd}\label{classparser_1_1_a_s_t_function_decl_ace0fd376f24d033dc50115f79b42a3fd}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!accept@{accept}}
+\index{accept@{accept}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{accept()}{accept()}}
+{\footnotesize\ttfamily void parser\+::\+A\+S\+T\+Function\+Decl\+::accept (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classvisitor_1_1_visitor}{visitor\+::\+Visitor}} $\ast$}]{visitor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classparser_1_1_a_s_t_statement_ae782325024da365437c78096598758e6}{parser\+::\+A\+S\+T\+Statement}}.
+
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_a80ff2e684b4b26f1f67a59c56b3ccd95}\label{classparser_1_1_a_s_t_function_decl_a80ff2e684b4b26f1f67a59c56b3ccd95}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!param\_names@{param\_names}}
+\index{param\_names@{param\_names}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{param\_names()}{param\_names()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ A\+S\+T\+Function\+Decl\+::param\+\_\+names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_a69836aa0698a891df2647fa0d19f3e3f}\label{classparser_1_1_a_s_t_function_decl_a69836aa0698a891df2647fa0d19f3e3f}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!param\_types@{param\_types}}
+\index{param\_types@{param\_types}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{param\_types()}{param\_types()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{Tealang\+\_\+t}} $>$ A\+S\+T\+Function\+Decl\+::param\+\_\+types (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_a4e0cade9787af2afe42bc89e877cfbb6}\label{classparser_1_1_a_s_t_function_decl_a4e0cade9787af2afe42bc89e877cfbb6}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!arguments@{arguments}}
+\index{arguments@{arguments}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{arguments}{arguments}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::tuple$<$std\+::string, \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{Tealang\+\_\+t}}$>$ $>$ parser\+::\+A\+S\+T\+Function\+Decl\+::arguments}
+
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_aa77cbe6ba433ab46d3b5840b2977efb4}\label{classparser_1_1_a_s_t_function_decl_aa77cbe6ba433ab46d3b5840b2977efb4}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!body@{body}}
+\index{body@{body}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{body}{body}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classparser_1_1_a_s_t_block}{A\+S\+T\+Block}}$\ast$ parser\+::\+A\+S\+T\+Function\+Decl\+::body}
+
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_a8edb973809a0458252b9fae261066760}\label{classparser_1_1_a_s_t_function_decl_a8edb973809a0458252b9fae261066760}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!identifier@{identifier}}
+\index{identifier@{identifier}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{identifier}{identifier}}
+{\footnotesize\ttfamily std\+::string parser\+::\+A\+S\+T\+Function\+Decl\+::identifier}
+
+\mbox{\Hypertarget{classparser_1_1_a_s_t_function_decl_a0d68f50cffb4b711d5157ad3517a6189}\label{classparser_1_1_a_s_t_function_decl_a0d68f50cffb4b711d5157ad3517a6189}} 
+\index{parser::ASTFunctionDecl@{parser::ASTFunctionDecl}!type@{type}}
+\index{type@{type}!parser::ASTFunctionDecl@{parser::ASTFunctionDecl}}
+\doxysubsubsection{\texorpdfstring{type}{type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{Tealang\+\_\+t}} parser\+::\+A\+S\+T\+Function\+Decl\+::type}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/parser/\mbox{\hyperlink{_a_s_t_8hh}{A\+S\+T.\+hh}}\item 
+src/parser/\mbox{\hyperlink{_a_s_t_8cc}{A\+S\+T.\+cc}}\end{DoxyCompactItemize}

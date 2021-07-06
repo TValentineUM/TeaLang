@@ -1,0 +1,83 @@
+\hypertarget{token_8hh}{}\doxysection{src/lexer/token.hh File Reference}
+\label{token_8hh}\index{src/lexer/token.hh@{src/lexer/token.hh}}
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+Include dependency graph for token.\+hh\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{token_8hh__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{token_8hh__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classlexer_1_1_token}{lexer\+::\+Token}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacelexer}{lexer}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49}{lexer\+::tl\+\_\+token}} \{ \newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a8595e61debf992e19b36a92f7009c426}{lexer\+::tok\+\_\+iden}} = 0, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49af0ed965727069e280481653a82472778}{lexer\+::tok\+\_\+type\+\_\+int}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a879eb0c1737f7ae73a0f2cc703ef2abc}{lexer\+::tok\+\_\+type\+\_\+float}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a8dd18de70fb90a7097113dd654849e6f}{lexer\+::tok\+\_\+type\+\_\+bool}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae2f89c073459e9baa3b7ec237cddcc86}{lexer\+::tok\+\_\+type\+\_\+string}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ad96d11b61f4a721f831c84ea78e91fa9}{lexer\+::tok\+\_\+type\+\_\+char}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a05e3c96221f60ede9a0794e1f3fc06b2}{lexer\+::tok\+\_\+lit\+\_\+bool}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a456fa420758b8aae81dca1e347a97d3b}{lexer\+::tok\+\_\+lit\+\_\+int}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a04322d127c73ba38a0e48af19e0baee3}{lexer\+::tok\+\_\+lit\+\_\+float}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a7d361ee95ddcd62b377b1c6633540517}{lexer\+::tok\+\_\+lit\+\_\+string}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ac3ef32723300a1db32ae4284bfdb1f90}{lexer\+::tok\+\_\+lit\+\_\+char}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ac77f6a969b5516df6060aff9d896730a}{lexer\+::tok\+\_\+multi\+\_\+op}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a2cbd8f13f87194186b1c950a76c1ab25}{lexer\+::tok\+\_\+add\+\_\+op}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae88a7d54bbf410e27a89663fe08ba62f}{lexer\+::tok\+\_\+curly\+\_\+left}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49aad3fb64b056596633c1802ec0ae3dcfa}{lexer\+::tok\+\_\+curly\+\_\+right}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a440bf6e386b44c4729c624d5b4b3b45a}{lexer\+::tok\+\_\+round\+\_\+left}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a9af7755cb587ed27c8073fe149eca960}{lexer\+::tok\+\_\+round\+\_\+right}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a677fa04595355b726acf2857abf8d03b}{lexer\+::tok\+\_\+square\+\_\+left}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a10fcd75712add0d6e9da0d4b22d50b22}{lexer\+::tok\+\_\+square\+\_\+right}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a0c685999fa6618d36d351f06d752bbb5}{lexer\+::tok\+\_\+semicolon}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a9789e3bb2ab2a1495fe43c3d79b96d44}{lexer\+::tok\+\_\+colon}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a696ebaa9298ba18f24f7b57563e3215b}{lexer\+::tok\+\_\+comma}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a5594f701d077a25132b294b7fcb99d77}{lexer\+::tok\+\_\+unary}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a6e2cbc5def19a440a75df7fafa92b7a3}{lexer\+::tok\+\_\+let}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a8ba5bde8443d531959dd32d12ec87b11}{lexer\+::tok\+\_\+print}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a377be02b844a72991cb656985d701e56}{lexer\+::tok\+\_\+return}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a081e78700069633b4c101abd3a2c61c1}{lexer\+::tok\+\_\+if}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae6bea6dbfc181c48b8f28ac59b60f93a}{lexer\+::tok\+\_\+else}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a6a1c8231ab9c7f336c1a48f21ff1bf2f}{lexer\+::tok\+\_\+for}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae3914d09e1adf56216c446bb70b472e3}{lexer\+::tok\+\_\+while}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49adadfdbef2e44b6b205f2ae47be683cfa}{lexer\+::tok\+\_\+relational}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ab1cf805170c3fd4b053e4c7b5d6e429f}{lexer\+::tok\+\_\+assign}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a89b8366784fa8adf3c6de2fcf471ad35}{lexer\+::tok\+\_\+type\+\_\+auto}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a8484b4641ad88bfba496488b93a6208b}{lexer\+::tok\+\_\+struct}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae199eb99a2440e8d5a9295977628c31a}{lexer\+::tok\+\_\+decimal}}, 
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ad842e66ad20cf8e3b944403e88a84ce0}{lexer\+::tok\+\_\+end}}, 
+\newline
+\mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a9e9baefe8feef1941283259330264df2}{lexer\+::tok\+\_\+comment}} = -\/1
+ \}
+\end{DoxyCompactItemize}

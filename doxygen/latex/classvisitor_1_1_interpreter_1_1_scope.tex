@@ -1,0 +1,103 @@
+\hypertarget{classvisitor_1_1_interpreter_1_1_scope}{}\doxysection{visitor\+::Interpreter\+::Scope Class Reference}
+\label{classvisitor_1_1_interpreter_1_1_scope}\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_a5541eaed5f2c0eb348672cf0817c37f1}{Scope}} ()
+\item 
+\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Function}} \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_aa8aba30f2582b1cf420700952ca2fe64}{get\+\_\+func}} (std\+::string)
+\item 
+\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}} \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_a4cbc4e12b3059db02816758dc4d6557c}{get\+\_\+var}} (std\+::string)
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_a567363909a5af795ad40375d79df973f}{add\+\_\+var}} (\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}})
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_a57644a15c91ccdb2de117d5cf96ba18a}{add\+\_\+func}} (\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Function}})
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_a4ef6d2754b1e1c35db5c553108702d61}{update\+\_\+var}} (std\+::string, \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}})
+\item 
+std\+::string \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_ac1dfbfd623bf20953da721327103d2a1}{code\+\_\+generator}} (std\+::string, std\+::vector$<$ \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{parser\+::\+Tealang\+\_\+t}} $>$)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::map$<$ std\+::string, \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}} $>$ $>$ \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_ae47bb7cf0c092cf48cfbf1acc84709fd}{variable\+\_\+scope}}
+\item 
+std\+::map$<$ std\+::string, \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Function}} $>$ \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_a85f9685cb6c723facf5676ef9adf20b2}{function\+\_\+scope}}
+\item 
+bool \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_scope_aa42a80b683c701f63144bf93cb470ba8}{function\+\_\+call}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_a5541eaed5f2c0eb348672cf0817c37f1}\label{classvisitor_1_1_interpreter_1_1_scope_a5541eaed5f2c0eb348672cf0817c37f1}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!Scope@{Scope}}
+\index{Scope@{Scope}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{Scope()}{Scope()}}
+{\footnotesize\ttfamily visitor\+::\+Interpreter\+::\+Scope\+::\+Scope (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_a57644a15c91ccdb2de117d5cf96ba18a}\label{classvisitor_1_1_interpreter_1_1_scope_a57644a15c91ccdb2de117d5cf96ba18a}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!add\_func@{add\_func}}
+\index{add\_func@{add\_func}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{add\_func()}{add\_func()}}
+{\footnotesize\ttfamily void Interpreter\+::\+Scope\+::add\+\_\+func (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Function}}}]{func }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_a567363909a5af795ad40375d79df973f}\label{classvisitor_1_1_interpreter_1_1_scope_a567363909a5af795ad40375d79df973f}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!add\_var@{add\_var}}
+\index{add\_var@{add\_var}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{add\_var()}{add\_var()}}
+{\footnotesize\ttfamily void Interpreter\+::\+Scope\+::add\+\_\+var (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}}}]{var }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_ac1dfbfd623bf20953da721327103d2a1}\label{classvisitor_1_1_interpreter_1_1_scope_ac1dfbfd623bf20953da721327103d2a1}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!code\_generator@{code\_generator}}
+\index{code\_generator@{code\_generator}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{code\_generator()}{code\_generator()}}
+{\footnotesize\ttfamily std\+::string Interpreter\+::\+Scope\+::code\+\_\+generator (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{std\+::vector$<$ \mbox{\hyperlink{namespaceparser_a188bcac3c5e252ac77403e912e0e25f1}{parser\+::\+Tealang\+\_\+t}} $>$}]{args }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_aa8aba30f2582b1cf420700952ca2fe64}\label{classvisitor_1_1_interpreter_1_1_scope_aa8aba30f2582b1cf420700952ca2fe64}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!get\_func@{get\_func}}
+\index{get\_func@{get\_func}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{get\_func()}{get\_func()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Interpreter\+::\+Function}} Interpreter\+::\+Scope\+::get\+\_\+func (\begin{DoxyParamCaption}\item[{std\+::string}]{str }\end{DoxyParamCaption})}
+
+Finds \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Function}} \mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_a4cbc4e12b3059db02816758dc4d6557c}\label{classvisitor_1_1_interpreter_1_1_scope_a4cbc4e12b3059db02816758dc4d6557c}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!get\_var@{get\_var}}
+\index{get\_var@{get\_var}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{get\_var()}{get\_var()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Interpreter\+::\+Variable}} Interpreter\+::\+Scope\+::get\+\_\+var (\begin{DoxyParamCaption}\item[{std\+::string}]{str }\end{DoxyParamCaption})}
+
+Find variable starting from top scope \mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_a4ef6d2754b1e1c35db5c553108702d61}\label{classvisitor_1_1_interpreter_1_1_scope_a4ef6d2754b1e1c35db5c553108702d61}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!update\_var@{update\_var}}
+\index{update\_var@{update\_var}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{update\_var()}{update\_var()}}
+{\footnotesize\ttfamily void Interpreter\+::\+Scope\+::update\+\_\+var (\begin{DoxyParamCaption}\item[{std\+::string}]{str,  }\item[{\mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}}}]{var }\end{DoxyParamCaption})}
+
+Updates a variable starting from top scope 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_aa42a80b683c701f63144bf93cb470ba8}\label{classvisitor_1_1_interpreter_1_1_scope_aa42a80b683c701f63144bf93cb470ba8}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!function\_call@{function\_call}}
+\index{function\_call@{function\_call}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{function\_call}{function\_call}}
+{\footnotesize\ttfamily bool visitor\+::\+Interpreter\+::\+Scope\+::function\+\_\+call}
+
+\mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_a85f9685cb6c723facf5676ef9adf20b2}\label{classvisitor_1_1_interpreter_1_1_scope_a85f9685cb6c723facf5676ef9adf20b2}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!function\_scope@{function\_scope}}
+\index{function\_scope@{function\_scope}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{function\_scope}{function\_scope}}
+{\footnotesize\ttfamily std\+::map$<$std\+::string, \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_function}{Function}}$>$ visitor\+::\+Interpreter\+::\+Scope\+::function\+\_\+scope}
+
+Maps function names to a tuple containing the function return type and the argument types \mbox{\Hypertarget{classvisitor_1_1_interpreter_1_1_scope_ae47bb7cf0c092cf48cfbf1acc84709fd}\label{classvisitor_1_1_interpreter_1_1_scope_ae47bb7cf0c092cf48cfbf1acc84709fd}} 
+\index{visitor::Interpreter::Scope@{visitor::Interpreter::Scope}!variable\_scope@{variable\_scope}}
+\index{variable\_scope@{variable\_scope}!visitor::Interpreter::Scope@{visitor::Interpreter::Scope}}
+\doxysubsubsection{\texorpdfstring{variable\_scope}{variable\_scope}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::map$<$std\+::string, \mbox{\hyperlink{classvisitor_1_1_interpreter_1_1_variable}{Variable}}$>$ $>$ visitor\+::\+Interpreter\+::\+Scope\+::variable\+\_\+scope}
+
+The Vector stores all current variable scopes, where each scope is a mapping from a string to its type 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/trv/\+Code/\+Tea\+Lang/src/visitor/\mbox{\hyperlink{interpreter_8hh}{interpreter.\+hh}}\item 
+/home/trv/\+Code/\+Tea\+Lang/src/visitor/\mbox{\hyperlink{interpreter_8cc}{interpreter.\+cc}}\end{DoxyCompactItemize}

@@ -565,6 +565,26 @@ Below is the full Tealang EBNF with changes from TealangV1 and TealangV2 highlig
 
 \newpage
 
+# Running Tealang
+
+To compile Tealang navigate to the `src` directory and run `make -B`, the Tealang interpreter will then be compiled into the `tealang` binary.
+
+```{.bash}
+cd src
+make -B          # Compiles the program
+./tealang --help # Lists the help menu
+./tealang <file> # Runs the specified file
+```
+
+## Tealang Flags
+
+- `-x` or `--xml` will output the generated AST in XML to the specified file
+- `-l` or `--lexer` will output the lexer tokens to the specified file
+- `-o` or `--output` will redirect `stdout` to the specified file
+
+
+\newpage
+
 # Testing
 
 ## Testing Characters

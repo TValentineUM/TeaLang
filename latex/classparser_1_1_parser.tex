@@ -1,0 +1,151 @@
+\hypertarget{classparser_1_1_parser}{}\doxysection{parser\+::Parser Class Reference}
+\label{classparser_1_1_parser}\index{parser::Parser@{parser::Parser}}
+
+
+Collaboration diagram for parser\+::Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classparser_1_1_parser__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a336cf1da3b59b851deab128dcb2a4086}\label{classparser_1_1_parser_a336cf1da3b59b851deab128dcb2a4086}} 
+{\bfseries Parser} (std\+::string filename)
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_afdadd6260b6c88adb2bc7d738dd47073}\label{classparser_1_1_parser_afdadd6260b6c88adb2bc7d738dd47073}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_program}{A\+S\+T\+Program}} $\ast$ {\bfseries parse\+\_\+program} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a16e43c790150f9b2a29da16ffd708868}\label{classparser_1_1_parser_a16e43c790150f9b2a29da16ffd708868}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ {\bfseries parse\+\_\+expression} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_ac915bd5d66ac720b1a393cff961c33f8}\label{classparser_1_1_parser_ac915bd5d66ac720b1a393cff961c33f8}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ {\bfseries parse\+\_\+simple\+\_\+expression} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a6165865c55ae71d449eb940aa4dbd723}\label{classparser_1_1_parser_a6165865c55ae71d449eb940aa4dbd723}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ {\bfseries parse\+\_\+term} ()
+\item 
+\mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ \mbox{\hyperlink{classparser_1_1_parser_ad605d35c4bb4ebf827bb2924f733dbef}{parse\+\_\+factor}} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a896964710a926c00a6efc4caa20290ce}\label{classparser_1_1_parser_a896964710a926c00a6efc4caa20290ce}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_unary}{A\+S\+T\+Unary}} $\ast$ {\bfseries parse\+\_\+unary} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a5904a689c4af860e9ecf85d7ef01e670}\label{classparser_1_1_parser_a5904a689c4af860e9ecf85d7ef01e670}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_array_literal}{A\+S\+T\+Array\+Literal}} $\ast$ {\bfseries parse\+\_\+array\+\_\+literal} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a92ab5b301cbcbec1398029ef6b487717}\label{classparser_1_1_parser_a92ab5b301cbcbec1398029ef6b487717}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ {\bfseries parse\+\_\+sub\+\_\+expression} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a5788f18f4a79ae410b829a807aeff95b}\label{classparser_1_1_parser_a5788f18f4a79ae410b829a807aeff95b}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_function_call}{A\+S\+T\+Function\+Call}} $\ast$ {\bfseries parse\+\_\+function\+\_\+call} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_afc639fed8dd6f8074691989d1c2c5427}\label{classparser_1_1_parser_afc639fed8dd6f8074691989d1c2c5427}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_array_access}{A\+S\+T\+Array\+Access}} $\ast$ {\bfseries parse\+\_\+array\+\_\+access} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_aab0080d753cbfeb2cf8bee5b26ca11c3}\label{classparser_1_1_parser_aab0080d753cbfeb2cf8bee5b26ca11c3}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ {\bfseries parse\+\_\+struct\+\_\+operator} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_ae0591c57394c17ab0609f510d92755fa}\label{classparser_1_1_parser_ae0591c57394c17ab0609f510d92755fa}} 
+std\+::vector$<$ \mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ $>$ {\bfseries parse\+\_\+actual\+\_\+params} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a5d9aa1433c20c5e54305e1de73df0f89}\label{classparser_1_1_parser_a5d9aa1433c20c5e54305e1de73df0f89}} 
+std\+::vector$<$ std\+::tuple$<$ std\+::string, Tealang\+\_\+t, std\+::string $>$ $>$ {\bfseries parse\+\_\+formal\+\_\+params} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_aeb57897e8675c3f8728364183d443bd3}\label{classparser_1_1_parser_aeb57897e8675c3f8728364183d443bd3}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_block}{A\+S\+T\+Block}} $\ast$ {\bfseries parse\+\_\+block} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a4776404c5e0e2d8cd4278e0c6f39bfbd}\label{classparser_1_1_parser_a4776404c5e0e2d8cd4278e0c6f39bfbd}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_statement}{A\+S\+T\+Statement}} $\ast$ {\bfseries parse\+\_\+statement} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a0edceaa1b517ac9c41ba4ea722b232e5}\label{classparser_1_1_parser_a0edceaa1b517ac9c41ba4ea722b232e5}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_statement}{A\+S\+T\+Statement}} $\ast$ {\bfseries parse\+\_\+decl} ()
+\item 
+\mbox{\hyperlink{classparser_1_1_a_s_t_variable_decl}{A\+S\+T\+Variable\+Decl}} $\ast$ \mbox{\hyperlink{classparser_1_1_parser_a1432c71320c4cc8d04f317c8b30a34b7}{parse\+\_\+var\+\_\+decl}} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_af8988b19d4983c7bfed86e6e355627dd}\label{classparser_1_1_parser_af8988b19d4983c7bfed86e6e355627dd}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_array_assignment}{A\+S\+T\+Array\+Assignment}} $\ast$ {\bfseries parse\+\_\+arr\+\_\+assign} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_ad2cf3471c14bec36f9bb95ec8b613c45}\label{classparser_1_1_parser_ad2cf3471c14bec36f9bb95ec8b613c45}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_assignment}{A\+S\+T\+Assignment}} $\ast$ {\bfseries parse\+\_\+assignment} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_ae50f9e49f2945e8c007080d6e504fcd3}\label{classparser_1_1_parser_ae50f9e49f2945e8c007080d6e504fcd3}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_print_statement}{A\+S\+T\+Print\+Statement}} $\ast$ {\bfseries parse\+\_\+print} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_aba017ebcb28fd8d254c9c7fbc9cf4ee1}\label{classparser_1_1_parser_aba017ebcb28fd8d254c9c7fbc9cf4ee1}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_return}{A\+S\+T\+Return}} $\ast$ {\bfseries parse\+\_\+return} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_ad8476bc6569954a976709af02ac9f6b6}\label{classparser_1_1_parser_ad8476bc6569954a976709af02ac9f6b6}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_function_decl}{A\+S\+T\+Function\+Decl}} $\ast$ {\bfseries parse\+\_\+function\+\_\+decl} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_adb16f69953c8134638686afb6bb01f79}\label{classparser_1_1_parser_adb16f69953c8134638686afb6bb01f79}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_while_statement}{A\+S\+T\+While\+Statement}} $\ast$ {\bfseries parse\+\_\+while} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a7527b18ec019817af9f5608f10947493}\label{classparser_1_1_parser_a7527b18ec019817af9f5608f10947493}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_for_statement}{A\+S\+T\+For\+Statement}} $\ast$ {\bfseries parse\+\_\+for} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_af81b716570412e43ea5981ae4b550ba1}\label{classparser_1_1_parser_af81b716570412e43ea5981ae4b550ba1}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_if_statement}{A\+S\+T\+If\+Statement}} $\ast$ {\bfseries parse\+\_\+if} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a111e35abf789b1de8f61dfd03ef5c74e}\label{classparser_1_1_parser_a111e35abf789b1de8f61dfd03ef5c74e}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_array_decl}{A\+S\+T\+Array\+Decl}} $\ast$ {\bfseries parse\+\_\+array\+\_\+decl} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_aef396a815740484be2cb9440b32b89f9}\label{classparser_1_1_parser_aef396a815740484be2cb9440b32b89f9}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_struct_decl}{A\+S\+T\+Struct\+Decl}} $\ast$ {\bfseries parse\+\_\+struct\+\_\+decl} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_abf74cd8f9a8452945e8d5e98e413ec12}\label{classparser_1_1_parser_abf74cd8f9a8452945e8d5e98e413ec12}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_struct_defn}{A\+S\+T\+Struct\+Defn}} $\ast$ {\bfseries parse\+\_\+struct\+\_\+def} ()
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a669bdc0c45229886d93445b3ea070b43}\label{classparser_1_1_parser_a669bdc0c45229886d93445b3ea070b43}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_struct_assign}{A\+S\+T\+Struct\+Assign}} $\ast$ {\bfseries parse\+\_\+struct\+\_\+assign} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_ac1a34736b514466728d96d716b704f36}\label{classparser_1_1_parser_ac1a34736b514466728d96d716b704f36}} 
+\mbox{\hyperlink{classlexer_1_1_lexer}{lexer\+::\+Lexer}} {\bfseries lex}
+\item 
+\mbox{\hyperlink{classlexer_1_1_token}{lexer\+::\+Token}} \mbox{\hyperlink{classparser_1_1_parser_a74a2ece7ac4a1dd4005e5f0441eb24a2}{curr\+\_\+tok}}
+\item 
+std\+::optional$<$ \mbox{\hyperlink{classlexer_1_1_token}{lexer\+::\+Token}} $>$ \mbox{\hyperlink{classparser_1_1_parser_ab992fd4c60472839c80953de13f50dd2}{ll1\+\_\+tok}}
+\item 
+\mbox{\Hypertarget{classparser_1_1_parser_a2e867095c273d71fcc827ee70f0b32be}\label{classparser_1_1_parser_a2e867095c273d71fcc827ee70f0b32be}} 
+\mbox{\hyperlink{classparser_1_1_a_s_t_program}{A\+S\+T\+Program}} $\ast$ {\bfseries tree}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classparser_1_1_parser_ad605d35c4bb4ebf827bb2924f733dbef}\label{classparser_1_1_parser_ad605d35c4bb4ebf827bb2924f733dbef}} 
+\index{parser::Parser@{parser::Parser}!parse\_factor@{parse\_factor}}
+\index{parse\_factor@{parse\_factor}!parser::Parser@{parser::Parser}}
+\doxysubsubsection{\texorpdfstring{parse\_factor()}{parse\_factor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classparser_1_1_a_s_t_expression}{A\+S\+T\+Expression}} $\ast$ Parser\+::parse\+\_\+factor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Regular Index\mbox{\Hypertarget{classparser_1_1_parser_a1432c71320c4cc8d04f317c8b30a34b7}\label{classparser_1_1_parser_a1432c71320c4cc8d04f317c8b30a34b7}} 
+\index{parser::Parser@{parser::Parser}!parse\_var\_decl@{parse\_var\_decl}}
+\index{parse\_var\_decl@{parse\_var\_decl}!parser::Parser@{parser::Parser}}
+\doxysubsubsection{\texorpdfstring{parse\_var\_decl()}{parse\_var\_decl()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classparser_1_1_a_s_t_variable_decl}{A\+S\+T\+Variable\+Decl}} $\ast$ Parser\+::parse\+\_\+var\+\_\+decl (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Also Handles Array Declerations 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classparser_1_1_parser_a74a2ece7ac4a1dd4005e5f0441eb24a2}\label{classparser_1_1_parser_a74a2ece7ac4a1dd4005e5f0441eb24a2}} 
+\index{parser::Parser@{parser::Parser}!curr\_tok@{curr\_tok}}
+\index{curr\_tok@{curr\_tok}!parser::Parser@{parser::Parser}}
+\doxysubsubsection{\texorpdfstring{curr\_tok}{curr\_tok}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classlexer_1_1_token}{lexer\+::\+Token}} parser\+::\+Parser\+::curr\+\_\+tok}
+
+Current Token \mbox{\Hypertarget{classparser_1_1_parser_ab992fd4c60472839c80953de13f50dd2}\label{classparser_1_1_parser_ab992fd4c60472839c80953de13f50dd2}} 
+\index{parser::Parser@{parser::Parser}!ll1\_tok@{ll1\_tok}}
+\index{ll1\_tok@{ll1\_tok}!parser::Parser@{parser::Parser}}
+\doxysubsubsection{\texorpdfstring{ll1\_tok}{ll1\_tok}}
+{\footnotesize\ttfamily std\+::optional$<$\mbox{\hyperlink{classlexer_1_1_token}{lexer\+::\+Token}}$>$ parser\+::\+Parser\+::ll1\+\_\+tok}
+
+Single Lookahead 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/parser/parser.\+hh\item 
+src/parser/parser.\+cc\end{DoxyCompactItemize}

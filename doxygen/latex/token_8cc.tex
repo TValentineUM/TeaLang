@@ -1,0 +1,47 @@
+\hypertarget{token_8cc}{}\doxysection{src/lexer/token.cc File Reference}
+\label{token_8cc}\index{src/lexer/token.cc@{src/lexer/token.cc}}
+{\ttfamily \#include \char`\"{}token.\+hh\char`\"{}}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+Include dependency graph for token.\+cc\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{token_8cc__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::map$<$ std\+::string, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49}{tl\+\_\+token}} $>$ \mbox{\hyperlink{token_8cc_a6d132bd1f301022d9739a02caacce277}{identifiers}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{token_8cc_a6d132bd1f301022d9739a02caacce277}\label{token_8cc_a6d132bd1f301022d9739a02caacce277}} 
+\index{token.cc@{token.cc}!identifiers@{identifiers}}
+\index{identifiers@{identifiers}!token.cc@{token.cc}}
+\doxysubsubsection{\texorpdfstring{identifiers}{identifiers}}
+{\footnotesize\ttfamily std\+::map$<$std\+::string, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49}{tl\+\_\+token}}$>$ identifiers}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{\{\textcolor{stringliteral}{"float"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a879eb0c1737f7ae73a0f2cc703ef2abc}{tok\_type\_float}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"int"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49af0ed965727069e280481653a82472778}{tok\_type\_int}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"bool"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a8dd18de70fb90a7097113dd654849e6f}{tok\_type\_bool}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"string"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae2f89c073459e9baa3b7ec237cddcc86}{tok\_type\_string}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"true"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a05e3c96221f60ede9a0794e1f3fc06b2}{tok\_lit\_bool}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"false"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a05e3c96221f60ede9a0794e1f3fc06b2}{tok\_lit\_bool}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"not"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a5594f701d077a25132b294b7fcb99d77}{tok\_unary}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"let"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a6e2cbc5def19a440a75df7fafa92b7a3}{tok\_let}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"print"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a8ba5bde8443d531959dd32d12ec87b11}{tok\_print}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"return"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a377be02b844a72991cb656985d701e56}{tok\_return}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"if"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a081e78700069633b4c101abd3a2c61c1}{tok\_if}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"else"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae6bea6dbfc181c48b8f28ac59b60f93a}{tok\_else}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"for"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a6a1c8231ab9c7f336c1a48f21ff1bf2f}{tok\_for}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"while"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ae3914d09e1adf56216c446bb70b472e3}{tok\_while}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"or"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49a2cbd8f13f87194186b1c950a76c1ab25}{tok\_add\_op}}\},}
+\DoxyCodeLine{                                               \{\textcolor{stringliteral}{"and"}, \mbox{\hyperlink{namespacelexer_aac4703d4eddc3e7ffdbe860f500c0a49ac77f6a969b5516df6060aff9d896730a}{tok\_multi\_op}}\}\}}
+
+\end{DoxyCode}

@@ -1,0 +1,255 @@
+\hypertarget{classvisitor_1_1_x_m_l_visitor}{}\doxysection{visitor\+::X\+M\+L\+Visitor Class Reference}
+\label{classvisitor_1_1_x_m_l_visitor}\index{visitor::XMLVisitor@{visitor::XMLVisitor}}
+
+
+{\ttfamily \#include $<$xmlvisitor.\+hh$>$}
+
+
+
+Inheritance diagram for visitor\+::X\+M\+L\+Visitor\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=185pt]{classvisitor_1_1_x_m_l_visitor__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for visitor\+::X\+M\+L\+Visitor\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=185pt]{classvisitor_1_1_x_m_l_visitor__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_abc62e017e59d2f312560b009dcba02d9}{X\+M\+L\+Visitor}} (std\+::string \&filename)
+\item 
+\mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_ad380392870cfd2518283815d04fecbb1}{X\+M\+L\+Visitor}} (std\+::string \&filename, \mbox{\hyperlink{classparser_1_1_a_s_t_program}{parser\+::\+A\+S\+T\+Program}} $\ast$p)
+\item 
+\mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a14d649e8bc46d49956cee1c781f43faa}{$\sim$\+X\+M\+L\+Visitor}} ()
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_aae4a6176ff2abf0f422cc5da8d1a11c5}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_literal}{parser\+::\+A\+S\+T\+Literal}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_adb5949b6fbf7dbd38d207bbde0fed393}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_identifier}{parser\+::\+A\+S\+T\+Identifier}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_ab454cd969d29cee175218b69d02b3bdb}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_function_call}{parser\+::\+A\+S\+T\+Function\+Call}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_ae653e62f196dc7b56d90449fd4ce2120}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_sub_expression}{parser\+::\+A\+S\+T\+Sub\+Expression}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a3c6bce414f4b0ce9e497d2af5789b56e}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_bin_op}{parser\+::\+A\+S\+T\+Bin\+Op}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a2441f516440169af1e9910f7b75409cc}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_program}{parser\+::\+A\+S\+T\+Program}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_ab342822a1cfe7b8daad212ec37a1385e}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_block}{parser\+::\+A\+S\+T\+Block}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a844403f3d9f9cff61201e953298ecf5d}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_unary}{parser\+::\+A\+S\+T\+Unary}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_aa82ff75ce86c6d451fe88cafc1e71ada}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_variable_decl}{parser\+::\+A\+S\+T\+Variable\+Decl}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_ae3f5feebcd3e91ee7130dd11692562c1}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_print_statement}{parser\+::\+A\+S\+T\+Print\+Statement}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a6022e1685746adf2b7041a4cb3c29d1e}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_assignment}{parser\+::\+A\+S\+T\+Assignment}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_afbbf6c0bac6838a85a5d1b046386a31f}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_if_statement}{parser\+::\+A\+S\+T\+If\+Statement}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a4078eb6f14bcd6951a1b6603772e3b58}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_for_statement}{parser\+::\+A\+S\+T\+For\+Statement}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_a088d57822ecd5633fdd57f6141865146}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_while_statement}{parser\+::\+A\+S\+T\+While\+Statement}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_ac2c3785bbf6baaa01347c23cb5c67fcc}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_return}{parser\+::\+A\+S\+T\+Return}} $\ast$) override
+\item 
+void \mbox{\hyperlink{classvisitor_1_1_x_m_l_visitor_aede64dfb8f64b0ee0ff2102857e6eed8}{visit}} (\mbox{\hyperlink{classparser_1_1_a_s_t_function_decl}{parser\+::\+A\+S\+T\+Function\+Decl}} $\ast$) override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_abc62e017e59d2f312560b009dcba02d9}\label{classvisitor_1_1_x_m_l_visitor_abc62e017e59d2f312560b009dcba02d9}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!XMLVisitor@{XMLVisitor}}
+\index{XMLVisitor@{XMLVisitor}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{XMLVisitor()}{XMLVisitor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily visitor\+::\+X\+M\+L\+Visitor\+::\+X\+M\+L\+Visitor (\begin{DoxyParamCaption}\item[{std\+::string \&}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_ad380392870cfd2518283815d04fecbb1}\label{classvisitor_1_1_x_m_l_visitor_ad380392870cfd2518283815d04fecbb1}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!XMLVisitor@{XMLVisitor}}
+\index{XMLVisitor@{XMLVisitor}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{XMLVisitor()}{XMLVisitor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily visitor\+::\+X\+M\+L\+Visitor\+::\+X\+M\+L\+Visitor (\begin{DoxyParamCaption}\item[{std\+::string \&}]{filename,  }\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_program}{parser\+::\+A\+S\+T\+Program}} $\ast$}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a14d649e8bc46d49956cee1c781f43faa}\label{classvisitor_1_1_x_m_l_visitor_a14d649e8bc46d49956cee1c781f43faa}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!````~XMLVisitor@{$\sim$XMLVisitor}}
+\index{````~XMLVisitor@{$\sim$XMLVisitor}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{$\sim$XMLVisitor()}{~XMLVisitor()}}
+{\footnotesize\ttfamily visitor\+::\+X\+M\+L\+Visitor\+::$\sim$\+X\+M\+L\+Visitor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a6022e1685746adf2b7041a4cb3c29d1e}\label{classvisitor_1_1_x_m_l_visitor_a6022e1685746adf2b7041a4cb3c29d1e}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_assignment}{parser\+::\+A\+S\+T\+Assignment}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a57837a4e1844a40ab4a3d2eb34336a6f}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a3c6bce414f4b0ce9e497d2af5789b56e}\label{classvisitor_1_1_x_m_l_visitor_a3c6bce414f4b0ce9e497d2af5789b56e}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_bin_op}{parser\+::\+A\+S\+T\+Bin\+Op}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a81d0dff0df029a56c7221cf85dc48b69}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_ab342822a1cfe7b8daad212ec37a1385e}\label{classvisitor_1_1_x_m_l_visitor_ab342822a1cfe7b8daad212ec37a1385e}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [3/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_block}{parser\+::\+A\+S\+T\+Block}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a9adbc27d9fde75019e8b88356bdbb644}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a4078eb6f14bcd6951a1b6603772e3b58}\label{classvisitor_1_1_x_m_l_visitor_a4078eb6f14bcd6951a1b6603772e3b58}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [4/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_for_statement}{parser\+::\+A\+S\+T\+For\+Statement}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a6febbf8eb808c18584923ae989e9c387}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_ab454cd969d29cee175218b69d02b3bdb}\label{classvisitor_1_1_x_m_l_visitor_ab454cd969d29cee175218b69d02b3bdb}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [5/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_function_call}{parser\+::\+A\+S\+T\+Function\+Call}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a3a5095ca35e35b80f890b0bbeedb8b25}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_aede64dfb8f64b0ee0ff2102857e6eed8}\label{classvisitor_1_1_x_m_l_visitor_aede64dfb8f64b0ee0ff2102857e6eed8}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [6/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_function_decl}{parser\+::\+A\+S\+T\+Function\+Decl}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a5cb2ab2e53456ea71fad9d8f4feb30eb}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_adb5949b6fbf7dbd38d207bbde0fed393}\label{classvisitor_1_1_x_m_l_visitor_adb5949b6fbf7dbd38d207bbde0fed393}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [7/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_identifier}{parser\+::\+A\+S\+T\+Identifier}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_abe9c309ff71e5adef618a52640294d70}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_afbbf6c0bac6838a85a5d1b046386a31f}\label{classvisitor_1_1_x_m_l_visitor_afbbf6c0bac6838a85a5d1b046386a31f}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [8/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_if_statement}{parser\+::\+A\+S\+T\+If\+Statement}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_aa5ca6dbcb807cb0acf3ef389ee9a3971}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_aae4a6176ff2abf0f422cc5da8d1a11c5}\label{classvisitor_1_1_x_m_l_visitor_aae4a6176ff2abf0f422cc5da8d1a11c5}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [9/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_literal}{parser\+::\+A\+S\+T\+Literal}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a53636598d60fea3c1f47d4081f238f5f}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_ae3f5feebcd3e91ee7130dd11692562c1}\label{classvisitor_1_1_x_m_l_visitor_ae3f5feebcd3e91ee7130dd11692562c1}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [10/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_print_statement}{parser\+::\+A\+S\+T\+Print\+Statement}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a6034d66a3bb98f60a53ae7599cc125e2}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a2441f516440169af1e9910f7b75409cc}\label{classvisitor_1_1_x_m_l_visitor_a2441f516440169af1e9910f7b75409cc}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [11/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_program}{parser\+::\+A\+S\+T\+Program}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_ad41a1c7c19f6f7c9953807b1f4fd22ec}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_ac2c3785bbf6baaa01347c23cb5c67fcc}\label{classvisitor_1_1_x_m_l_visitor_ac2c3785bbf6baaa01347c23cb5c67fcc}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [12/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_return}{parser\+::\+A\+S\+T\+Return}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a8942f4333135f9bf11dd97b54cdb4b49}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_ae653e62f196dc7b56d90449fd4ce2120}\label{classvisitor_1_1_x_m_l_visitor_ae653e62f196dc7b56d90449fd4ce2120}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [13/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_sub_expression}{parser\+::\+A\+S\+T\+Sub\+Expression}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a45c0949e8310710b698f9ad40e96b3b6}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a844403f3d9f9cff61201e953298ecf5d}\label{classvisitor_1_1_x_m_l_visitor_a844403f3d9f9cff61201e953298ecf5d}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [14/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_unary}{parser\+::\+A\+S\+T\+Unary}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a13baa6cfda4ccd43bf0486b6b05ffc76}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_aa82ff75ce86c6d451fe88cafc1e71ada}\label{classvisitor_1_1_x_m_l_visitor_aa82ff75ce86c6d451fe88cafc1e71ada}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [15/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_variable_decl}{parser\+::\+A\+S\+T\+Variable\+Decl}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a3a2a7c18145ce7d5359d8bd6e142dcd0}{visitor\+::\+Visitor}}.
+
+\mbox{\Hypertarget{classvisitor_1_1_x_m_l_visitor_a088d57822ecd5633fdd57f6141865146}\label{classvisitor_1_1_x_m_l_visitor_a088d57822ecd5633fdd57f6141865146}} 
+\index{visitor::XMLVisitor@{visitor::XMLVisitor}!visit@{visit}}
+\index{visit@{visit}!visitor::XMLVisitor@{visitor::XMLVisitor}}
+\doxysubsubsection{\texorpdfstring{visit()}{visit()}\hspace{0.1cm}{\footnotesize\ttfamily [16/16]}}
+{\footnotesize\ttfamily void X\+M\+L\+Visitor\+::visit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classparser_1_1_a_s_t_while_statement}{parser\+::\+A\+S\+T\+While\+Statement}} $\ast$}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classvisitor_1_1_visitor_a94c61696c97c6895f3d534ae0f3373f5}{visitor\+::\+Visitor}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/visitor/\mbox{\hyperlink{xmlvisitor_8hh}{xmlvisitor.\+hh}}\item 
+src/visitor/\mbox{\hyperlink{xmlvisitor_8cc}{xmlvisitor.\+cc}}\end{DoxyCompactItemize}
